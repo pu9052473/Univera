@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Univera
 
-## Getting Started
+### 🚀 Revolutionizing Education Through Seamless Integration
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### 📝 Problem Statement
+Universities today face **fragmented systems** that lead to inefficiencies and missed opportunities to enhance the educational experience.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Faculty**: Struggle with isolated systems for administrative tasks, wasting time that could be used for academic and student-focused activities.
+- **Students**: Experience a **disjointed learning journey** as learning tools are often separated from academic administration, reducing engagement and learning outcomes.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
+<hr>
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Features
+What Univera Offers?
 
-## Learn More
+- **AI-Integrated LMS & ERP**: Unified solution for course management, student tracking, and administrative tasks.
+- **Automated Administration**: Streamlines HR, finance, attendance, and resource management.
+- **Course & Exam Management**: Simplified course creation, grading, and progress tracking.
+- **Built-in Coding Environment**: Workspace for coding assignments and projects.
+- **Real-Time Communication**: Messaging, discussion boards, and group chats.
+- **Data Analytics & Reporting**: AI-driven insights on performance and engagement.
+- **Customizable & Scalable**: Adaptable for institutions of any size with tailored features.
 
-To learn more about Next.js, take a look at the following resources:
+## Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Frontend**: [Next.js](https://nextjs.org/), React, Tailwind CSS
+- **Backend**: Node.js, Express
+- **Database**: PostgreSQL (primary)
+- **Authentication**: JWT, clerk
+- **AI Integration**: TensorFlow.js or PyTorch (for analytics and insights)
+- **Deployment**: AWS or vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
+<hr>
 
-## Deploy on Vercel
+## Wroking with us
+1. How to use:
+- clone the [repo](https://github.com/kihan2518B/Univera.git)
+- run `npm install or yarn install`
+- Add your `env` varibales
+- You are good to go😄
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. How to contribute
+- fork the repository
+- create your `branch` within main branch in this format `issues/{#issuenumber}/shortname`
+- set your `environment`
+- start the server
+- make changes
+- commit them and push to your forked repository
+- `raise a pull reqest` of your branch
+- wait for reviews and make requested changes
+- wait for your pull request to be `merged`
+- `Congrats` you are now a contributor in `Univera🥳`
