@@ -8,8 +8,10 @@ datasource db {
 }
 
 model User {
-  id    String
-  email String @unique
-  password String
+  id                    String    @id @default(uuid())
+  clerkId               String 
+  email String          @unique
   role  String
+
+  createdAt DateTime    @default(now())
 }
