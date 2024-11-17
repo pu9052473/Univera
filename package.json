@@ -3,13 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "install-all": "npm install && npm run setup-husky",
+    "setup-husky": "npx husky install && [ ! -f .husky/pre-commit ] && npx husky add .husky/pre-commit 'npx lint-staged' || echo 'pre-commit hook already exists' && [ ! -f .husky/commit-msg ] && npx husky add .husky/commit-msg 'npx --no-install commitlint --edit \"$1\"' || echo 'commit-msg hook already exists'",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "prepare": "husky install",
     "lint": "eslint src --ext ts,tsx,js,jsx --report-unused-disable-directives ",
     "lint:fix": "eslint src --ext js,jsx,ts,tsx --fix",
-    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,html}'"
+    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,html}' 'package.json'"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.3.1",
