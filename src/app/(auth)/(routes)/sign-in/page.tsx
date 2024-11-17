@@ -57,22 +57,51 @@ export default function SignIn() {
   }
 
   return (
-    <div className="font-literata min-h-screen flex flex-col md:flex-row bg-white w-full">
-      {/* Right side - Image */}
-      <div className="w-full md:w-1/2 h-64 md:h-screen relative bg-gray-200 order-1 md:order-1">
+    <div className="font-literata min-h-screen flex flex-col sm:flex-row bg-white w-full">
+      {/* Main Background for small screens */}
+      <div className="absolute inset-0 sm:hidden z-0">
+        <Image
+          src={"/signin_page.png"}
+          alt={"Main Background"}
+          layout="fill"
+          objectFit="cover"
+          className="opacity-80"
+        />
+      </div>
+
+      {/* Absolute Background behind the form */}
+      <div
+        id="curv-mobile-background-container"
+        className="absolute z-10 sm:hidden bottom-0 max-w-full w-full h-3/5 pt-48"
+      >
+        <Image
+          id="curv-mobile-background"
+          src={"/backgrounds/Rectangle-12.png"}
+          alt={"Form Background"}
+          layout="fill"
+          objectFit="fill"
+          className="opacity-90"
+        />
+      </div>
+
+      {/* left side - Image */}
+      <div className="w-full sm:w-1/2 h-64 sm:h-screen relative max-sm:hidden bg-gray-200 order-1 sm:order-1">
         <Image
           src={"/signin_page.png"}
           alt={"University Campus"}
           height={1}
           width={1000}
-          className={"w-[100%] h-full object-cover"}
+          className={"w-[100%] h-full object-cover "}
         />
       </div>
 
       {/* Left side - Form */}
-      <div className="w-full  md:w-1/2 p-6 md:p-12 flex items-center justify-center order-2 md:order-2">
-        <Card className="w-full relative max-w-md space-y-8 p-8 shadow-lg">
-          <h1 className="font-literata mt-4 text-3xl font-bold text-gray-900">
+      <div
+        id="form-container"
+        className="max-sm:absolute relative max-sm:bottom-0 z-10 max-sm:h-1/2 w-full sm:w-1/2 p-6 flex items-center justify-center order-2 sm:order-2"
+      >
+        <Card className="w-full relative max-w-sm space-y-8 sm:p-4 md:p-8 sm:shadow-lg max-sm:shadow-none max-sm:border-0">
+          <h1 className="font-literata mt-4 text-3xl max-sm:hidden font-bold text-gray-900">
             Welcome Back to Univera!
           </h1>
 
@@ -95,7 +124,7 @@ export default function SignIn() {
                   id="password"
                   name="password"
                   type="password"
-                  placeholder="**********"
+                  placeholder="Enter your password"
                   required
                   onChange={(e) => setPassword(e.target.value)}
                   className="bg-[#E7E7FF] rounded-full"
@@ -140,7 +169,7 @@ export default function SignIn() {
                 </span>
               </div>
 
-              <OauthGoogle isSignup={true} />
+              <OauthGoogle isSignup={false} />
             </div>
           </form>
         </Card>
