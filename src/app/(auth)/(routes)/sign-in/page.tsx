@@ -12,8 +12,6 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
 import OauthGoogle from "@/components/GoogleAuth"
 
 export default function SignIn() {
