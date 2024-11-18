@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { PrismaClient } from "@prisma/client"
 
 //this function will create a new connection of prisma

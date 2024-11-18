@@ -3,7 +3,6 @@
 import { OAuthStrategy } from "@clerk/types"
 import { useSignIn, useSignUp } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
-import { AiOutlineGoogle } from "react-icons/ai"
 import Image from "next/image"
 
 export default function OauthGoogle({ isSignup }: { isSignup: boolean }) {
