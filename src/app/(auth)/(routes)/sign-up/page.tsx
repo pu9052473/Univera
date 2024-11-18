@@ -54,7 +54,6 @@ export default function SignupPage() {
           alt={"Main Background"}
           layout="fill"
           objectFit="cover"
-          className="opacity-80"
         />
       </div>
 
@@ -69,7 +68,6 @@ export default function SignupPage() {
           alt={"Form Background"}
           layout="fill"
           objectFit="fill"
-          className="opacity-90"
         />
       </div>
 
@@ -121,7 +119,7 @@ export default function SignupPage() {
             ) : (
               <Button
                 type="submit"
-                className=" w-full bg-[#5b58eb]  hover:bg-[#112c71] text-white rounded-full"
+                className="w-full bg-[#5b58eb] hover:bg-[#112c71] text-white rounded-full"
               >
                 Sign up
               </Button>
@@ -134,9 +132,10 @@ export default function SignupPage() {
               </Link>
             </div>
 
-            <div className="mt-6">
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
+            <div>
+              <div className="relative flex justify-center items-center text-sm">
+                <hr className="text-[#112C71] absolute max-sm:hidden border border-[#112C71] w-full bottom-[50%] z-10" />
+                <span className="px-2 text-[#112C71] sm:bg-white z-20">
                   Or continue with
                 </span>
               </div>
