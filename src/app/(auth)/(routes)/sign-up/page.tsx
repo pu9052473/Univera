@@ -36,8 +36,6 @@ export default function SignupPage() {
       if (!res.ok) {
         throw new Error("Failed to submit form")
       }
-
-      console.log("Form submitted with data:", data)
     } catch (error) {
       console.error(error)
     } finally {
