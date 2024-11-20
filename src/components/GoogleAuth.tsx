@@ -51,14 +51,12 @@ export default function OauthGoogle({ isSignup }: { isSignup: boolean }) {
   }
 
   return (
-    <div>
-      <button
-        onClick={() => handleSignIn("oauth_google")}
-        className="w-full bg-[#5b58eb] hover:bg-[#112c71] text-white flex items-center justify-center mt-4 gap-2 p-2 rounded-full"
-      >
-        <Image src={"/google.png"} alt={"google icon"} width={24} height={24} />
-        {isSignup ? "SignUp" : "SignIn"} with Google
-      </button>
-    </div>
+    <button
+      onClick={() => handleSignIn("oauth_google")}
+      className="w-full bg-[#5b58eb] hover:bg-[#112c71] text-white flex items-center justify-center gap-2 p-2 rounded-full"
+    >
+      <Image src={"/google.png"} alt={"google icon"} width={24} height={24} />
+      {isSignup ? "SignUp" : "SignIn"} with Google
+    </button>
   )
 }
