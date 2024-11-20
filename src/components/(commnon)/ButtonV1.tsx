@@ -120,7 +120,7 @@ export function ButtonV1({
 }
 
 interface SubmitButtonProps {
-  label: string
+  label?: string
   disabled?: boolean
   loading?: boolean
   className?: string
