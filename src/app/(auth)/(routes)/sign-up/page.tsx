@@ -1,21 +1,20 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Loader } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { FormEvent, useState } from "react"
 
 import OauthGoogle from "@/components/GoogleAuth"
+import { ButtonV1 } from "@/components/(commnon)/ButtonV1"
 
 export default function SignupPage() {
-  const [loading, setLoading] = useState(false)
+  const [isLoading, setisLoading] = useState(false)
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setLoading(true)
+    setisLoading(true)
 
     const formData = new FormData(e.currentTarget)
     const data = {
@@ -39,14 +38,14 @@ export default function SignupPage() {
     } catch (error) {
       console.error(error)
     } finally {
-      setLoading(false)
+      setisLoading(false)
     }
   }
 
   return (
-    <div className="font-literata min-h-screen flex flex-col sm:flex-row bg-white w-full">
+    <div className="font-literata max-h-screen h-fit  flex flex-col sm:flex-row w-full">
       {/* Main Background for small screens */}
-      <div className="absolute inset-0 sm:hidden z-0">
+      <div className="bottom-0 inset-0 sm:hidden z-0">
         <Image
           src={"/signup_page.png"}
           alt={"Main Background"}
@@ -71,14 +70,17 @@ export default function SignupPage() {
 
       <div
         id="form-container"
-        className="max-sm:absolute relative max-sm:bottom-0 z-10 max-sm:h-1/2 w-full sm:w-1/2 p-6 flex items-center justify-center order-2 sm:order-2"
+        className="max-sm:absolute relative min-h-fit max-sm:bottom-4 z-10 max-sm:h-1/2 w-full sm:w-1/2 p-6 flex items-center justify-center order-2 sm:order-2"
       >
         <Card className="w-full relative max-w-sm space-y-8 py-2 sm:p-4 md:p-8 sm:shadow-lg max-sm:shadow-none max-sm:border-0">
           <h1 className="font-literata mt-4 text-3xl max-sm:hidden font-bold text-gray-900">
             Welcome to Univera!
           </h1>
 
-          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-6 flex flex-col gap-3"
+          >
             <div className="space-y-4">
               <div>
                 <Input
@@ -112,25 +114,26 @@ export default function SignupPage() {
                 />
               </div>
             </div>
-            {loading ? (
-              <Loader />
-            ) : (
-              <Button
+            <div
+              id="signin-form-button-container"
+              className="gap-2 flex flex-col items-center justify-center"
+            >
+              <ButtonV1
+                id="sign-up-submit"
+                icon={null}
+                loading={isLoading}
                 type="submit"
+                label="Sign up"
                 className="w-full bg-[#5b58eb] hover:bg-[#112c71] text-white rounded-full"
-              >
-                Sign up
-              </Button>
-            )}
+              />
 
-            <div className="text-center text-sm mt-4">
-              <span className="text-gray-600">Already have an account? </span>
-              <Link href="/sign-in" className="text-blue-600 hover:underline">
-                Log in
-              </Link>
-            </div>
+              <div className="text-center text-sm">
+                <span className="text-gray-600">Already have an account? </span>
+                <Link href="/sign-in" className="text-blue-600 hover:underline">
+                  Sign In
+                </Link>
+              </div>
 
-            <div>
               <div className="relative flex justify-center items-center text-sm">
                 <hr className="text-[#112C71] absolute max-sm:hidden border border-[#112C71] w-full bottom-[50%] z-10" />
                 <span className="px-2 text-[#112C71] sm:bg-white z-20">
