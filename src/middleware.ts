@@ -29,12 +29,12 @@ export default clerkMiddleware(async (authPromise, req) => {
         const role = user.publicMetadata.role as string | undefined
 
         //admin role redirection
-        if (role == "ADMIN" && req.nextUrl.pathname === "/dashboard") {
-          return NextResponse.redirect(new URL("/admin/dashboard", req.url))
+        if (role == "admin" && req.nextUrl.pathname === "/") {
+          return NextResponse.redirect(new URL("/erp/admin/dashboard", req.url))
         }
 
         //prevent non admin user to go to admin paths
-        if (role !== "ADMIN" && req.nextUrl.pathname.startsWith("/admin")) {
+        if (role !== "admin" && req.nextUrl.pathname.startsWith("/admin")) {
           return NextResponse.redirect(new URL("/dashboard", req.url))
         }
 
@@ -42,7 +42,7 @@ export default clerkMiddleware(async (authPromise, req) => {
         if (publicRoutes.includes(req.nextUrl.pathname)) {
           return NextResponse.redirect(
             new URL(
-              role === "ADMIN" ? "/admin/dashboard" : "/dashboard",
+              role === "admin" ? "/admin/dashboard" : "/dashboard",
               req.url
             )
           )
