@@ -9,7 +9,7 @@ export default function AuthLayout({
 }>) {
   return (
     <SidebarProvider>
-      <div className="h-full flex items-center justify-center">
+      <div className="h-full w-full p-0 m-0 flex items-center justify-center">
         <CustomSideBar />
         {children}
       </div>
