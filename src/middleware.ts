@@ -32,7 +32,7 @@ export default clerkMiddleware(async (authPromise, req) => {
       try {
         const user = (await clerk.users.getUser(auth.userId)) ?? undefined
         const role = user.publicMetadata.role as string | undefined
-
+        if (role == "superuser") return
         //admin role redirection
         if (role == "admin" && req.nextUrl.pathname === "/") {
           return NextResponse.redirect(new URL("/erp/admin/dashboard", req.url))
@@ -40,16 +40,13 @@ export default clerkMiddleware(async (authPromise, req) => {
 
         //prevent non admin user to go to admin paths
         if (role !== "admin" && req.nextUrl.pathname.startsWith("/admin")) {
-          return NextResponse.redirect(new URL("/dashboard", req.url))
+          return NextResponse.redirect(new URL("/", req.url))
         }
 
-        //redirect auth users trying to access public routes
+        //redirect auth users trying to access public routes (eg:"/sign-in")
         if (publicRoutes.includes(req.nextUrl.pathname)) {
           return NextResponse.redirect(
-            new URL(
-              role === "admin" ? "/admin/dashboard" : "/dashboard",
-              req.url
-            )
+            new URL(role === "admin" ? "/admin/dashboard" : "/", req.url)
           )
         }
       } catch (error) {

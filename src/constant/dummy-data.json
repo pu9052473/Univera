@@ -1,0 +1,195 @@
+{
+    "roles": [
+      {
+        "id": 1,
+        "rolename": "admin"
+      },
+      {
+        "id": 2,
+        "rolename": "student"
+      },
+      {
+        "id": 3,
+        "rolename": "faculty"
+      },
+      {
+        "id": 4,
+        "rolename": "assistant professor"
+      },
+      {
+        "id": 5,
+        "rolename": "professor"
+      }
+    ],
+    "universities": [
+      {
+        "id": 1,
+        "name": "Karnavati University",
+        "location": "Ahmedabad, India",
+        "established": 2012,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      }
+    ],
+    "departments": [
+      {
+        "id": 1,
+        "name": "B Tech",
+        "code": "BT101",
+        "universityId": 1,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      },
+      {
+        "id": 2,
+        "name": "Bsc-It",
+        "code": "IT102",
+        "universityId": 1,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      }
+    ],
+    "faculties": [
+      {
+        "id": "user_2pWbD30knEj1V0jeyFkim67Bo73",
+        "name": "Dr. Ravi Kumar",
+        "email": "dev-faculty1@karnavatiuniversity.edu.in",
+        "clerkId": "user_2pWbD30knEj1V0jeyFkim67Bo73",
+        "phone": "+91-9876543210",
+        "departmentId": 1,
+        "subrole": "Professor",
+        "universityId": 1,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      },
+      {
+        "id": "user_2pWbMrpqSrAAOHCAKRZ5uWVFz7W",
+        "name": "Prof. Sneha Patel",
+        "email": "dev-faculty2@karnavatiuniversity.edu.in",
+        "clerkId": "user_2pWbMrpqSrAAOHCAKRZ5uWVFz7W",
+        "phone": "+91-9876543211",
+        "departmentId": 1,
+        "subrole": "Assistant Professor",
+        "universityId": 1,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      },
+      {
+        "id": "user_2pWbOT0zpbSXgUKmyUvHDiWBU42",
+        "name": "Dr. Arjun Mehta",
+        "email": "dev-faculty3@karnavatiuniversity.edu.in",
+        "clerkId": "user_2pWbOT0zpbSXgUKmyUvHDiWBU42",
+        "phone": "+91-9876543212",
+        "departmentId": 2,
+        "subrole": "Professor",
+        "universityId": 1,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      },
+      {
+        "id": "user_2pWbQmzbDpySFUgDa6UbuOxBf3a",
+        "name": "Prof. Kavita Shah",
+        "email": "dev-faculty4@karnavatiuniversity.edu.in",
+        "clerkId": "user_2pWbQmzbDpySFUgDa6UbuOxBf3a",
+        "phone": "+91-9876543213",
+        "departmentId": 2,
+        "subrole": "Assistant Professor",
+        "universityId": 1,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      }
+    ],
+    "students": [
+      {
+        "id": "user_2pWbVEq2ofULWoG6chkZCw0kwkw",
+        "name": "Amit Shah",
+        "email": "dev-student1@karnavatiuniversity.edu.in",
+        "clerkId": "user_2pWbVEq2ofULWoG6chkZCw0kwkw",
+        "phone": "+91-9876543220",
+        "year": 2,
+        "departmentId": 1,
+        "universityId": 1,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      },
+      {
+        "id": "user_2pWbXiKHxXfDENAvXSfV0bcgYOu",
+        "name": "Priya Desai",
+        "email": "dev-student2@karnavatiuniversity.edu.in",
+        "clerkId": "user_2pWbXiKHxXfDENAvXSfV0bcgYOu",
+        "phone": "+91-9876543221",
+        "year": 3,
+        "departmentId": 1,
+        "universityId": 1,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      },
+      {
+        "id": "user_2pWbYujKlenmASI5FzPVlxrIyyC",
+        "name": "Rajesh Singh",
+        "email": "dev-student3@karnavatiuniversity.edu.in",
+        "clerkId": "user_2pWbYujKlenmASI5FzPVlxrIyyC",
+        "phone": "+91-9876543222",
+        "year": 1,
+        "departmentId": 2,
+        "universityId": 1,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      },
+      {
+        "id": "user_2pWbaWfOHlu8paRAdnceN9lZA0a",
+        "name": "Sneha Verma",
+        "email": "dev-student4@karnavatiuniversity.edu.in",
+        "clerkId": "user_2pWbaWfOHlu8paRAdnceN9lZA0a",
+        "phone": "+91-9876543223",
+        "year": 4,
+        "departmentId": 2,
+        "universityId": 1,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      }
+    ],
+    "courses": [
+      {
+        "id": 1,
+        "name": "Introduction to Computer Science",
+        "code": "CS101",
+        "credits": 4,
+        "departmentId": 1,
+        "universityId": 1,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      },
+      {
+        "id": 2,
+        "name": "Data Structures and Algorithms",
+        "code": "CS102",
+        "credits": 3,
+        "departmentId": 1,
+        "universityId": 1,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      },
+      {
+        "id": 3,
+        "name": "Database Management Systems",
+        "code": "CS103",
+        "credits": 3,
+        "departmentId": 2,
+        "universityId": 1,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      },
+      {
+        "id": 4,
+        "name": "Computer Networks",
+        "code": "CS104",
+        "credits": 4,
+        "departmentId": 2,
+        "universityId": 1,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      }
+    ]
+  }
+  

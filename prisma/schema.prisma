@@ -7,11 +7,125 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id                    String    @id @default(uuid())
-  clerkId               String 
-  email String          @unique
-  role  String
+model Role {
+  id       Int    @id @default(autoincrement())
+  rolename String
+  users    User[] @relation("UserRoles") // Relation: A role can have many users
+}
 
-  createdAt DateTime    @default(now())
+model User {
+  id          String        @id @default(uuid())
+  email       String        @unique
+  clerkId     String        @unique
+  createdAt   DateTime      @default(now())
+  roles       Role[]        @relation("UserRoles") // Relation: A user can have multiple roles
+  ChatMessage ChatMessage[]
+  Forum       Forum[]
+}
+
+model University {
+  id          Int          @id @default(autoincrement())
+  name        String
+  location    String
+  established Int
+  faculties   Faculty[]
+  students    Student[]
+  departments Department[]
+  courses     Course[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Faculty {
+  id           String   @id @unique
+  name         String
+  email        String   @unique
+  phone        String?
+  departmentId Int
+  clerkId      String   @unique
+  courseId     Int
+  universityId Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  course     Course     @relation(fields: [courseId], references: [id])
+  Department Department @relation(fields: [departmentId], references: [id])
+  University University @relation(fields: [universityId], references: [id])
+}
+
+model Student {
+  id              String           @id @unique
+  name            String
+  email           String           @unique
+  phone           String?
+  year            Int
+  departmentId    Int
+  universityId    Int
+  courseId        Int
+  clerkId         String           @unique
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  course     Course     @relation(fields: [courseId], references: [id])
+  Department Department @relation(fields: [departmentId], references: [id])
+  University University @relation(fields: [universityId], references: [id])
+}
+
+model Department {
+  id           Int       @id @default(autoincrement())
+  name         String
+  code         String    @unique
+  faculty      Faculty[]
+  students     Student[]
+  courses      Course[]
+  forums       Forum[]
+  universityId Int
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  University University @relation(fields: [universityId], references: [id])
+}
+
+model Course {
+  id           Int       @id @default(autoincrement())
+  name         String
+  code         String    @unique
+  credits      Int
+  departmentId Int
+  universityId Int
+  forums       Forum[]
+  Faculty      Faculty[]
+  students     Student[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  Department     Department       @relation(fields: [departmentId], references: [id])
+  University     University       @relation(fields: [universityId], references: [id])
+}
+
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  message   String
+  userId    String
+  forumId   Int
+  createdAt DateTime @default(now())
+  Forum     Forum    @relation(fields: [forumId], references: [id])
+  User      User     @relation(fields: [userId], references: [clerkId])
+}
+
+model Forum {
+  id           Int           @id @default(autoincrement())
+  name         String
+  departmentId Int
+  courseId     Int
+  year         Int
+  userId       String
+  status       String
+  createdAt    DateTime      @default(now())
+  ChatMessage  ChatMessage[]
+
+  course     Course     @relation(fields: [courseId], references: [id])
+  department Department @relation(fields: [departmentId], references: [id])
+  User       User       @relation(fields: [userId], references: [clerkId])
 }
