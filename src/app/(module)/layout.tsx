@@ -2,7 +2,7 @@ import CustomSideBar from "@/components/(commnon)/CustomSideBar"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import React from "react"
 
-export default function AuthLayout({
+export default function ModuleLayout({
   children
 }: Readonly<{
   children: React.ReactNode
