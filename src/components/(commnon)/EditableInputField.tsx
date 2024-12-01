@@ -1,5 +1,3 @@
-"use client"
-
 import React, { useState } from "react"
 import { FiEdit } from "react-icons/fi"
 
@@ -7,43 +5,47 @@ interface EditableInputFieldProps {
   label: string
   placeholder: string
   value?: string
-  onSave?: (newValue: string) => void
+  name?: string
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export function EditableInputField({
   label,
   placeholder,
-  value = "",
-  onSave
+  value,
+  name,
+  onChange
 }: EditableInputFieldProps) {
   const [isEditing, setIsEditing] = useState(false)
-  const [inputValue, setInputValue] = useState(value)
 
   const toggleEdit = () => {
-    if (isEditing && onSave) {
-      onSave(inputValue)
-    }
     setIsEditing(!isEditing)
   }
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (onChange) {
+      onChange(e) // Propagate the change to the parent component
+    }
+  }
+
   return (
-    <div>
+    <div className="flex justify-center flex-col gap-1 h-full w-full">
       <label className="block font-medium">{label}</label>
       <div
-        className={`flex items-center border-b ${isEditing ? "border-blue-500" : "border-gray-300"}`}
+        className={`flex items-center border-b ${isEditing ? "border-blue-500" : "border-gray-300"} w-full`}
       >
         <input
-          className={`flex-grow placeholder-gray-400 bg-transparent outline-none ${isEditing ? "" : "cursor-not-allowed"}`}
+          className={`w-full placeholder-gray-400 bg-transparent outline-none ${isEditing ? "" : "cursor-not-allowed"}`}
           placeholder={placeholder}
-          value={inputValue}
+          value={value}
+          name={name}
           disabled={!isEditing}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={handleChange}
         />
-        <button onClick={toggleEdit}>
-          <FiEdit
-            className={`text-gray-500 transition-colors ${isEditing ? "text-blue-500" : ""}`}
-          />
-        </button>
+        <FiEdit
+          onClick={toggleEdit}
+          className={`cursor-pointer h-4 w-4 transition-colors ${isEditing ? "text-blue-500" : "text-black"}`}
+        />
       </div>
     </div>
   )

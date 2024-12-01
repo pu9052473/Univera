@@ -25,7 +25,14 @@ export const Menuitems = {
     { title: "Doctors", url: "/admin/doctors", icon: FaUserMd },
     { title: "Patients", url: "/admin/patients", icon: FaUsers }
   ],
-  user: []
+  faculty: [
+    { title: "Dashboard", url: "/teacher", icon: FaUserMd },
+    { title: "Students", url: "/students", icon: FaUserMd },
+    { title: "Curicullam", url: "/curicullam", icon: FaUserMd },
+    { title: "Subjects", url: "/subjects", icon: FaUserMd },
+    { title: "Events", url: "/events", icon: FaUserMd },
+    { title: "Announcement", url: "/announcements", icon: FaUserMd }
+  ]
 }
 
 import { IconType } from "react-icons"

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sidebar"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
-import { LogOut } from "lucide-react"
+import { LogOut, UserRoundPen } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -110,9 +110,20 @@ export default function CustomSideBar() {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-36 mt-2 p-2 bg-white border border-gray-200 rounded-lg shadow-md">
-            <DropdownMenuItem className="flex items-center gap-2 p-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
-              <LogOut className="w-4 h-4" />
-              <SignOutButton redirectUrl="/signin" />
+            <DropdownMenuItem className="w-full">
+              <div className="flex items-center gap-2 p-2 w-full text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
+                <LogOut className="w-4 h-4" />
+                <SignOutButton redirectUrl="/signin" />
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="w-full">
+              <Link
+                className="flex items-center gap-2 p-2 w-full text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                href={"/profile"}
+              >
+                <UserRoundPen className="w-4 h-4" />
+                Profile
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
