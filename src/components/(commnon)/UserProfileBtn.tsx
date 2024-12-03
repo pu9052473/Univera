@@ -1,6 +1,6 @@
 "use client"
 import React from "react"
-import { ChevronUp, Loader2 } from "lucide-react"
+import { ChevronDown, Loader2 } from "lucide-react"
 import { UserButton, useUser } from "@clerk/nextjs"
 
 interface UserProfileBtnProps {
@@ -27,7 +27,7 @@ export default function UserProfileBtn({ SideBarOpen }: UserProfileBtnProps) {
                   }
                 }}
               />
-              <div className="text-sm font-bold font-roboto">
+              <div className="text-sm font-bold font-roboto max-md:hidden">
                 {user?.fullName ?? "User"}
               </div>
             </div>
@@ -35,12 +35,12 @@ export default function UserProfileBtn({ SideBarOpen }: UserProfileBtnProps) {
             <Loader2 />
           )}
           <div className="">
-            <ChevronUp />
+            <ChevronDown />
           </div>
         </div>
       ) : (
         <div className="flex flex-col items-center justify-between gap-2">
-          <ChevronUp />
+          <ChevronDown />
           {/* UserButton as a compact avatar-only version */}
           <UserButton
             afterSignOutUrl="/"
