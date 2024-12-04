@@ -17,7 +17,7 @@ export default function ModuleLayout({
           href="/"
           className="flex items-center justify-center lg:justify-start p-3 gap-2"
         >
-          <Image src="/data/logo.png" alt="logo" width={32} height={32} />
+          <Image src="/logo.png" alt="logo" width={32} height={32} />
           <span className="hidden lg:block font-extrabold text-2xl ">
             Univera
           </span>

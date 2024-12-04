@@ -55,7 +55,7 @@ const config: Config = {
         TextTwo: '#0A2353',
         ColorOne: '#56E1E9',
         ColorTwo: '#BB63FF',
-        ColorThree: '5B58EB',
+        ColorThree: '#5B58EB',
       },
       fontFamily: {
         glyphic: ['Faculty Glyphic', 'sans-serif'],

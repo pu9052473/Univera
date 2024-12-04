@@ -85,7 +85,7 @@ export async function POST(req: Request) {
             clerkId: id,
             id: id,
             email: primaryEmail.email_address,
-            role: "USER"
+            roles: { connect: { id: 2 } }
           }
         })
         console.log("User created in DB", newUser)
