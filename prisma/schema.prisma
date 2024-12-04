@@ -21,6 +21,8 @@ model User {
   roles       Role[]        @relation("UserRoles") // Relation: A user can have multiple roles
   ChatMessage ChatMessage[]
   Forum       Forum[]
+  student Student?
+  faculty Faculty?
 }
 
 model University {
@@ -48,24 +50,26 @@ model Faculty {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  user  User @relation(fields: [clerkId],references: [clerkId])
   course     Course     @relation(fields: [courseId], references: [id])
   Department Department @relation(fields: [departmentId], references: [id])
   University University @relation(fields: [universityId], references: [id])
 }
 
 model Student {
-  id              String           @id @unique
-  name            String
-  email           String           @unique
-  phone           String?
-  year            Int
-  departmentId    Int
-  universityId    Int
-  courseId        Int
-  clerkId         String           @unique
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  id           String   @id @unique
+  name         String
+  email        String   @unique
+  phone        String?
+  year         Int
+  departmentId Int
+  universityId Int
+  courseId     Int
+  clerkId      String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
+  user  User @relation(fields: [clerkId],references: [clerkId])
   course     Course     @relation(fields: [courseId], references: [id])
   Department Department @relation(fields: [departmentId], references: [id])
   University University @relation(fields: [universityId], references: [id])
@@ -99,10 +103,9 @@ model Course {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  Department     Department       @relation(fields: [departmentId], references: [id])
-  University     University       @relation(fields: [universityId], references: [id])
+  Department Department @relation(fields: [departmentId], references: [id])
+  University University @relation(fields: [universityId], references: [id])
 }
-
 
 model ChatMessage {
   id        Int      @id @default(autoincrement())

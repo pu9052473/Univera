@@ -3,15 +3,17 @@ import Profile from "@/components/(commnon)/Profile"
 import { useUser } from "@clerk/nextjs"
 import { Faculty, Student } from "@prisma/client"
 import React, { useEffect, useState } from "react"
+import toast from "react-hot-toast"
 
 export default function Page() {
   const user = useUser()
   const userRole = user.user?.publicMetadata.role as string
   const userId = user.user?.id
   const [defaults, setDefaults] = useState<Faculty | Student | null>(null)
+  const [loading, setLoading] = useState<boolean>(false)
 
   const handleSubmit = async (updatedFields: any) => {
-    console.log("updatedFields: ", updatedFields)
+    setLoading(true)
     if (!updatedFields) return
 
     try {
@@ -23,13 +25,18 @@ export default function Page() {
         body: JSON.stringify({ userId, updatedFields, role: userRole })
       })
       const data = await response.json()
+      console.log(data)
+
       if (response.ok) {
-        console.log("Profile updated successfully", data)
+        setDefaults(data.updatedUser)
       } else {
         console.error("Error updating profile", data)
       }
+      toast.success("Profile updated sucessfully.")
     } catch (error) {
       console.error("Error:", error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -51,19 +58,17 @@ export default function Page() {
       fetchData()
     }
   }, [userId, userRole])
-  if (!defaults) return <>Loading...</>
   return (
-    <div>
-      {defaults && (
-        <div className="w-full h-full flex justify-center p-3">
-          <Profile
-            clerkUser={user.user}
-            defaults={defaults}
-            onSubmit={handleSubmit}
-            fields={["name", "phone"]}
-          />
-        </div>
-      )}
+    <div className="w-full h-full">
+      <div className="w-full h-full flex justify-center p-3">
+        <Profile
+          loading={loading}
+          clerkUser={user.user}
+          defaults={defaults}
+          onSubmit={handleSubmit}
+          fields={["name", "phone", "email"]}
+        />
+      </div>
     </div>
   )
 }
