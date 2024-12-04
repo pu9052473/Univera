@@ -63,6 +63,7 @@ const config: Config = {
         poppins: ['Poppins', 'sans-serif'],
         roboto: ['Roboto', 'sans-serif'],
       },
+
     },
   },
   plugins: [require("tailwindcss-animate")],

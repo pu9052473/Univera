@@ -1,24 +1,19 @@
 import { FaUserMd, FaUsers } from "react-icons/fa"
-import {
-  MdSpaceDashboard,
-  MdSchool,
-  MdPeopleAlt,
-  MdGroups2
-} from "react-icons/md"
+import { MdSpaceDashboard, MdSchool, MdGroups2 } from "react-icons/md"
 
 export const Menuitems = {
   admin: [
-    { title: "Dashboard", url: "/erp/admin/dashboard", icon: MdSpaceDashboard },
-    { title: "Departments", url: "/erp/admin/departments", icon: MdSchool },
-    {
-      title: "University Admin Team",
-      url: "/erp/admin/university-admin-team",
-      icon: MdPeopleAlt
-    },
+    { title: "Dashboard", url: "/admin", icon: MdSpaceDashboard },
+    { title: "Departments", url: "/admin/departments", icon: MdSchool },
     {
       title: "Non-Teaching Staff",
-      url: "/erp/admin/non-teaching-staff",
+      url: "/non-teaching-staff",
       icon: MdGroups2
+    },
+    {
+      title: "Teachers",
+      url: "/teachers",
+      icon: FaUsers
     }
   ],
   university_admin_staff: [
