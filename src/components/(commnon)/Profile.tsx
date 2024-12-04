@@ -27,6 +27,7 @@ const Profile: React.FC<ProfileProps> = ({
   const [isDirty, setIsDirty] = useState(false)
   const [editingField, setEditingField] = useState<string | null>(null)
   const [formData, setFormData] = useState<Record<string, string>>(initForm)
+
   useEffect(() => {
     if (defaults) {
       setFormData(
@@ -81,101 +82,145 @@ const Profile: React.FC<ProfileProps> = ({
   }
 
   return (
-    <div className="flex flex-col items-center w-full min-h-screen p-4 sm:p-10 bg-gray-100">
+    <div
+      className="flex flex-col items-center w-full min-h-screen p-4 sm:p-10 
+                 bg-white rounded-md
+                 text-TextTwo transition-all duration-300"
+    >
       <div className="w-full max-w-6xl">
-        <div className="flex flex-col md:flex-row items-center md:items-start justify-between mb-10 space-y-6 md:space-y-0">
+        <div
+          className="flex flex-col md:flex-row items-center md:items-start 
+                     justify-between mb-10 space-y-6 md:space-y-0 
+                     bg-gradient-to-br from-[#f4f5ff] to-[#e6e8f3] p-6 rounded-xl shadow-lg 
+                     hover:bg-white/90 transition-all duration-300 
+                     border border-Secondary"
+        >
           <div className="flex flex-col items-center md:items-start">
-            <h1 className="text-2xl md:text-3xl font-extrabold mb-4 text-gray-800 text-center md:text-left">
+            <h1
+              className="text-2xl md:text-3xl font-extrabold mb-4 
+                         text-Primary text-center md:text-left 
+                         drop-shadow-md"
+            >
               {defaults && defaults.name}&#39;s Profile
             </h1>
             <div
-              className="relative h-24 w-24 rounded-full shadow-lg overflow-hidden bg-gray-200 
-                         transition-transform duration-300 hover:scale-105 
-                         focus-within:ring-2 focus-within:ring-blue-400"
+              className="relative h-28 w-28 rounded-full shadow-2xl 
+                         overflow-hidden bg-ColorTwo/20 
+                         transition-all duration-500 
+                         hover:scale-105 hover:shadow-2xl 
+                         hover:ring-4 hover:ring-ColorThree"
             >
               <Image
                 src={clerkUser?.imageUrl ?? "/user.jpg"}
-                className="object-cover h-full w-full"
-                height={96}
-                width={96}
+                className="object-cover h-full w-full transition-transform duration-300 hover:scale-110"
+                height={112}
+                width={112}
                 alt="Profile"
                 priority
               />
             </div>
           </div>
-          <div className="text-center md:text-right text-gray-600 space-y-2">
-            <p>
+          <div
+            className="text-center md:text-right text-TextTwo/80 
+                       space-y-2 text-sm md:text-base"
+          >
+            <p className="animate-pulse text-ColorThree">
               Last Updated:{" "}
               {defaults &&
                 new Date(defaults.updatedAt).toISOString().split("T")[0]}
             </p>
-            <p className="text-sm">Manage your personal information</p>
+            <p className="text-xs md:text-sm opacity-70 text-Primary">
+              Manage your personal information
+            </p>
           </div>
         </div>
 
         <form
-          className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full bg-white p-6 md:p-10 rounded-lg shadow-md"
+          className="flex flex-col gap-6 w-full bg-white 
+                     p-6 rounded-2xl shadow-2xl 
+                     md:gap-8 md:p-10 
+                     border-2 border-Secondary 
+                     hover:border-ColorThree/50 
+                     transition-all duration-300"
           onSubmit={handleSubmit}
         >
-          {fields.includes("name") && (
-            <EditableInputField
-              key={"name"}
-              label={"Name"}
-              placeholder={"Enter your Name"}
-              name={"name"}
-              value={formData["name"]}
-              onChange={handleChange}
-              isEditing={editingField === "name"}
-              setEditingField={setEditingField}
-              isDirty={isDirty}
-              className="border rounded-lg p-3 transition-all duration-300"
-            />
-          )}
-          {fields.includes("phone") && (
-            <EditableInputField
-              key={"phone"}
-              label={"Phone number"}
-              placeholder={"Enter your Phonenumber"}
-              name={"phone"}
-              value={formData["phone"]}
-              onChange={handleChange}
-              isEditing={editingField === "phone"}
-              setEditingField={setEditingField}
-              isDirty={isDirty}
-              className="border rounded-lg p-3 transition-all duration-300"
-            />
-          )}
-          {fields.includes("email") && (
-            <EditableInputField
-              key={"email"}
-              label={"Email"}
-              placeholder={"Enter your email"}
-              name={"email"}
-              value={formData["email"]}
-              onChange={handleChange}
-              isEditing={editingField === "email"}
-              disabled={true}
-              setEditingField={setEditingField}
-              isDirty={isDirty}
-              className="border rounded-lg p-3 transition-all duration-300"
-            />
-          )}
+          <div
+            id="fields-container"
+            className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full"
+          >
+            {fields.includes("name") && (
+              <EditableInputField
+                key={"name"}
+                label={"Name"}
+                placeholder={"Enter your Name"}
+                name={"name"}
+                value={formData["name"]}
+                onChange={handleChange}
+                isEditing={editingField === "name"}
+                setEditingField={setEditingField}
+                isDirty={isDirty}
+                className="bg-Secondary/10 text-TextTwo 
+                           border-2 border-ColorOne/30 
+                           rounded-xl p-3 
+                           focus:border-ColorThree 
+                           transition-all duration-300"
+              />
+            )}
+            {fields.includes("phone") && (
+              <EditableInputField
+                key={"phone"}
+                label={"Phone number"}
+                placeholder={"Enter your Phone number"}
+                name={"phone"}
+                value={formData["phone"]}
+                onChange={handleChange}
+                isEditing={editingField === "phone"}
+                setEditingField={setEditingField}
+                isDirty={isDirty}
+                className="bg-Secondary/10 text-TextTwo 
+                           border-2 border-ColorOne/30 
+                           rounded-xl p-3 
+                           focus:border-ColorThree 
+                           transition-all duration-300"
+              />
+            )}
+            {fields.includes("email") && (
+              <EditableInputField
+                key={"email"}
+                label={"Email"}
+                placeholder={"Enter your Email"}
+                name={"email"}
+                value={formData["email"]}
+                onChange={handleChange}
+                isEditing={editingField === "email"}
+                disabled={true}
+                setEditingField={setEditingField}
+                isDirty={isDirty}
+                className="bg-Secondary/10 text-TextTwo/70 
+                           border-2 border-ColorOne/30 
+                           rounded-xl p-3 
+                           opacity-60 cursor-not-allowed"
+              />
+            )}
+          </div>
 
-          <div className="col-span-2 flex flex-col sm:flex-row justify-between items-center mt-6">
+          <div
+            className="flex flex-col sm:flex-row justify-between 
+                       items-center mt-6 space-y-4 sm:space-y-0"
+          >
             <p
-              className={`mb-4 sm:mb-0 text-sm ${
-                isDirty ? "text-blue-600" : "text-gray-500"
+              className={`text-sm transition-colors duration-300 ${
+                isDirty ? "text-ColorThree" : "text-TextTwo/50"
               }`}
             >
-              {isDirty ? "You have unsaved changes" : ""}
+              {isDirty
+                ? "You have unsaved changes"
+                : "All information up to date"}
             </p>
             <Submit
               disabled={!isDirty}
-              className={`w-full sm:w-auto px-6 py-3 font-medium rounded-lg transition-all ${
-                !isDirty
-                  ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                  : "bg-blue-600 text-white hover:bg-blue-700"
-              }`}
+              className={`w-full sm:w-auto px-6 py-3 font-medium 
+                          rounded-xl `}
               loading={loading}
               label={isDirty ? "Save Changes" : "No Changes"}
             />

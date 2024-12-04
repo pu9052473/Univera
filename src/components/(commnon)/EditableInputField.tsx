@@ -54,7 +54,7 @@ export function EditableInputField({
   )
 
   return (
-    <div className="flex flex-col gap-2 w-full">
+    <div className="flex flex-col gap-2 w-full max-w-md shrink min-w-[100px]">
       <label className="block font-semibold text-gray-700">{label}</label>
       <div
         className={clsx(
