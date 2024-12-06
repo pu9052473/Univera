@@ -1,0 +1,346 @@
+"use client"
+
+// export default function Home() {
+// return <div className="">hi</div>
+// }
+
+import { useUser } from "@clerk/nextjs"
+import { useEffect, useRef, useState } from "react"
+import io from "socket.io-client";
+
+export default function Home() {
+const [selectedRole, setSelectedRole] = useState<"student" | "faculty">(
+"student"
+)
+const [selectedDepartment, setSelectedDepartment] = useState<string | null>(
+null
+)
+const [selectedYear, setSelectedYear] = useState<string | null>(null)
+const [forums, setForums] = useState<any[]>([])
+const [filteredForums, setFilteredForums] = useState<any[]>([])
+const [error, setError] = useState<string | null>(null)
+const [selectedForum, setSelectedForum] = useState<number | null>(null);
+const [messages, setMessages] = useState<any[]>([]);
+const [inputMessage, setInputMessage] = useState("");
+
+const userData = useUser();
+const userId = userData.user?.id
+const socketRef = useRef<any>(null);
+
+useEffect(() => {
+const socket = io("http://localhost:3001");
+socketRef.current = socket;
+
+// Fetch existing messages
+fetch(`/api/erp/forum/messages?forumId=${selectedForum}`)
+.then((res) => {
+if (!res.ok) { console.log("Failed to fetch messages"); };
+return res.json();
+})
+.then((data) => {
+setMessages((prev) => mergeMessages(prev, data));
+})
+.catch(console.error);
+
+// Join the forum room
+socket.emit("join_forum", selectedForum);
+
+// Listen for new messages
+socket.on("receive_message", (newMessage: any) => {
+setMessages((prev) => [...prev, newMessage]);
+});
+
+// Cleanup on unmount or forum change
+return () => {
+if (socket) {
+socket.emit("leave_forum", selectedForum);
+socket.disconnect();
+}
+};
+}, [selectedForum]);
+
+// for remove the duplicate messages of state and DB
+const mergeMessages = (
+existingMessages: any[],
+newMessages: any[]
+) => {
+// Ensure newMessages is an array or default to an empty array
+const safeNewMessages = Array.isArray(newMessages) ? newMessages : [];
+const allMessages = [...existingMessages, ...safeNewMessages];
+
+// Remove duplicate messages based on the `id` field
+return Array.from(new Map(allMessages.map((msg) => [msg.id, msg])).values());
+};
+
+
+const handleRoleChange = (role: "student" | "faculty") => {
+setSelectedRole(role)
+setSelectedDepartment(null) // Reset department selection on role change
+setSelectedYear(null); // Reset year selection
+setForums([]); // Clear forums on role change
+}
+
+useEffect(() => {
+// Fetch forums data dynamically based on userId
+const fetchForums = async() => {
+try {
+const response = await fetch(`/api/erp/forum`);
+if (!response.ok) throw new Error("Failed to fetch the forums @app/page");
+
+const data = await response.json();
+setForums(data);
+} catch (error: any) {
+setError(error.message || "An error occurred while fetching forums @app/page");
+}
+};
+
+fetchForums();
+}, [userId]);
+
+useEffect(() => {
+// Filter forums data based on selected department and year
+const filtered = forums.filter(
+(forum) =>
+(!selectedDepartment || forum.department === selectedDepartment) &&
+(!selectedYear || forum.year === selectedYear)
+)
+
+setFilteredForums(filtered);
+}, [forums, selectedDepartment, selectedYear]);
+
+// console.log("selectedDepartment", selectedDepartment)
+// console.log("selectedYear", selectedYear)
+
+
+const handleCreateForum = async() => {
+if (!selectedDepartment || !selectedYear) return;
+console.log("entered in post")
+
+try {
+const response = await fetch(`/api/erp/forum`, {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({
+name: `some dout`,
+departmentId: 2,
+courseId: 2,
+year: 1,
+userId: `${userId}`,
+status: "pending"
+})
+});
+
+
+if(!response.ok) throw new Error("Failed to create the forum @app/page");
+const newForum = await response.json();
+setForums((prev) => [...prev, newForum]);
+} catch (error: any) {
+setError(error.message || "An error occurred while creating forum @app/page");
+}
+};
+
+// console.log("forums", forums)
+// console.log("filterdForums", filteredForums)
+
+const handleForumSelect = (forumId: number) => {
+setSelectedForum(forumId);
+};
+
+const sendMessage = async () => {
+if (inputMessage.trim()) {
+const newMessage = {
+id: Date.now(),
+message: inputMessage,
+userId,
+forumId: selectedForum,
+createdAt: new Date().toISOString(),
+};
+
+// Ensure socket is defined before emitting
+if (socketRef.current) {
+socketRef.current.emit("send_message", newMessage);
+} else {
+console.error("Socket is not connected.");
+}
+
+setInputMessage("");
+}
+};
+
+const leaveChat = async () => {
+try {
+const response = await fetch("/api/erp/forum/messages", {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({ selectedForum, messages }),
+});
+
+if (response.ok) {
+console.log("Messages stored successfully.");
+} else {
+console.log("Failed to store messages.", error);
+}
+} catch (error) {
+console.error("Error saving messages:", error);
+}
+};
+
+console.log("selected forum", selectedForum);
+console.log("new message", inputMessage);
+console.log("messages", messages);
+console.log("filteredForums", filteredForums);
+
+// useEffect(() => {
+// fetch("api/erp/socket");
+// }, [])
+
+return (
+<div
+className="min-h-screen flex flex-row bg-[#CECDF9] text-[#0A2353]"
+style={{ fontFamily: "Arial, sans-serif" }}
+>
+{/* Left Sidebar - Forums Section */}
+<div className="w-1/4 p-4 bg-[#112C71] text-white">
+{/* <h2 className="text-xl font-bold mb-4">Forums Section</h2> */}
+
+{/* Create Forum Button */}
+{selectedDepartment && selectedYear && (
+<button
+onClick={handleCreateForum}
+className="w-full bg-[#56E1E9] text-[#0A2353] py-2 mb-4 rounded-lg font-semibold"
+>
+Create Forum
+</button>
+)}
+
+{/* History of Forums */}
+<div>
+<h3 className="text-lg font-semibold mb-2">Existing Forums</h3>
+{filteredForums.length > 0 ? (
+filteredForums.map((forum) => (
+<div
+key={forum.id}
+onClick={() => handleForumSelect(forum.id)}
+className="p-2 mb-2 bg-[#CECDF9] text-[#0A2353] rounded-lg cursor-pointer"
+>
+<p>
+<span className="font-bold">Name:</span> {forum.name}
+</p>
+<p>
+<span className="font-bold">DepartmentId:</span>{" "}
+{forum.departmentId}
+</p>
+<p>
+<span className="font-bold">Year:</span> {forum.year}
+</p>
+</div>
+))
+) : (
+<p className="text-sm">No forums found for the selected values.</p>
+)}
+</div>
+</div>
+
+{/* Main Content */}
+<div className="flex-1 p-6">
+{/* Filter Section */}
+<div className="mb-6">
+<div className="mb-4 flex justify-center">
+<button
+onClick={() => handleRoleChange("student")}
+className={`px-6 py-2 rounded-lg font-semibold mx-2 ${
+selectedRole === "student"
+? "bg-[#112C71] text-white"
+: "bg-[#56E1E9] text-[#0A2353]"
+}`}
+>
+Student
+</button>
+<button
+onClick={() => handleRoleChange("faculty")}
+className={`px-6 py-2 rounded-lg font-semibold mx-2 ${
+selectedRole === "faculty"
+? "bg-[#112C71] text-white"
+: "bg-[#56E1E9] text-[#0A2353]"
+}`}
+>
+Faculty
+</button>
+</div>
+
+<h2 className="text-lg font-semibold mb-4 mx-auto w-fit text-[#0A2353]">
+{selectedRole === "student"
+? "Select a Department and Year"
+: "Select a Faculty Department"}
+</h2>
+
+{/* Dropdown for Departments */}
+<select
+onChange={(e) => setSelectedDepartment(e.target.value)}
+value={selectedDepartment || ""}
+className="w-full px-4 py-2 mb-4 border border-[#112C71] rounded-lg text-[#0A2353]"
+>
+<option value="" disabled>
+Select a Department
+</option>
+{["CS", "IT", "ECE"].map((department) => (
+<option key={department} value={department}>
+{department}
+</option>
+))}
+</select>
+
+{/* Dropdown for Years (only for students) */}
+{selectedRole === "student" && selectedDepartment && (
+<select
+onChange={(e) => setSelectedYear(e.target.value)}
+value={selectedYear || ""}
+className="w-full px-4 py-2 border border-[#112C71] rounded-lg text-[#0A2353]"
+>
+<option value="" disabled>
+Select a Year
+</option>
+{["1", "2", "3", "4"].map((year) => (
+<option key={year} value={year}>
+{year}
+</option>
+))}
+</select>
+)}
+
+
+{/* Chat Section */}
+<div>
+{selectedForum ? (
+<div>
+<h2>Chat</h2>
+<div>
+{messages.length > 0 ? (
+messages.map((msg, idx) => (
+<p key={idx}>
+<strong>{msg.userId === userId ? "You" : msg.userId}:</strong> {msg.message}
+</p>
+))
+) : (
+<p>No messages yet</p>
+)}
+</div>
+<input
+type="text"
+value={inputMessage}
+onChange={(e) => setInputMessage(e.target.value)}
+placeholder="Type a message..."
+/>
+<button onClick={sendMessage}>Send</button>
+<button onClick={leaveChat}>Leave Chat</button>
+</div>
+) : (
+<p>Please select a forum to view and send messages.</p>
+)}
+</div>
+
+</div>
+</div>
+</div>
+)
+}

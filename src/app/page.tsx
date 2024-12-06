@@ -1,154 +1,424 @@
 "use client"
 
-// export default function Home() {
-//   return <div className="">hi</div>
-// }
+import React, { useState, useEffect, useRef } from "react"
+import { useUser } from "@clerk/nextjs"
+import io from "socket.io-client"
 
-import { staticData } from "@/constant"
-import { useState } from "react"
+// ForumSidebar Component
+const ForumSidebar = ({
+  filteredForums,
+  selectedForum,
+  onForumSelect,
+  onCreateForum,
+  canCreateForum
+}) => {
+  return (
+    <div className="h-full bg-[#112C71] text-white rounded-lg shadow-md p-4">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold">Forums</h2>
+        {canCreateForum && (
+          <button
+            onClick={onCreateForum}
+            className="bg-[#56E1E9] text-[#0A2353] px-3 py-1 rounded-md hover:bg-opacity-80 transition-colors"
+          >
+            Create Forum
+          </button>
+        )}
+      </div>
+      <div className="h-[calc(100vh-200px)] overflow-y-auto">
+        {filteredForums.length > 0 ? (
+          filteredForums.map((forum) => (
+            <div
+              key={forum.id}
+              onClick={() => onForumSelect(forum.id)}
+              className={`p-3 mb-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                selectedForum === forum.id
+                  ? "bg-[#CECDF9] text-[#0A2353]"
+                  : "hover:bg-[#CECDF9]/20"
+              }`}
+            >
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="font-semibold">{forum.name}</p>
+                  <p className="text-sm opacity-70">
+                    Dept: {forum.departmentId} | Year: {forum.year}
+                  </p>
+                </div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={
+                    selectedForum === forum.id
+                      ? "text-[#0A2353]"
+                      : "text-[#56E1E9]"
+                  }
+                >
+                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                </svg>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-sm text-center opacity-70">No forums available</p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ForumFilter Component
+const ForumFilter = ({
+  selectedRole,
+  selectedDepartment,
+  selectedYear,
+  onRoleChange,
+  onDepartmentChange,
+  onYearChange
+}) => {
+  const departments = ["CS", "IT", "ECE"]
+  const years = ["1", "2", "3", "4"]
+
+  return (
+    <div className="w-full bg-white rounded-lg shadow-md p-4">
+      <h2 className="text-xl font-bold mb-4">Forum Filters</h2>
+      <div className="mb-4 grid grid-cols-2 gap-2">
+        {["student", "faculty"].map((role) => (
+          <button
+            key={role}
+            onClick={() => onRoleChange(role)}
+            className={`px-4 py-2 rounded-md transition-colors ${
+              selectedRole === role
+                ? "bg-[#112C71] text-white"
+                : "bg-gray-200 text-black"
+            }`}
+          >
+            {role.charAt(0).toUpperCase() + role.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      <select
+        value={selectedDepartment || ""}
+        onChange={(e) => onDepartmentChange(e.target.value)}
+        className="w-full p-2 border rounded-md mb-4"
+      >
+        <option value="">Select Department</option>
+        {departments.map((dept) => (
+          <option key={dept} value={dept}>
+            {dept}
+          </option>
+        ))}
+      </select>
+
+      {selectedRole === "student" && selectedDepartment && (
+        <select
+          value={selectedYear || ""}
+          onChange={(e) => onYearChange(e.target.value)}
+          className="w-full p-2 border rounded-md"
+        >
+          <option value="">Select Year</option>
+          {years.map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
+      )}
+    </div>
+  )
+}
+
+// ChatSection Component
+const ChatSection = ({
+  messages,
+  userId,
+  inputMessage,
+  onInputChange,
+  onSendMessage,
+  onLeaveChat
+}) => {
+  const messagesEndRef = useRef(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
+
+  return (
+    <div className="h-full flex flex-col bg-white rounded-lg shadow-md">
+      <div className="p-4 border-b flex justify-between items-center">
+        <h2 className="text-xl font-bold">Forum Chat</h2>
+        <button
+          onClick={onLeaveChat}
+          className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors"
+        >
+          Leave
+        </button>
+      </div>
+      <div className="flex-1 flex flex-col p-4 overflow-hidden">
+        <div className="flex-1 overflow-y-auto pr-4 mb-4">
+          {messages.length > 0 ? (
+            messages.map((msg, idx) => (
+              <div
+                key={idx}
+                className={`mb-3 p-2 rounded-lg max-w-[80%] ${
+                  msg.userId === userId
+                    ? "self-end bg-[#56E1E9] text-[#0A2353] ml-auto"
+                    : "bg-[#CECDF9] text-[#0A2353]"
+                }`}
+              >
+                <p className="font-semibold text-sm mb-1">
+                  {msg.userId === userId ? "You" : msg.userId}
+                </p>
+                <p>{msg.message}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-gray-500">No messages yet</p>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+        <div className="flex space-x-2">
+          <input
+            value={inputMessage}
+            onChange={(e) => onInputChange(e.target.value)}
+            placeholder="Type a message..."
+            className="flex-1 p-2 border rounded-md"
+          />
+          <button
+            onClick={onSendMessage}
+            disabled={!inputMessage.trim()}
+            className="bg-[#112C71] text-white px-4 py-2 rounded-md hover:bg-opacity-80 disabled:opacity-50"
+          >
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function Home() {
-  const [selectedRole, setSelectedRole] = useState<"student" | "faculty">(
-    "student"
-  )
-  const [selectedDepartment, setSelectedDepartment] = useState<string | null>(
-    null
-  )
-  const [selectedYear, setSelectedYear] = useState<string | null>(null)
+  const [selectedRole, setSelectedRole] = useState("student")
+  const [selectedDepartment, setSelectedDepartment] = useState(null)
+  const [selectedYear, setSelectedYear] = useState(null)
+  const [forums, setForums] = useState([])
+  const [filteredForums, setFilteredForums] = useState([])
+  const [selectedForum, setSelectedForum] = useState(null)
+  const [messages, setMessages] = useState([])
+  const [inputMessage, setInputMessage] = useState("")
+  const [error, setError] = useState(null)
+
+  const userData = useUser()
+  const userId = userData.user?.id
+  const socketRef = useRef<any>(null)
+
+  // ... [Previous useEffects and functions remain the same]
+
+  useEffect(() => {
+    const socket = io("http://localhost:3001")
+    socketRef.current = socket
+
+    // Fetch existing messages
+    fetch(`/api/erp/forum/messages?forumId=${selectedForum}`)
+      .then((res) => {
+        if (!res.ok) {
+          console.log("Failed to fetch messages")
+        }
+        return res.json()
+      })
+      .then((data) => {
+        setMessages((prev) => mergeMessages(prev, data))
+      })
+      .catch(console.error)
+
+    // Join the forum room
+    socket.emit("join_forum", selectedForum)
+
+    // Listen for new messages
+    socket.on("receive_message", (newMessage: any) => {
+      setMessages((prev) => [...prev, newMessage])
+    })
+
+    // Cleanup on unmount or forum change
+    return () => {
+      if (socket) {
+        socket.emit("leave_forum", selectedForum)
+        socket.disconnect()
+      }
+    }
+  }, [selectedForum])
+
+  // for remove the duplicate messages of state and DB
+  const mergeMessages = (existingMessages: any[], newMessages: any[]) => {
+    // Ensure newMessages is an array or default to an empty array
+    const safeNewMessages = Array.isArray(newMessages) ? newMessages : []
+    const allMessages = [...existingMessages, ...safeNewMessages]
+
+    // Remove duplicate messages based on the `id` field
+    return Array.from(new Map(allMessages.map((msg) => [msg.id, msg])).values())
+  }
 
   const handleRoleChange = (role: "student" | "faculty") => {
     setSelectedRole(role)
     setSelectedDepartment(null) // Reset department selection on role change
+    setSelectedYear(null) // Reset year selection
+    setForums([]) // Clear forums on role change
   }
 
-  // Filter forums data based on selected department and year
-  const filteredForums =
-    staticData.forums.filter(
+  useEffect(() => {
+    // Fetch forums data dynamically based on userId
+    const fetchForums = async () => {
+      try {
+        const response = await fetch(`/api/erp/forum`)
+        if (!response.ok)
+          throw new Error("Failed to fetch the forums @app/page")
+
+        const data = await response.json()
+        setForums(data)
+      } catch (error: any) {
+        setError(
+          error.message || "An error occurred while fetching forums @app/page"
+        )
+      }
+    }
+
+    fetchForums()
+  }, [userId])
+
+  useEffect(() => {
+    // Filter forums data based on selected department and year
+    const filtered = forums.filter(
       (forum) =>
-        forum.department === selectedDepartment && forum.year === selectedYear
-    ) || []
+        (!selectedDepartment || forum.department === selectedDepartment) &&
+        (!selectedYear || forum.year === selectedYear)
+    )
+
+    setFilteredForums(filtered)
+  }, [forums, selectedDepartment, selectedYear])
+
+  // console.log("selectedDepartment", selectedDepartment)
+  // console.log("selectedYear", selectedYear)
+
+  const handleCreateForum = async () => {
+    if (!selectedDepartment || !selectedYear) return
+    console.log("entered in post")
+
+    try {
+      const response = await fetch(`/api/erp/forum`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: `some dout`,
+          departmentId: 2,
+          courseId: 2,
+          year: 1,
+          userId: `${userId}`,
+          status: "pending"
+        })
+      })
+
+      if (!response.ok) throw new Error("Failed to create the forum @app/page")
+      const newForum = await response.json()
+      setForums((prev) => [...prev, newForum])
+    } catch (error: any) {
+      setError(
+        error.message || "An error occurred while creating forum @app/page"
+      )
+    }
+  }
+
+  // console.log("forums", forums)
+  // console.log("filterdForums", filteredForums)
+
+  // const handleForumSelect = (forumId: number) => {
+  //   setSelectedForum(forumId)
+  // }
+
+  const sendMessage = async () => {
+    if (inputMessage.trim()) {
+      const newMessage = {
+        id: Date.now(),
+        message: inputMessage,
+        userId,
+        forumId: selectedForum,
+        createdAt: new Date().toISOString()
+      }
+
+      // Ensure socket is defined before emitting
+      if (socketRef.current) {
+        socketRef.current.emit("send_message", newMessage)
+      } else {
+        console.error("Socket is not connected.")
+      }
+
+      setInputMessage("")
+    }
+  }
+
+  const leaveChat = async () => {
+    try {
+      const response = await fetch("/api/erp/forum/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ selectedForum, messages })
+      })
+
+      if (response.ok) {
+        console.log("Messages stored successfully.")
+      } else {
+        console.log("Failed to store messages.", error)
+      }
+    } catch (error) {
+      console.error("Error saving messages:", error)
+    }
+  }
+
+  console.log("selected forum", selectedForum)
+  console.log("new message", inputMessage)
+  console.log("messages", messages)
+  console.log("filteredForums", filteredForums)
 
   return (
-    <div
-      className="min-h-screen flex flex-row bg-[#CECDF9] text-[#0A2353]"
-      style={{ fontFamily: "Arial, sans-serif" }}
-    >
-      {/* Left Sidebar - Forums Section */}
-      <div className="w-1/4 p-4 bg-[#112C71] text-white">
-        <h2 className="text-xl font-bold mb-4">Forums Section</h2>
-
-        {/* Create Issue Button */}
-        {selectedDepartment && selectedYear && (
-          <button
-            onClick={() => alert("Create Issue functionality")}
-            className="w-full bg-[#56E1E9] text-[#0A2353] py-2 mb-4 rounded-lg font-semibold"
-          >
-            Create Issue
-          </button>
-        )}
-
-        {/* History of Forums */}
-        <div>
-          <h3 className="text-lg font-semibold mb-2">History</h3>
-          {filteredForums.length > 0 ? (
-            filteredForums[0].issues.map((issue) => (
-              <div
-                key={issue.id}
-                className="p-2 mb-2 bg-[#CECDF9] text-[#0A2353] rounded-lg"
-              >
-                <p>
-                  <span className="font-bold">Date:</span> {issue.date}
-                </p>
-                <p>
-                  <span className="font-bold">Name:</span> {issue.name}
-                </p>
-                <p>
-                  <span className="font-bold">Status:</span>{" "}
-                  <span
-                    className={
-                      issue.status === "Resolved"
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }
-                  >
-                    {issue.status}
-                  </span>
-                </p>
-              </div>
-            ))
-          ) : (
-            <p className="text-sm">No issues found for the selected values.</p>
-          )}
-        </div>
+    <div className="min-h-screen bg-[#CECDF9] p-6 grid grid-cols-12 gap-4">
+      <div className="col-span-3">
+        <ForumSidebar
+          filteredForums={filteredForums}
+          selectedForum={selectedForum}
+          onForumSelect={setSelectedForum}
+          onCreateForum={handleCreateForum}
+          canCreateForum={!!selectedDepartment && !!selectedYear}
+        />
       </div>
-
-      {/* Main Content */}
-      <div className="flex-1 p-6">
-        {/* Filter Section */}
-        <div className="mb-6">
-          <div className="mb-4 flex justify-center">
-            <button
-              onClick={() => handleRoleChange("student")}
-              className={`px-6 py-2 rounded-lg font-semibold mx-2 ${
-                selectedRole === "student"
-                  ? "bg-[#112C71] text-white"
-                  : "bg-[#56E1E9] text-[#0A2353]"
-              }`}
-            >
-              Student
-            </button>
-            <button
-              onClick={() => handleRoleChange("faculty")}
-              className={`px-6 py-2 rounded-lg font-semibold mx-2 ${
-                selectedRole === "faculty"
-                  ? "bg-[#112C71] text-white"
-                  : "bg-[#56E1E9] text-[#0A2353]"
-              }`}
-            >
-              Faculty
-            </button>
-          </div>
-
-          <h2 className="text-lg font-semibold mb-4 mx-auto w-fit text-[#0A2353]">
-            {selectedRole === "student"
-              ? "Select a Department and Year"
-              : "Select a Faculty Department"}
-          </h2>
-
-          {/* Dropdown for Departments */}
-          <select
-            onChange={(e) => setSelectedDepartment(e.target.value)}
-            value={selectedDepartment || ""}
-            className="w-full px-4 py-2 mb-4 border border-[#112C71] rounded-lg text-[#0A2353]"
-          >
-            <option value="" disabled>
-              Select a Department
-            </option>
-            {staticData[selectedRole].departments.map((department) => (
-              <option key={department} value={department}>
-                {department}
-              </option>
-            ))}
-          </select>
-
-          {/* Dropdown for Years (only for students) */}
-          {selectedRole === "student" && selectedDepartment && (
-            <select
-              onChange={(e) => setSelectedYear(e.target.value)}
-              value={selectedYear || ""}
-              className="w-full px-4 py-2 border border-[#112C71] rounded-lg text-[#0A2353]"
-            >
-              <option value="" disabled>
-                Select a Year
-              </option>
-              {staticData.student.years.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
+      <div className="col-span-9 grid grid-rows-[auto,1fr] gap-4">
+        <ForumFilter
+          selectedRole={selectedRole}
+          selectedDepartment={selectedDepartment}
+          selectedYear={selectedYear}
+          onRoleChange={handleRoleChange}
+          onDepartmentChange={setSelectedDepartment}
+          onYearChange={setSelectedYear}
+        />
+        {selectedForum && (
+          <ChatSection
+            messages={messages}
+            userId={userId}
+            inputMessage={inputMessage}
+            onInputChange={setInputMessage}
+            onSendMessage={sendMessage}
+            onLeaveChat={leaveChat}
+          />
+        )}
       </div>
     </div>
   )
