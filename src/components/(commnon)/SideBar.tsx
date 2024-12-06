@@ -28,7 +28,10 @@ export default function SideBar() {
   }
 
   return (
-    <div className="mt-2 text-sm flex flex-col h-full w-full" id="sideBar">
+    <div
+      className="mt-2 text-sm flex flex-col h-full w-full max-h-screen"
+      id="sideBar"
+    >
       <div
         className="text-md font-bold flex flex-col gap-1"
         id="sidebar-content"
