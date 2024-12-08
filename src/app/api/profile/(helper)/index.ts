@@ -28,28 +28,19 @@ const updateUserProfile = async (
   }
 }
 
-const findUserData = async (userId: string, role: string) => {
+const findUserData = async (userId: string) => {
   try {
-    let User
-    if (role == "faculty") {
-      User = await prisma.faculty.findUnique({
-        where: { clerkId: userId },
-        include: {
-          Department: true,
-          University: true,
-          course: true
-        }
-      })
-    } else if (role == "student") {
-      User = await prisma.student.findUnique({
-        where: { clerkId: userId },
-        include: {
-          Department: true,
-          University: true,
-          course: true
-        }
-      })
-    }
+    const User = await prisma.user.findUnique({
+      where: { clerkId: userId },
+      include: {
+        roles: true,
+        faculty: true,
+        student: true,
+        course: true,
+        university: true
+      }
+    })
+
     return User
   } catch (error) {
     throw new Error(`Error while getting user in api/(helper)/index ${error}`)

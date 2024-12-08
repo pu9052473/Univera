@@ -25,9 +25,8 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
     const userId = searchParams.get("userId") as string
-    const role = searchParams.get("role") as string
 
-    const User = await findUserData(userId, role)
+    const User = await findUserData(userId)
 
     if (!User) {
       throw new Error("User not found")

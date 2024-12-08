@@ -21,7 +21,7 @@ export function ButtonV1({
   ...props
 }: ButtonV1Props) {
   const buttonClasses = clsx(
-    "py-2 pl-2 pr-3 text-white bg-Primary flex gap-1.5 items-center transition-all duration-300 ease-in-out hover:bg-[#1A3E99] hover:scale-105 hover:shadow-lg",
+    "py-2 pl-2 pr-3 text-white bg-[#112C71] rounded-md flex gap-1.5 items-center transition-all duration-300 ease-in-out hover:bg-[#1A3E99] hover:scale-105 hover:shadow-lg max-w-fit",
     props.className
   )
 

@@ -5,12 +5,7 @@ import {
 } from "@clerk/nextjs/server"
 import { NextRequest, NextResponse } from "next/server"
 
-const publicRoutes = [
-  "/api/webhook/register",
-  "/sign-in(.*)",
-  "/sign-up(.*)",
-  "/api/department"
-]
+const publicRoutes = ["/api/webhook/register", "/sign-in(.*)", "/sign-up(.*)"]
 
 const isPublicRoutes = createRouteMatcher(publicRoutes)
 
@@ -34,7 +29,7 @@ export default clerkMiddleware(async (authPromise, req) => {
         const role = user.publicMetadata.role as string | undefined
         if (role == "superuser") return
         //admin role redirection
-        if (role == "admin" && req.nextUrl.pathname === "/") {
+        if (role == "university_admin" && req.nextUrl.pathname === "/") {
           return NextResponse.redirect(new URL("/admin", req.url))
         }
 
@@ -49,14 +44,17 @@ export default clerkMiddleware(async (authPromise, req) => {
         }
 
         //prevent non admin user to go to admin paths
-        if (role !== "admin" && req.nextUrl.pathname.startsWith("/admin")) {
+        if (
+          role !== "university_admin" &&
+          req.nextUrl.pathname.startsWith("/admin")
+        ) {
           return NextResponse.redirect(new URL("/", req.url))
         }
 
         //redirect auth users trying to access public routes (eg:"/sign-in")
         if (publicRoutes.includes(req.nextUrl.pathname)) {
           return NextResponse.redirect(
-            new URL(role === "admin" ? "/admin" : "/", req.url)
+            new URL(role === "university_admin" ? "/admin" : "/", req.url)
           )
         }
       } catch (error) {

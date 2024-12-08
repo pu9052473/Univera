@@ -15,7 +15,7 @@ import {
 } from "react-icons/md"
 
 export const Menuitems = {
-  admin: [
+  university_admin: [
     { title: "Dashboard", url: "/admin", icon: MdSpaceDashboard },
     { title: "Departments", url: "/admin/departments", icon: FaBuilding },
     {

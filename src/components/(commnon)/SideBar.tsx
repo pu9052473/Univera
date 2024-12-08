@@ -12,12 +12,19 @@ export default function SideBar() {
   const { user } = useUser()
   const userRole: Roles = (user?.publicMetadata.role as Roles) ?? "admin"
   const [userLinks, setUserLinks] = useState<LinkItem[]>([])
+  const [active, setActive] = useState<string>("")
 
   useEffect(() => {
     if (userRole) {
       setUserLinks(Menuitems[userRole] || [])
     }
   }, [userRole])
+
+  useEffect(() => {
+    const found = userLinks.find((link) => pathName.endsWith(link.url))
+    setActive(found?.url || "")
+  }, [userLinks])
+
   // Check if we are on the signin or signup page
   const isAuthPage =
     pathName.includes("/sign-in") || pathName.includes("/sign-up")
@@ -34,11 +41,12 @@ export default function SideBar() {
         id="sidebar-content"
       >
         {userLinks.map((item) => {
-          const isActive = pathName.includes(item.url)
+          const isActive = active === item.url
           return (
             <Link
               href={item.url}
               key={item.title}
+              onClick={() => setActive(item.url)}
               className={`flex items-center justify-center lg:justify-start gap-4 transition-all duration-200 border-l-4 font-bold text-gray-500 py-2 rounded-md hover:bg-lamaSkyLight md:px-2 ${
                 isActive
                   ? "bg-Secondary shadow-sm hover:bg-Secondary font-bold border-ColorTwo"
