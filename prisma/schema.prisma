@@ -7,15 +7,114 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Role {
+  id       Int    @id @default(autoincrement())
+  rolename String
+  users    User[] @relation("UserRoles") // Relation: A role can have many users
+}
+
 model User {
-  id           String        @id @default(uuid())
-  email        String        @unique
-  clerkId      String        @unique
-  createdAt    DateTime      @default(now())
-  chatMessages ChatMessage[]
-  student      Student?
+  id          String        @id @default(uuid())
+  email       String        @unique
+  clerkId     String        @unique
+  createdAt   DateTime      @default(now())
+  roles       Role[]        @relation("UserRoles") // Relation: A user can have multiple roles
+  ChatMessage ChatMessage[]
+  Forum       Forum[]
+  student Student?
+  faculty Faculty?
+}
+
+model University {
+  id          Int          @id @default(autoincrement())
+  name        String
+  location    String
+  established Int
+  faculties   Faculty[]
+  students    Student[]
+  departments Department[]
+  courses     Course[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Faculty {
+  id           String   @id @unique
+  name         String
+  email        String   @unique
+  phone        String?
+  departmentId Int
+  clerkId      String   @unique
+  courseId     Int
+  universityId Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user  User @relation(fields: [clerkId],references: [clerkId])
+  course     Course     @relation(fields: [courseId], references: [id])
+  Department Department @relation(fields: [departmentId], references: [id])
+  University University @relation(fields: [universityId], references: [id])
+}
+
+model Student {
+  id           String   @id @unique
+  name         String
+  email        String   @unique
+  phone        String?
+  year         Int
+  departmentId Int
+  universityId Int
+  courseId     Int
+  clerkId      String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user  User @relation(fields: [clerkId],references: [clerkId])
+  course     Course     @relation(fields: [courseId], references: [id])
+  Department Department @relation(fields: [departmentId], references: [id])
+  University University @relation(fields: [universityId], references: [id])
+}
+
+model Department {
+  id           Int       @id @default(autoincrement())
+  name         String
+  code         String    @unique
+  faculty      Faculty[]
+  students     Student[]
+  courses      Course[]
   forums       Forum[]
-  Role         Role[]        @relation("UserRoles")
+  universityId Int
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  University University @relation(fields: [universityId], references: [id])
+}
+
+model Course {
+  id           Int       @id @default(autoincrement())
+  name         String
+  code         String    @unique
+  credits      Int
+  departmentId Int
+  universityId Int
+  forums       Forum[]
+  Faculty      Faculty[]
+  students     Student[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  Department Department @relation(fields: [departmentId], references: [id])
+  University University @relation(fields: [universityId], references: [id])
+}
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  message   String
+  userId    String
+  forumId   Int
+  createdAt DateTime @default(now())
+  Forum     Forum    @relation(fields: [forumId], references: [id])
+  User      User     @relation(fields: [userId], references: [clerkId])
 }
 
 model Forum {
@@ -27,102 +126,9 @@ model Forum {
   userId       String
   status       String
   createdAt    DateTime      @default(now())
-  chatMessages ChatMessage[]
-  Course       Course        @relation(fields: [courseId], references: [id])
-  Department   Department    @relation(fields: [departmentId], references: [id])
-  user         User          @relation(fields: [userId], references: [clerkId])
-}
+  ChatMessage  ChatMessage[]
 
-model ChatMessage {
-  id        Int      @id @default(autoincrement())
-  message   String
-  userId    String
-  forumId   Int
-  createdAt DateTime @default(now())
-  forum     Forum    @relation(fields: [forumId], references: [id])
-  user      User     @relation(fields: [userId], references: [clerkId])
-}
-
-model Course {
-  id           Int        @id @default(autoincrement())
-  name         String
-  code         String     @unique
-  credits      Int
-  departmentId Int
-  universityId Int
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime
-  Department   Department @relation(fields: [departmentId], references: [id])
-  University   University @relation(fields: [universityId], references: [id])
-  Faculty      Faculty[]
-  Forum        Forum[]
-  Student      Student[]
-}
-
-model Department {
-  id           Int        @id @default(autoincrement())
-  name         String
-  code         String     @unique
-  universityId Int
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime
-  Course       Course[]
-  University   University @relation(fields: [universityId], references: [id])
-  Faculty      Faculty[]
-  Forum        Forum[]
-  Student      Student[]
-}
-
-model Faculty {
-  id           String     @id @unique
-  name         String
-  email        String     @unique
-  phone        String?
-  departmentId Int
-  clerkId      String     @unique
-  courseId     Int
-  universityId Int
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime
-  Course       Course     @relation(fields: [courseId], references: [id])
-  Department   Department @relation(fields: [departmentId], references: [id])
-  University   University @relation(fields: [universityId], references: [id])
-}
-
-model Role {
-  id       Int    @id @default(autoincrement())
-  rolename String
-  User     User[] @relation("UserRoles")
-}
-
-model Student {
-  id           String     @id @unique
-  name         String
-  email        String     @unique
-  phone        String?
-  year         Int
-  departmentId Int
-  universityId Int
-  courseId     Int
-  clerkId      String     @unique
-  userId       String     @unique
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime
-  user         User       @relation(fields: [userId], references: [id])
-  Course       Course     @relation(fields: [courseId], references: [id])
-  Department   Department @relation(fields: [departmentId], references: [id])
-  University   University @relation(fields: [universityId], references: [id])
-}
-
-model University {
-  id          Int          @id @default(autoincrement())
-  name        String
-  location    String
-  established Int
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime
-  Course      Course[]
-  Department  Department[]
-  Faculty     Faculty[]
-  Student     Student[]
+  course     Course     @relation(fields: [courseId], references: [id])
+  department Department @relation(fields: [departmentId], references: [id])
+  User       User       @relation(fields: [userId], references: [clerkId])
 }

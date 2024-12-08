@@ -70,7 +70,7 @@ export function Submit({
       disabled={disabled || loading}
       className={buttonClasses}
     >
-      <Send size={20} />
+      {loading ? <Loader /> : <Send size={20} />}
       {label && <p>{label}</p>}
     </Button>
   )

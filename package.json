@@ -5,11 +5,9 @@
   "scripts": {
     "install-all": "npm install && npm run setup-husky",
     "setup-husky": "npx husky install && [ ! -f .husky/pre-commit ] && npx husky add .husky/pre-commit 'npx lint-staged' || echo 'pre-commit hook already exists' && [ ! -f .husky/commit-msg ] && npx husky add .husky/commit-msg 'npx --no-install commitlint --edit \"$1\"' || echo 'commit-msg hook already exists'",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "node server.js",
-    "client": "next dev",
+    "dev": "node server.js",
     "build": "prisma generate && next build",
-    "start": "next start",
+    "start": "node server.js",
     "prepare": "husky install",
     "lint": "eslint src --ext ts,tsx,js,jsx --report-unused-disable-directives ",
     "lint:fix": "eslint src --ext js,jsx,ts,tsx --fix",
@@ -27,11 +25,13 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "express": "^4.21.2",
+    "http": "^0.0.1-security",
     "localtunnel": "^2.0.2",
     "lucide-react": "^0.456.0",
-    "next": "15.0.3",
+    "next": "^15.0.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hot-toast": "^2.4.1",
     "react-icons": "^5.3.0",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
@@ -46,7 +46,6 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/socket.io": "^3.0.1",
-    "concurrently": "^9.1.0",
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
     "eslint-config-prettier": "^9.1.0",
@@ -58,6 +57,9 @@
     "prisma": "^5.22.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.7.2"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "husky": {
     "hooks": {
