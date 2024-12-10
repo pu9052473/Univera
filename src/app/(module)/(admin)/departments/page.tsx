@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { UserContext } from "@/context/user"
-import DepartmentContainer from "../../_components/DepartmentContainer"
+import DepartmentContainer from "../_components/DepartmentContainer"
 
 export default function Page() {
   const { user } = useContext(UserContext)

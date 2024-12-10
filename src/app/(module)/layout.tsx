@@ -13,7 +13,7 @@ export default function ModuleLayout({
   return (
     <div className="h-screen flex">
       {/* left */}
-      <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[14%] min-md:px-4 py-4 px-2">
+      <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[14%] min-md:px-4 py-4 px-2 max-h-screen flex flex-col">
         <Link
           href="/"
           className="flex items-center justify-center lg:justify-start p-3 gap-2"

@@ -16,15 +16,16 @@ export default function DepartmentContainer({
         {departments && departments.length == 0 && <>No departments found</>}
         {departments &&
           departments.map((department) => (
-            <Link
-              href={`/admin/departments/${department.id}`}
-              key={department.id}
-            >
+            <Link href={`/departments/${department.id}`} key={department.id}>
               {department.name}
             </Link>
           ))}
       </ul>
-      <ButtonV1 href="/admin/departments/create" label="Create Department" />
+      <ButtonV1
+        className="max-w-fit rounded-md"
+        href="/departments/create"
+        label="Create Department"
+      />
     </div>
   )
 }

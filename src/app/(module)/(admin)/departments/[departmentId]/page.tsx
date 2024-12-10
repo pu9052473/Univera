@@ -2,7 +2,7 @@
 import { useParams } from "next/navigation"
 import { useState, useEffect } from "react"
 import { Department } from "@prisma/client"
-import DepartmentDetail from "../../../_components/DepartmentDetail"
+import DepartmentDetail from "../../_components/DepartmentDetail"
 
 export default function Page() {
   const { departmentId } = useParams()

@@ -17,7 +17,7 @@ import {
 export const Menuitems = {
   university_admin: [
     { title: "Dashboard", url: "/admin", icon: MdSpaceDashboard },
-    { title: "Departments", url: "/admin/departments", icon: FaBuilding },
+    { title: "Departments", url: "/departments", icon: FaBuilding },
     {
       title: "Non-Teaching Staff",
       url: "/non-teaching-staff",

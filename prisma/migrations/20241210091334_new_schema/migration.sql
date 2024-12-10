@@ -29,7 +29,6 @@
   - A unique constraint covering the columns `[adminId]` on the table `Department` will be added. If there are existing duplicate values, this will fail.
   - A unique constraint covering the columns `[rolename]` on the table `Role` will be added. If there are existing duplicate values, this will fail.
   - A unique constraint covering the columns `[adminId]` on the table `University` will be added. If there are existing duplicate values, this will fail.
-  - Added the required column `hodId` to the `Course` table without a default value. This is not possible if the table is not empty.
   - Added the required column `totalSemister` to the `Course` table without a default value. This is not possible if the table is not empty.
   - Added the required column `moderatorId` to the `Forum` table without a default value. This is not possible if the table is not empty.
   - Added the required column `rollNo` to the `Student` table without a default value. This is not possible if the table is not empty.
@@ -59,7 +58,7 @@ ADD COLUMN     "attachmentUrl" JSONB[];
 ALTER TABLE "Course" DROP COLUMN "createdAt",
 DROP COLUMN "credits",
 DROP COLUMN "updatedAt",
-ADD COLUMN     "hodId" TEXT NOT NULL,
+ADD COLUMN     "hodId" TEXT,
 ADD COLUMN     "totalSemister" INTEGER NOT NULL;
 
 -- AlterTable
@@ -105,7 +104,6 @@ ADD COLUMN     "adminId" TEXT NOT NULL;
 ALTER TABLE "User" DROP COLUMN "createdAt",
 ADD COLUMN     "address" TEXT,
 ADD COLUMN     "birthPlace" TEXT,
-ADD COLUMN     "caste" TEXT,
 ADD COLUMN     "dob" TIMESTAMP(3),
 ADD COLUMN     "gender" TEXT,
 ADD COLUMN     "name" TEXT NOT NULL,
@@ -159,6 +157,7 @@ CREATE TABLE "Attendance" (
     "facultyId" TEXT NOT NULL,
     "semister" INTEGER NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
+    "status" TEXT NOT NULL,
     "subjectId" INTEGER NOT NULL,
     "courseId" INTEGER NOT NULL,
     "departmentId" INTEGER NOT NULL,
@@ -258,7 +257,8 @@ CREATE TABLE "TimeTable" (
     "subjectId" INTEGER NOT NULL,
     "courseId" INTEGER NOT NULL,
     "departmentId" INTEGER NOT NULL,
-    "moderatorId" TEXT NOT NULL,
+    "facultyId" TEXT NOT NULL,
+    "lecturerId" TEXT,
 
     CONSTRAINT "TimeTable_pkey" PRIMARY KEY ("id")
 );
@@ -368,7 +368,7 @@ ALTER TABLE "Department" ADD CONSTRAINT "Department_adminId_fkey" FOREIGN KEY ("
 ALTER TABLE "Department" ADD CONSTRAINT "Department_principalId_fkey" FOREIGN KEY ("principalId") REFERENCES "User"("clerkId") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Course" ADD CONSTRAINT "Course_hodId_fkey" FOREIGN KEY ("hodId") REFERENCES "User"("clerkId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Course" ADD CONSTRAINT "Course_hodId_fkey" FOREIGN KEY ("hodId") REFERENCES "User"("clerkId") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Subject" ADD CONSTRAINT "Subject_resultId_fkey" FOREIGN KEY ("resultId") REFERENCES "Result"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -464,7 +464,10 @@ ALTER TABLE "Announcement" ADD CONSTRAINT "Announcement_universityId_fkey" FOREI
 ALTER TABLE "Announcement" ADD CONSTRAINT "Announcement_announcerId_fkey" FOREIGN KEY ("announcerId") REFERENCES "User"("clerkId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TimeTable" ADD CONSTRAINT "TimeTable_moderatorId_fkey" FOREIGN KEY ("moderatorId") REFERENCES "Faculty"("clerkId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TimeTable" ADD CONSTRAINT "TimeTable_lecturerId_fkey" FOREIGN KEY ("lecturerId") REFERENCES "Faculty"("clerkId") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TimeTable" ADD CONSTRAINT "TimeTable_facultyId_fkey" FOREIGN KEY ("facultyId") REFERENCES "Faculty"("clerkId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TimeTable" ADD CONSTRAINT "TimeTable_subjectId_fkey" FOREIGN KEY ("subjectId") REFERENCES "Subject"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -31,7 +31,6 @@ model User {
   address    String?
   clerkId    String    @unique
   gender     String?
-  caste      String?
   dob        DateTime?
   birthPlace String?
 
@@ -100,7 +99,8 @@ model Faculty {
   students   Student[]
   Assignment Assignment[]
   Subject    Subject[]    @relation("faculty_to_Subject")
-  timeTable  TimeTable[]
+  proxyTimeTable  TimeTable[]  @relation("ProxyToAttendance")
+  timeTable  TimeTable[]  @relation("FacultyToAttendance")
   attendance Attendance[]
 
   user       User?       @relation(fields: [clerkId], references: [clerkId])
@@ -162,12 +162,12 @@ model Department {
 }
 
 model Course {
-  id            Int    @id @unique @default(autoincrement())
+  id            Int     @id @unique @default(autoincrement())
   name          String
-  code          String @unique
+  code          String  @unique
   departmentId  Int
   universityId  Int
-  hodId         String @unique
+  hodId         String? @unique
   totalSemister Int
 
   forums       Forum[]
@@ -215,6 +215,7 @@ model Attendance {
   facultyId    String
   semister     Int
   date         DateTime
+  status       String //absent or present
   subjectId    Int
   courseId     Int
   departmentId Int
@@ -362,9 +363,11 @@ model TimeTable {
   subjectId    Int
   courseId     Int
   departmentId Int
-  moderatorId  String
+  facultyId    String
+  lecturerId   String?
 
-  moderator  Faculty?    @relation(fields: [moderatorId], references: [clerkId])
+  lecturer   Faculty?     @relation(name: "ProxyToAttendance", fields: [lecturerId], references: [clerkId])
+  facuty     Faculty?    @relation(name: "FacultyToAttendance", fields: [facultyId], references: [clerkId])
   subject    Subject?    @relation(fields: [subjectId], references: [id])
   course     Course?     @relation(fields: [courseId], references: [id])
   department Department? @relation(fields: [departmentId], references: [id])
