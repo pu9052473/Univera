@@ -10,7 +10,7 @@ import { useUser } from "@clerk/nextjs"
 
 interface User {
   id: string
-  role: string
+  role: { id: number; roleName: string }[]
   [key: string]: any
 }
 

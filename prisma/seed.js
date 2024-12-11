@@ -27,8 +27,8 @@ async function main() {
       name: "kishan patel",
       phone: "8888888888",
       roles: {
-        create: {
-          roleId: 2
+        connect: {
+          id: 2
         }
       }
     }
@@ -42,8 +42,8 @@ async function main() {
       name: "University Admin",
       clerkId: "user_2oo7c0B50nyD00rgejt5Q8e44cg",
       roles: {
-        create: {
-          roleId: 1
+        connect: {
+          id: 1
         }
       }
     }

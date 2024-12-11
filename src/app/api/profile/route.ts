@@ -3,8 +3,9 @@ import { NextResponse } from "next/server"
 
 export async function PATCH(req: Request) {
   try {
-    const { userId, updatedFields, role } = await req.json()
-    const updatedUser = await updateUserProfile(userId, updatedFields, role)
+    const { userId, updatedFields } = await req.json()
+
+    const updatedUser = await updateUserProfile(userId, updatedFields)
     if (!updatedUser) {
       throw new Error("Error while updating user profile")
     }

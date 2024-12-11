@@ -61,7 +61,7 @@ export default function CreateDepartment({
               value={name}
               placeholder="Eg. Btech"
               onChange={(e) => setName(e.target.value)}
-              className="p-2 border rounded-md w-full focus:ring-2 border-ColorOne bg-Secondary text-TextTwo outline-ColorThree"
+              className="p-2 border transition-all ease-in-out duration-500 rounded-md w-full focus:ring-2 border-ColorOne bg-Secondary text-TextTwo outline-ColorThree"
               required
             />
           </label>
@@ -77,7 +77,7 @@ export default function CreateDepartment({
               value={code}
               placeholder="Eg. BT101"
               onChange={(e) => setCode(e.target.value)}
-              className="p-2 border rounded-md w-full focus:ring-2 border-ColorOne bg-Secondary text-TextTwo outline-ColorThree"
+              className="p-2 border transition-all ease-in-out duration-500 rounded-md w-full focus:ring-2 border-ColorOne bg-Secondary text-TextTwo outline-ColorThree"
               required
             />
           </label>

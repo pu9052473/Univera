@@ -6,22 +6,14 @@ const prisma = new PrismaClient()
 
 const updateUserProfile = async (
   userId: string,
-  updatedFields: Record<string, any>,
-  role: string
+  updatedFields: Record<string, any>
 ) => {
   try {
-    let updatedUser
-    if (role == "faculty") {
-      updatedUser = await prisma.faculty.update({
-        where: { clerkId: userId },
-        data: updatedFields
-      })
-    } else if (role == "student") {
-      updatedUser = await prisma.student.update({
-        where: { clerkId: userId },
-        data: updatedFields
-      })
-    }
+    const updatedUser = await prisma.user.update({
+      where: { clerkId: userId },
+      data: updatedFields
+    })
+
     return updatedUser
   } catch (error) {
     throw new Error(`Error updating user profile, ${error}`)
@@ -40,7 +32,6 @@ const findUserData = async (userId: string) => {
         university: true
       }
     })
-
     return User
   } catch (error) {
     throw new Error(`Error while getting user in api/(helper)/index ${error}`)

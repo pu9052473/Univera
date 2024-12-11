@@ -2,14 +2,13 @@
 import Profile from "@/components/(commnon)/Profile"
 import { UserContext } from "@/context/user"
 import { useUser } from "@clerk/nextjs"
-import { Faculty, Student } from "@prisma/client"
+// import { User } from "@prisma/client"
 import React, { useContext, useState } from "react"
 import toast from "react-hot-toast"
 
 export default function Page() {
-  const { user } = useContext(UserContext)
+  const { user, dispatch } = useContext(UserContext)
   const clerkUser = useUser()
-  const [defaults, setDefaults] = useState<Faculty | Student | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
 
   const handleSubmit = async (updatedFields: any) => {
@@ -24,15 +23,14 @@ export default function Page() {
         },
         body: JSON.stringify({
           userId: user?.id,
-          updatedFields,
-          role: clerkUser.user?.publicMetadata.role
+          updatedFields
         })
       })
       const data = await response.json()
       console.log(data)
 
       if (response.ok) {
-        setDefaults(data.updatedUser)
+        dispatch({ type: "SET_USER", user: data.updatedUser })
       } else {
         toast.error("Failed to update profile")
         console.error("Error updating profile", data)
@@ -51,9 +49,17 @@ export default function Page() {
         <Profile
           loading={loading}
           clerkUser={clerkUser.user}
-          defaults={defaults}
+          defaults={user}
           onSubmit={handleSubmit}
-          fields={["name", "phone", "email"]}
+          fields={[
+            "name",
+            "phone",
+            "email",
+            "address",
+            "gender",
+            "dob",
+            "birthPlace"
+          ]}
         />
       </div>
     </div>

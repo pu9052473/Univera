@@ -1,12 +1,10 @@
 import prisma from "@/lib/prisma"
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { departmentId: number } }
-) {
+export async function GET(req: Request) {
   try {
-    const { departmentId } = params
+    const { searchParams } = new URL(req.url)
+    const departmentId = searchParams.get("departmentId")
     if (!departmentId) {
       throw new Error("departmentId not found")
     }
@@ -34,7 +32,7 @@ export async function GET(
       throw new Error("Department not found")
     }
     return NextResponse.json(
-      { message: "Department found", Department },
+      { message: `Department found DepartmentId: ${departmentId}`, Department },
       { status: 200 }
     )
   } catch (error) {
