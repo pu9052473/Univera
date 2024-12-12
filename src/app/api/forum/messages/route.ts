@@ -41,16 +41,18 @@ export async function GET(req: Request) {
 // POST function for saving new messages and avoiding duplicates
 export async function POST(req: Request) {
   try {
-    const { selectedForum, messages } = await req.json()
+    const { selectedForumId, localMessages } = await req.json()
 
     // Fetch existing message IDs for the given forumId
-    const existingMessages = await fetchMessagesByForumId(Number(selectedForum))
+    const existingMessages = await fetchMessagesByForumId(
+      Number(selectedForumId)
+    )
 
     // Create a set of existing message IDs
     const existingMessageIds = new Set(existingMessages.map((msg) => msg.id))
 
     // Filter out any messages that already exist in the database
-    const newMessages = messages.filter(
+    const newMessages = localMessages.filter(
       (msg: any) => !existingMessageIds.has(msg.id)
     )
 
@@ -70,6 +72,7 @@ export async function POST(req: Request) {
       headers: { "Content-Type": "application/json" }
     })
   } catch (error) {
+    console.log("Failed to save message @api/erp/forum/messages", error)
     return new Response(
       JSON.stringify({
         error: `Failed to save message @api/erp/forum/messages ${error}`
