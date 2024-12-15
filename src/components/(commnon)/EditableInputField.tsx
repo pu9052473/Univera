@@ -6,7 +6,7 @@ import { FiEdit } from "react-icons/fi"
 interface EditableInputFieldProps {
   label: string
   placeholder: string
-  value: string
+  value: string | number
   name: string
   className?: string
   isEditing: boolean
