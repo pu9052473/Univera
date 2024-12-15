@@ -24,7 +24,9 @@ const CreatePage = () => {
   // Our own data
   useEffect(() => {
     const fetchCourse = async () => {
-      const res = await axios.get(`/api/courses/${courseId}`)
+      const res = await axios.get(
+        `/api/courses/${courseId}?courseId=${courseId}`
+      )
       if (res.status !== 200) {
         toast.error("error while getting course details")
       }

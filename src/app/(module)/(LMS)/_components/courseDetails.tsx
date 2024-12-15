@@ -114,7 +114,10 @@ export const CourseDetials: React.FC<CourseDetailsProps> = ({
 
     try {
       setLoading(true)
-      const response = await axios.patch(`/api/courses/${courseId}`, payload)
+      const response = await axios.patch(
+        `/api/courses/${courseId}?courseId=${courseId}`,
+        payload
+      )
       if (response.status !== 200) {
         throw new Error("Error while updating course")
       }

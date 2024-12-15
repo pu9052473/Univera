@@ -2,12 +2,10 @@ import { NextResponse } from "next/server"
 import prisma from "@/lib/prisma" // Adjust the path to your Prisma client setup
 import { findUserData } from "../../profile/(helper)"
 
-export async function GET(
-  req: Request,
-  { params }: { params: { courseId: string } }
-) {
+export async function GET(req: Request) {
   try {
-    const { courseId } = await params
+    const { searchParams } = await new URL(req.url)
+    const courseId = await searchParams.get("courseId")
 
     // Validate courseId
     if (!courseId) {
@@ -42,13 +40,11 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { courseId: string } }
-) {
+export async function PATCH(req: Request) {
   try {
     const { updatedcourse, userId, department } = await req.json() // Ensure valid payload
-    const { courseId } = await params
+    const { searchParams } = await new URL(req.url)
+    const courseId = await searchParams.get("courseId")
 
     //check user authorization
     const user = await findUserData(userId)
