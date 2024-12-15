@@ -11,7 +11,8 @@ import {
   MdGroups,
   MdClass,
   MdOutlineHealthAndSafety,
-  MdPerson
+  MdPerson,
+  MdPeople
 } from "react-icons/md"
 
 export const Menuitems = {
@@ -33,6 +34,12 @@ export const Menuitems = {
     { title: "Doctors", url: "/admin/doctors", icon: MdOutlineHealthAndSafety },
     { title: "Patients", url: "/admin/patients", icon: MdPerson }
   ],
+  department_admin: [
+    { title: "Dashborad", url: "/department_admin", icon: MdSpaceDashboard },
+    { title: "Course", url: "/courses", icon: BookCheckIcon },
+    { title: "Subjects", url: "/subject", icon: MdClass },
+    { title: "faculty", url: "/faculty", icon: MdPeople }
+  ],
   faculty: [
     { title: "Dashboard", url: "/teacher", icon: MdSpaceDashboard },
     { title: "Students", url: "/students", icon: FaUsers },
@@ -44,6 +51,7 @@ export const Menuitems = {
 }
 
 import { IconType } from "react-icons"
+import { BookCheckIcon } from "lucide-react"
 
 export interface LinkItem {
   title: string
