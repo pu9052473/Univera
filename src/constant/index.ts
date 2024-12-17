@@ -16,9 +16,9 @@ import {
 } from "react-icons/md"
 
 export const Menuitems = {
-  admin: [
+  university_admin: [
     { title: "Dashboard", url: "/admin", icon: MdSpaceDashboard },
-    { title: "Departments", url: "/admin/departments", icon: FaBuilding },
+    { title: "Departments", url: "/departments", icon: FaBuilding },
     {
       title: "Non-Teaching Staff",
       url: "/non-teaching-staff",
@@ -28,11 +28,6 @@ export const Menuitems = {
       title: "Teachers",
       url: "/teachers",
       icon: FaChalkboardTeacher
-    },
-    {
-      title: "Forums",
-      url: "/forum",
-      icon: MdForum
     }
   ],
   university_admin_staff: [
@@ -45,7 +40,16 @@ export const Menuitems = {
     { title: "Curriculum", url: "/curriculum", icon: FaBook },
     { title: "Subjects", url: "/subjects", icon: MdClass },
     { title: "Events", url: "/events", icon: FaRegCalendarAlt },
-    { title: "Announcement", url: "/announcements", icon: FaBullhorn }
+    { title: "Announcement", url: "/announcements", icon: FaBullhorn },
+    { title: "Forums", url: "/forum", icon: MdForum }
+  ],
+  student: [
+    { title: "Dashboard", url: "/student", icon: MdSpaceDashboard },
+    { title: "Curriculum", url: "/curriculum", icon: FaBook },
+    { title: "Subjects", url: "/subjects", icon: MdClass },
+    { title: "Events", url: "/events", icon: FaRegCalendarAlt },
+    { title: "Announcement", url: "/announcements", icon: FaBullhorn },
+    { title: "Forums", url: "/forum", icon: MdForum }
   ]
 }
 

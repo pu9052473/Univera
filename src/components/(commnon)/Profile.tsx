@@ -1,6 +1,9 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react"
 import { Submit } from "@/components/(commnon)/ButtonV1"
-import { EditableInputField } from "@/components/(commnon)/EditableInputField"
+import {
+  EditableDropdownInput,
+  EditableInputField
+} from "@/components/(commnon)/EditableInputField"
 import Image from "next/image"
 
 interface ProfileProps {
@@ -64,8 +67,21 @@ const Profile: React.FC<ProfileProps> = ({
     setIsDirty(!isEqual)
   }
 
+  const handleDropdownChange = ({
+    name,
+    value
+  }: {
+    name: string
+    value: string
+  }) => {
+    setFormData((prevData) => ({ ...prevData, [name]: value }))
+    setIsDirty(true)
+  }
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    console.log("formData")
+
     if (!editingField) return
 
     const updatedFields = {
@@ -200,6 +216,40 @@ const Profile: React.FC<ProfileProps> = ({
                            border-2 border-ColorOne/30 
                            rounded-xl p-3 
                            opacity-60 cursor-not-allowed"
+              />
+            )}
+            {fields.includes("address") && (
+              <EditableInputField
+                key={"address"}
+                label={"Address"}
+                placeholder={"Enter your Address"}
+                name={"Adress"}
+                value={formData["address"]}
+                onChange={handleChange}
+                isEditing={editingField === "address"}
+                setEditingField={setEditingField}
+                isDirty={isDirty}
+                className="bg-Secondary/10 text-TextTwo 
+                           border-2 border-ColorOne/30 
+                           rounded-xl p-3 
+                           focus:border-ColorThree 
+                           transition-all duration-300"
+              />
+            )}
+            {fields.includes("gender") && (
+              <EditableDropdownInput
+                isEditing={editingField === "gender"}
+                setEditingField={setEditingField}
+                label="Select an Option"
+                options={[
+                  { value: "male", label: "Male" },
+                  { value: "female", label: "Female" },
+                  { value: "other", label: "Other" }
+                ]}
+                value={formData["gender"]}
+                name="gender"
+                onChange={handleDropdownChange}
+                placeholder="Choose one"
               />
             )}
           </div>

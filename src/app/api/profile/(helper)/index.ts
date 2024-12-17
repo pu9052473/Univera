@@ -6,50 +6,32 @@ const prisma = new PrismaClient()
 
 const updateUserProfile = async (
   userId: string,
-  updatedFields: Record<string, any>,
-  role: string
+  updatedFields: Record<string, any>
 ) => {
   try {
-    let updatedUser
-    if (role == "faculty") {
-      updatedUser = await prisma.faculty.update({
-        where: { clerkId: userId },
-        data: updatedFields
-      })
-    } else if (role == "student") {
-      updatedUser = await prisma.student.update({
-        where: { clerkId: userId },
-        data: updatedFields
-      })
-    }
+    const updatedUser = await prisma.user.update({
+      where: { clerkId: userId },
+      data: updatedFields
+    })
+
     return updatedUser
   } catch (error) {
     throw new Error(`Error updating user profile, ${error}`)
   }
 }
 
-const findUserData = async (userId: string, role: string) => {
+const findUserData = async (userId: string) => {
   try {
-    let User
-    if (role == "faculty") {
-      User = await prisma.faculty.findUnique({
-        where: { clerkId: userId },
-        include: {
-          Department: true,
-          University: true,
-          course: true
-        }
-      })
-    } else if (role == "student") {
-      User = await prisma.student.findUnique({
-        where: { clerkId: userId },
-        include: {
-          Department: true,
-          University: true,
-          course: true
-        }
-      })
-    }
+    const User = await prisma.user.findUnique({
+      where: { clerkId: userId },
+      include: {
+        roles: true,
+        faculty: true,
+        student: true,
+        course: true,
+        university: true
+      }
+    })
     return User
   } catch (error) {
     throw new Error(`Error while getting user in api/(helper)/index ${error}`)

@@ -1,14 +1,16 @@
 "use client"
-import React from "react"
+import React, { useContext } from "react"
 import { ChevronDown, Loader2 } from "lucide-react"
 import { UserButton, useUser } from "@clerk/nextjs"
+import { UserContext } from "@/context/user"
 
 interface UserProfileBtnProps {
   SideBarOpen: boolean
 }
 
 export default function UserProfileBtn({ SideBarOpen }: UserProfileBtnProps) {
-  const { user, isLoaded } = useUser()
+  const { isLoaded } = useUser()
+  const { user } = useContext(UserContext)
   return (
     <div
       className={`${
@@ -28,7 +30,7 @@ export default function UserProfileBtn({ SideBarOpen }: UserProfileBtnProps) {
                 }}
               />
               <div className="text-sm font-bold font-roboto max-md:hidden">
-                {user?.fullName ?? "User"}
+                {user?.name ?? "User"}
               </div>
             </div>
           ) : (

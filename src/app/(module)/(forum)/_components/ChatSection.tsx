@@ -1,13 +1,21 @@
 import React, { useEffect, useRef, useState } from "react"
 import { Send, Smile, Paperclip, Image, X, File } from "lucide-react"
+import { chatMessage } from "@/types/globals"
 
 interface ChatSectionProps {
   messages: any[]
   userId: string | undefined
   inputMessage: string
   onInputChange: (value: string) => void
-  onSendMessage: () => void
+  onSendMessage: (message?: string) => void
   onLeaveChat: () => void
+}
+
+interface GroupedMessages {
+  [dateKey: string]: {
+    date: string | Date // or Date if it's a Date object
+    messages: chatMessage[]
+  }
 }
 
 export const ChatSection = ({
@@ -18,12 +26,12 @@ export const ChatSection = ({
   onSendMessage,
   onLeaveChat
 }: ChatSectionProps) => {
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
-  const [showMediaOptions, setShowMediaOptions] = useState(false)
-  const [selectedFiles, setSelectedFiles] = useState([])
-  const messagesEndRef = useRef(null)
-  const inputRef = useRef(null)
-  const fileInputRef = useRef(null)
+  const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false)
+  const [showMediaOptions, setShowMediaOptions] = useState<boolean>(false)
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const messagesEndRef = useRef<HTMLDivElement | null>(null)
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const handleSend = () => {
     if (inputMessage.trim()) {
@@ -33,7 +41,7 @@ export const ChatSection = ({
   }
 
   // Function to format date
-  const formatDate = (messageDate) => {
+  const formatDate = (messageDate: any) => {
     const today = new Date()
     const yesterday = new Date(today)
     yesterday.setDate(yesterday.getDate() - 1)
@@ -48,7 +56,7 @@ export const ChatSection = ({
   }
 
   // Group messages by date
-  const groupedMessages = messages.reduce((acc, message) => {
+  const groupedMessages = messages.reduce<GroupedMessages>((acc, message) => {
     const messageDate = new Date(message.createdAt)
     const dateKey = messageDate.toDateString()
 
@@ -88,19 +96,19 @@ export const ChatSection = ({
     setShowEmojiPicker(false)
   }
 
-  const addEmoji = (emoji) => {
+  const addEmoji = (emoji: any) => {
     onInputChange(inputMessage + emoji)
     setShowEmojiPicker(false)
     inputRef.current?.focus()
   }
 
-  const handleFileSelect = (e) => {
-    const files = Array.from(e.target.files)
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
     setSelectedFiles((prevFiles) => [...prevFiles, ...files])
     setShowMediaOptions(false)
   }
 
-  const removeFile = (indexToRemove) => {
+  const removeFile = (indexToRemove: any) => {
     setSelectedFiles((prevFiles) =>
       prevFiles.filter((_, index) => index !== indexToRemove)
     )
@@ -191,7 +199,7 @@ export const ChatSection = ({
       />
 
       {/* Messages Container */}
-      <div className="h-[60vh] overflow-y-auto px-4 py-6 space-y-4 bg-secondary/5">
+      <div className="h-[65vh] overflow-y-auto px-4 py-6 space-y-4 bg-secondary/5">
         {Object.entries(groupedMessages).map(
           ([dateKey, { date, messages }]) => (
             <React.Fragment key={dateKey}>
@@ -279,8 +287,10 @@ export const ChatSection = ({
         <div className="absolute bottom-20 right-4 bg-white shadow-lg rounded-xl p-4 z-10 w-64 space-y-2">
           <button
             onClick={() => {
-              fileInputRef.current.accept = "image/*,video/*"
-              fileInputRef.current.click()
+              if (fileInputRef.current) {
+                fileInputRef.current.accept = "image/*,video/*"
+                fileInputRef.current.click()
+              }
             }}
             className="flex items-center space-x-3 hover:bg-secondary/20 p-3 rounded-lg w-full transition-colors"
           >
@@ -291,8 +301,10 @@ export const ChatSection = ({
           </button>
           <button
             onClick={() => {
-              fileInputRef.current.accept = "application/pdf,.doc,.docx,.txt"
-              fileInputRef.current.click()
+              if (fileInputRef.current) {
+                fileInputRef.current.accept = "application/pdf,.doc,.docx,.txt"
+                fileInputRef.current.click()
+              }
             }}
             className="flex items-center space-x-3 hover:bg-secondary/20 p-3 rounded-lg w-full transition-colors"
           >

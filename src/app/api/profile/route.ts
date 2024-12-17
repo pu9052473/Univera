@@ -3,8 +3,9 @@ import { NextResponse } from "next/server"
 
 export async function PATCH(req: Request) {
   try {
-    const { userId, updatedFields, role } = await req.json()
-    const updatedUser = await updateUserProfile(userId, updatedFields, role)
+    const { userId, updatedFields } = await req.json()
+
+    const updatedUser = await updateUserProfile(userId, updatedFields)
     if (!updatedUser) {
       throw new Error("Error while updating user profile")
     }
@@ -25,9 +26,8 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
     const userId = searchParams.get("userId") as string
-    const role = searchParams.get("role") as string
 
-    const User = await findUserData(userId, role)
+    const User = await findUserData(userId)
 
     if (!User) {
       throw new Error("User not found")

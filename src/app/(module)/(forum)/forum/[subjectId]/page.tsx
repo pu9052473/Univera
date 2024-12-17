@@ -3,28 +3,34 @@
 import React, { useState, useEffect, useRef } from "react"
 import { useUser } from "@clerk/nextjs"
 import io, { Socket } from "socket.io-client"
-import { ForumSidebar } from "@/components/forum/ForumSidebar"
-import { ForumFilter } from "@/components/forum/ForumFilter"
-import { ChatSection } from "@/components/forum/ChatSection"
+import { ForumSidebar } from "@/app/(module)/(forum)/_components/ForumSidebar"
+import { ChatSection } from "@/app/(module)/(forum)/_components/ChatSection"
+import { useParams } from "next/navigation"
+import { chatMessage, Forum } from "@/types/globals"
 
 export default function Home() {
-  const [selectedRole, setSelectedRole] = useState("student")
-  const [selectedDepartment, setSelectedDepartment] = useState<string | null>(
-    null
-  )
-  const [selectedYear, setSelectedYear] = useState<string | null>(null)
-  const [forums, setForums] = useState([])
-  const [filteredForums, setFilteredForums] = useState([])
+  const [forums, setForums] = useState<Forum[]>([])
   const [selectedForumId, setSelectedForumId] = useState<number | null>(null)
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState<chatMessage[]>([])
   const [inputMessage, setInputMessage] = useState("")
-
-  // const [error, setError] = useState(null);
+  const [tag, setTag] = useState<string>("")
+  const [isTagDialogOpen, setIsTagDialogOpen] = useState(false)
+  const [isForumDialogOpen, setIsForumDialogOpen] = useState(false)
+  const [forumName, setForumName] = useState<string>("")
+  const [forumTags, setForumTags] = useState<string[]>([])
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [departmentId, setDepartmentId] = useState<number | null>(null)
+  const [courseId, setCourseId] = useState<number | null>(null)
+  const [isPrivate, setIsPrivate] = useState(false)
 
   const userData = useUser()
   const userId = userData.user?.id
+  const userRole = userData.user?.publicMetadata.role as string
   const socketRef = useRef<Socket | null>(null) // Store socket in a ref
+  const { subjectId } = useParams()
   console.log("userId", userId)
+  console.log("subjectId", subjectId)
+  console.log("userRole", userRole)
 
   useEffect(() => {
     // Initialize socket connection with the path to the WebSocket API
@@ -55,7 +61,7 @@ export default function Home() {
 
       try {
         const res = await fetch(
-          `/api/forum/messages?forumId=${selectedForumId}`
+          `/api/subjects/forum/messages?forumId=${selectedForumId}`
         )
         if (!res.ok)
           console.log("Failed to fetch messages from DB @(module)/forum/page")
@@ -63,7 +69,7 @@ export default function Home() {
         const dbMessages = await res.json()
         setMessages(mergeMessages(dbMessages, localMessages))
       } catch (error) {
-        console.error("Error fetching messages:", error)
+        console.log("Error fetching messages:", error)
         setMessages(localMessages) // Fallback to local messages if DB fetch fails
       }
     }
@@ -98,7 +104,10 @@ export default function Home() {
     }
   }, [selectedForumId])
 
-  const mergeMessages = (existingMessages: any[], newMessages: any[]) => {
+  const mergeMessages = (
+    existingMessages: chatMessage[],
+    newMessages: chatMessage[]
+  ) => {
     const safeNewMessages = Array.isArray(newMessages) ? newMessages : []
     const safeExistingMessages = Array.isArray(existingMessages)
       ? existingMessages
@@ -116,22 +125,18 @@ export default function Home() {
     return uniqueMessages
   }
 
-  const handleRoleChange = (role: "student" | "faculty") => {
-    setSelectedRole(role)
-    setSelectedDepartment(null) // Reset department selection on role change
-    setSelectedYear(null) // Reset year selection
-    setForums([]) // Clear forums on role change
-  }
-
   useEffect(() => {
     // Fetch forums data dynamically based on userId
     const fetchForums = async () => {
       try {
-        const response = await fetch(`/api/forum`)
+        const response = await fetch(
+          `/api/subjects/forum?subjectId=${subjectId}`
+        )
         if (!response.ok)
           throw new Error("Failed to fetch the forums @app/page")
 
         const data = await response.json()
+        console.log("forums from DB", data)
         setForums(data)
       } catch (error: any) {
         console.log(
@@ -145,48 +150,6 @@ export default function Home() {
 
   const handleForumSelect = (forumId: any) => {
     setSelectedForumId(forumId)
-  }
-
-  useEffect(() => {
-    // Filter forums data based on selected department and year
-    const filtered = forums.filter(
-      (forum) =>
-        (!selectedDepartment || forum.department === selectedDepartment) &&
-        (!selectedYear || forum.year === selectedYear)
-    )
-
-    setFilteredForums(filtered)
-  }, [forums, selectedDepartment, selectedYear])
-
-  // console.log("selectedDepartment", selectedDepartment)
-  // console.log("selectedYear", selectedYear)
-
-  const handleCreateForum = async () => {
-    if (!selectedDepartment || !selectedYear) return
-    console.log("entered in post")
-
-    try {
-      const response = await fetch(`/api/forum`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: `some dout`,
-          departmentId: 2,
-          courseId: 2,
-          year: 1,
-          userId: `${userId}`,
-          status: "pending"
-        })
-      })
-
-      if (!response.ok) throw new Error("Failed to create the forum @app/page")
-      const newForum = await response.json()
-      setForums((prev) => [...prev, newForum])
-    } catch (error: any) {
-      console.log(
-        error.message || "An error occurred while creating forum @app/page"
-      )
-    }
   }
 
   const sendMessage = async () => {
@@ -245,7 +208,7 @@ export default function Home() {
     localMessages: any[]
   ) => {
     try {
-      const response = await fetch("/api/forum/messages", {
+      const response = await fetch("/api/subjects/forum/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ selectedForumId, localMessages })
@@ -254,11 +217,9 @@ export default function Home() {
       if (response.ok) {
         console.log("Messages stored successfully.")
         localStorage.removeItem(`forum_${selectedForumId}`)
-      } else {
-        console.error("Failed to store messages.")
       }
     } catch (error) {
-      console.error("Error saving messages:", error)
+      console.log("Error saving messages:", error)
     }
   }
 
@@ -270,32 +231,137 @@ export default function Home() {
       )
       await saveChatMessages(selectedForumId, localMessages)
     }
+    setSelectedForumId(null)
+  }
+
+  const addTag = async () => {
+    if (!subjectId || !tag.trim()) {
+      alert("Subject ID or tag is missing!")
+      return
+    }
+
+    try {
+      const res = await fetch("/api/subjects/forum/tags", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subjectId, tag })
+      })
+
+      if (!res.ok) throw new Error("Failed to add tag")
+
+      setTag("") // Clear the input
+      setIsTagDialogOpen(false) // Close dialog
+    } catch (error) {
+      console.log(
+        `error while creating tag @(module)/(forum)/forum/[subjectId]/page${error}`
+      )
+    }
+  }
+
+  // Fetch forumTags, departmentId, and courseId from the subject table
+  useEffect(() => {
+    async function fetchSubjectDetails() {
+      try {
+        const res = await fetch(
+          `/api/subjects/forum/helper?route=subjectDetails&subjectId=${subjectId}`
+        )
+        if (!res.ok) throw new Error("Failed to fetch subject details")
+
+        const data = await res.json()
+        setForumTags(data.forumTags || [])
+        setDepartmentId(data.departmentId)
+        setCourseId(data.courseId)
+      } catch (error) {
+        console.log("Error fetching subject details:", error)
+      }
+    }
+
+    fetchSubjectDetails()
+  }, [subjectId])
+
+  // Handle forum creation
+  const createForum = async () => {
+    try {
+      // Fetch the faculty data for the given courseId
+      const facultyRes = await fetch(
+        `/api/subjects/forum/helper?route=facultyDetails&courseId=${courseId}`
+      )
+      if (!facultyRes.ok) {
+        throw new Error("Failed to fetch faculty data")
+      }
+
+      const facultyList = await facultyRes.json()
+
+      // Find the faculty with the earliest `createdAt`
+      const earliestFaculty = facultyList.reduce(
+        (earliest: any, current: any) => {
+          return new Date(current.createdAt) < new Date(earliest.createdAt)
+            ? current
+            : earliest
+        }
+      )
+
+      const moderatorId = earliestFaculty.id
+
+      const res = await fetch("/api/subjects/forum", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: forumName,
+          userId,
+          subjectId,
+          departmentId,
+          moderatorId,
+          courseId,
+          forumTags: selectedTags,
+          isPrivate
+        })
+      })
+
+      if (!res.ok) throw new Error("Failed to create forum")
+
+      const newForum = await res.json()
+      console.log("Forum created successfully:", newForum)
+
+      setForums((prev) => [...prev, newForum])
+      setForumName("") // Clear the input
+      setSelectedTags([]) // Clear selected tags
+      setIsForumDialogOpen(false) // Close dialog
+    } catch (error) {
+      console.log("Error creating forum:", error)
+    }
   }
 
   console.log("selected forum", selectedForumId)
   console.log("messages", messages)
-  console.log("filteredForums", filteredForums)
+  console.log("forums", forums)
 
   return (
-    <div className="min-h-screen bg-[#CECDF9] p-6 grid grid-cols-12 gap-4">
-      <div className="col-span-3">
+    <div className="h-[90%] bg-[#CECDF9] p-3.5 grid grid-cols-12 gap-4">
+      <div className="col-span-3 min-h-full">
         <ForumSidebar
-          filteredForums={filteredForums}
+          forums={forums}
           selectedForumId={selectedForumId}
+          tag={tag}
+          setTag={setTag}
+          addTag={addTag}
+          userRole={userRole}
+          isTagDialogOpen={isTagDialogOpen}
+          setIsTagDialogOpen={setIsTagDialogOpen}
+          isForumDialogOpen={isForumDialogOpen}
+          setIsForumDialogOpen={setIsForumDialogOpen}
           onForumSelect={handleForumSelect}
-          onCreateForum={handleCreateForum}
-          canCreateForum={!!selectedDepartment && !!selectedYear}
+          forumName={forumName}
+          forumTags={forumTags}
+          selectedTags={selectedTags}
+          setSelectedTags={setSelectedTags}
+          createForum={createForum}
+          isPrivate={isPrivate}
+          setForumName={setForumName}
+          setIsPrivate={setIsPrivate}
         />
       </div>
-      <div className="col-span-9 grid grid-rows-[auto,1fr] gap-4">
-        <ForumFilter
-          selectedRole={selectedRole}
-          selectedDepartment={selectedDepartment}
-          selectedYear={selectedYear}
-          onRoleChange={handleRoleChange}
-          onDepartmentChange={setSelectedDepartment}
-          onYearChange={setSelectedYear}
-        />
+      <div className="col-span-9 min-h-full grid grid-rows-[auto,1fr] gap-4">
         {selectedForumId && (
           <ChatSection
             messages={messages}
