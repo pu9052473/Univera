@@ -84,7 +84,7 @@ export default function EditSubjectPage() {
               <DeleteButton
                 label="Delete this item"
                 onDelete={handleDeleteClick}
-                className="bg-primary text-white w-full mt-4 hover:bg-red-500 rounded-lg px-4 py-2"
+                className="bg-Primary text-white w-full mt-4 hover:bg-red-500 rounded-lg px-4 py-2"
               />
             </div>
           </div>

@@ -14,7 +14,7 @@ export default function DeleteButton({
 }: DeleteButtonProps) {
   const [showConfirm, setShowConfirm] = useState(false)
   const btnClassName = clsx(
-    "bg-primary text-black text-md hover:bg-red-500 hover:text-white rounded-lg px-4 py-2",
+    "bg-Primary text-black text-md hover:bg-red-500 hover:text-white rounded-lg px-4 py-2",
     className
   )
   if (showConfirm) {

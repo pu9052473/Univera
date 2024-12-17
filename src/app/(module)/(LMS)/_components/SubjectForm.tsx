@@ -146,7 +146,7 @@ export function SubjectForm({
           <button
             id={submitBtnId ?? "submit"}
             type="submit"
-            className="bg-primary text-white w-full mt-4 hover:bg-blue-500 rounded-lg px-4 py-2"
+            className="bg-Primary text-white w-full mt-4 hover:bg-blue-500 rounded-lg px-4 py-2"
           >
             {submitBtnLabel}
           </button>
