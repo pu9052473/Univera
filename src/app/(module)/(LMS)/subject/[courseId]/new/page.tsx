@@ -1,5 +1,4 @@
 "use client"
-import Left from "@/components/icons/Left"
 import Link from "next/link"
 import toast from "react-hot-toast"
 import { SubjectForm } from "../../../_components/SubjectForm"
@@ -8,6 +7,7 @@ import { useContext, useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import axios from "axios"
 import { Course } from "@prisma/client"
+import Left from "@/components/Icons/Left"
 
 export default function NewSubjectPage() {
   const { user } = useContext(UserContext)

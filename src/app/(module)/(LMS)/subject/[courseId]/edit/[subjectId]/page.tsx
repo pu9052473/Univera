@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { SubjectForm } from "@/app/(module)/(LMS)/_components/SubjectForm"
-import Left from "@/components/icons/Left"
 import { UserContext } from "@/context/user"
 import { Course, Subject } from "@prisma/client"
 import Link from "next/link"
@@ -11,6 +10,7 @@ import { useContext, useEffect, useState } from "react"
 import axios from "axios"
 import toast from "react-hot-toast"
 import DeleteButton from "@/components/(commnon)/DeleteButton"
+import Left from "@/components/Icons/Left"
 
 const initForm = {
   name: "",

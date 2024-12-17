@@ -1,11 +1,11 @@
 "use client"
-import Left from "@/components/icons/Left"
-import Right from "@/components/icons/Right"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import { Subject } from "@prisma/client"
 import axios from "axios"
+import Right from "@/components/Icons/Right"
+import Left from "@/components/Icons/Left"
 
 export default function SubjectsPage() {
   const [subjects, setSubjects] = useState<Subject[]>([]) // State to hold subjects
