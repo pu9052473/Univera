@@ -10,6 +10,7 @@ export interface ButtonV1Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   href?: string
   disabled?: boolean
   loading?: boolean
+  varient?: "primary" | "outline"
 }
 
 export function ButtonV1({
@@ -17,30 +18,63 @@ export function ButtonV1({
   label,
   disabled,
   href,
+  varient = "primary",
   loading,
   ...props
 }: ButtonV1Props) {
-  const buttonClasses = clsx(
-    "py-2 pl-2 pr-3 text-white bg-Primary flex gap-1.5 items-center transition-all duration-300 ease-in-out hover:bg-[#1A3E99] hover:scale-105 hover:shadow-lg",
-    props.className
-  )
+  if (varient == "primary") {
+    const primaryButtonClasses = clsx(
+      "py-2 pl-2 pr-3 text-white bg-Primary flex gap-1.5 items-center transition-all duration-300 ease-in-out hover:bg-[#1A3E99] hover:-translate-y-px hover:shadow-lg",
+      props.className
+    )
 
-  if (href) {
+    if (href) {
+      return (
+        <Link href={href} className={primaryButtonClasses}>
+          {Icon && <Icon className="w-5 h-5" />}
+          {label && <p>{label}</p>}
+        </Link>
+      )
+    }
+
     return (
-      <Link href={href} className={buttonClasses}>
-        {Icon && <Icon className="w-5 h-5" />}
-        {label && <p>{label}</p>}
-      </Link>
+      <Button
+        {...props}
+        disabled={disabled || loading}
+        className={primaryButtonClasses}
+      >
+        {loading && <Loader />}
+        {!loading && Icon && <Icon className="w-5 h-5" />}
+        {!loading && label && <p>{label}</p>}
+      </Button>
+    )
+  } else if (varient == "outline") {
+    const primaryButtonClasses = clsx(
+      "py-2 pl-2 pr-3 text-white border-2 border-Primary bg-white text-Primary flex gap-1.5 items-center transition-all duration-300 ease-in-out hover:text-white hover:border-white hover:bg-[#1A3E99] hover:shadow-lg",
+      props.className
+    )
+
+    if (href) {
+      return (
+        <Link href={href} className={primaryButtonClasses}>
+          {Icon && <Icon className="w-5 h-5" />}
+          {label && <p>{label}</p>}
+        </Link>
+      )
+    }
+
+    return (
+      <Button
+        {...props}
+        disabled={disabled || loading}
+        className={primaryButtonClasses}
+      >
+        {loading && <Loader />}
+        {!loading && Icon && <Icon className="w-5 h-5" />}
+        {!loading && label && <p>{label}</p>}
+      </Button>
     )
   }
-
-  return (
-    <Button {...props} disabled={disabled || loading} className={buttonClasses}>
-      {loading && <Loader />}
-      {!loading && Icon && <Icon className="w-5 h-5" />}
-      {!loading && label && <p>{label}</p>}
-    </Button>
-  )
 }
 
 interface SubmitButtonProps {

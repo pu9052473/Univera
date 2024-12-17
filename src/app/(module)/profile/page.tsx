@@ -27,15 +27,14 @@ export default function Page() {
         })
       })
       const data = await response.json()
-      console.log(data)
 
       if (response.ok) {
         dispatch({ type: "SET_USER", user: data.updatedUser })
+        toast.success("Profile updated sucessfully.")
       } else {
         toast.error("Failed to update profile")
         console.error("Error updating profile", data)
       }
-      toast.success("Profile updated sucessfully.")
     } catch (error) {
       console.error("Error @/profile:", error)
     } finally {
