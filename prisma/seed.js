@@ -83,7 +83,7 @@ async function main() {
       adminId:dAdmin.clerkId
     }
   })
-  //create faculty
+  //create faculty user
   const dummyFacultyUser = await prisma.user.create({
     data:{
       id:"user_2pWbD30knEj1V0jeyFkim67Bo73",

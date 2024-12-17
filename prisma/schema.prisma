@@ -40,7 +40,6 @@ model User {
   departmentAdmin     Department?        @relation("AdminToDepartment")
   departmentPrincipal Department?        @relation("PrincipalToDepartment")
   forumStudent        Forum[]            @relation("UserToForum")
-  forumModerator      Forum[]            @relation("ModeratorToForum")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -109,6 +108,7 @@ model Faculty {
   course     Course?     @relation(fields: [courseId], references: [id])
   department Department? @relation(fields: [departmentId], references: [id])
   university University? @relation(fields: [universityId], references: [id])
+  forumModerator      Forum[]            @relation("ModeratorToForum")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -205,11 +205,12 @@ model Subject {
   name         String
   credits      Int
   semester     Int
-  code         Int
+  code         String
   courseId     Int
   departmentId Int
   universityId Int
-  resultId     Int
+  resultId     Int?
+  syllabus     Json[] //{title,link}
 
   assignment Assignment[]
   attendance Attendance[]
@@ -375,7 +376,7 @@ model Forum {
   course     Course?     @relation(fields: [courseId], references: [id])
   department Department? @relation(fields: [departmentId], references: [id])
   user       User?       @relation(name: "UserToForum", fields: [userId], references: [clerkId])
-  moderator  User?       @relation(name: "ModeratorToForum", fields: [moderatorId], references: [clerkId])
+  moderator  Faculty     @relation(name: "ModeratorToForum", fields: [moderatorId], references: [clerkId])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
