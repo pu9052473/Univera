@@ -50,7 +50,7 @@ const config: Config = {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))"
         },
-        primary: "#87CEEB",
+        Primary: "#87CEEB",
         Secondary: "#CECDF9",
         TextTwo: "#0A2353",
         ColorOne: "#56E1E9",

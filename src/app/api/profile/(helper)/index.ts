@@ -39,4 +39,24 @@ const findUserData = async (userId: string) => {
     throw new Error(`Error while getting user in api/(helper)/index ${error}`)
   }
 }
-export { updateUserProfile, findUserData }
+
+async function getCourseById(courseId: number) {
+  try {
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      include: {
+        subjects: true,
+        faculties: true,
+        announcement: true,
+        assignment: true,
+        students: true,
+        hod: true,
+        department: true
+      }
+    })
+    return course
+  } catch (error) {
+    throw new Error(`Error while getting course in api/(helper)/index ${error}`)
+  }
+}
+export { updateUserProfile, findUserData, getCourseById }
