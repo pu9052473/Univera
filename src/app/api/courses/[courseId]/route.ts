@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server"
 import prisma from "@/lib/prisma" // Adjust the path to your Prisma client setup
-import { findUserData } from "../../profile/(helper)"
+import { currentUser } from "@clerk/nextjs/server"
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = await new URL(req.url)
     const courseId = await searchParams.get("courseId")
-
+    // console.log("courseId: ",courseId)
     // Validate courseId
     if (!courseId) {
       return NextResponse.json(
@@ -19,9 +19,11 @@ export async function GET(req: Request) {
     const course = await prisma.course.findUnique({
       where: {
         id: Number(courseId) // Ensure the ID is a number if your database expects it
+      },
+      include: {
+        subjects: true
       }
     })
-
     if (!course) {
       return NextResponse.json({ message: "Course not found" }, { status: 404 })
     }
@@ -46,13 +48,15 @@ export async function PATCH(req: Request) {
     const { searchParams } = await new URL(req.url)
     const courseId = await searchParams.get("courseId")
 
+    const user = await currentUser()
+    const role = user?.publicMetadata.role
+
     //check user authorization
-    const user = await findUserData(userId)
-    if (!user || user.departmentAdmin?.id !== department.id) {
+    if (role !== "department_admin" && role !== "super_user") {
       return NextResponse.json(
-        { message: "Access denied" },
+        { message: "You are not allowed to create a Subject" },
         {
-          status: 403
+          status: 401
         }
       )
     }
@@ -78,6 +82,46 @@ export async function PATCH(req: Request) {
     console.log("Error while updating course @/course", error)
     return NextResponse.json(
       { message: "Error while updating" },
+      {
+        status: 500
+      }
+    )
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = await new URL(req.url)
+    const courseId = await searchParams.get("courseId")
+    const user = await currentUser()
+    const role = user?.publicMetadata.role
+
+    //check user authorization
+    if (role !== "department_admin" && role !== "super_user") {
+      return NextResponse.json(
+        { message: "You are not allowed to create a Subject" },
+        {
+          status: 401
+        }
+      )
+    }
+
+    const DeletedCourse = await prisma.course.delete({
+      where: { id: Number(courseId) }
+    })
+    if (!DeletedCourse) {
+      throw new Error("Error while deleting course")
+    }
+    return NextResponse.json(
+      { message: "Course Deleted", course: DeletedCourse },
+      {
+        status: 200
+      }
+    )
+  } catch (error) {
+    console.log(`Error while deleting course @api/course/[courseId] ${error}`)
+    return NextResponse.json(
+      { message: "Error while deleting course" },
       {
         status: 500
       }

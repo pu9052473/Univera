@@ -60,7 +60,8 @@ export async function GET(req: Request) {
     // Fetch courses by department
     const courses = await prisma.course.findMany({
       where: { departmentId: Number(departmentId) },
-      orderBy: { createdAt: "asc" } // Order courses (optional)
+      orderBy: { createdAt: "asc" }, // Order courses (optional)
+      include: { subjects: true }
     })
 
     return NextResponse.json(

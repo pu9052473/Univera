@@ -12,7 +12,8 @@ import {
   MdClass,
   MdOutlineHealthAndSafety,
   MdPerson,
-  MdPeople
+  MdPeople,
+  MdEditDocument
 } from "react-icons/md"
 
 export const Menuitems = {
@@ -36,7 +37,7 @@ export const Menuitems = {
   ],
   department_admin: [
     { title: "Dashborad", url: "/department_admin", icon: MdSpaceDashboard },
-    { title: "Course", url: "/courses", icon: BookCheckIcon },
+    { title: "Course", url: "/courses", icon: MdEditDocument },
     { title: "Subjects", url: "/subject", icon: MdClass },
     { title: "faculty", url: "/faculty", icon: MdPeople }
   ],
@@ -51,7 +52,6 @@ export const Menuitems = {
 }
 
 import { IconType } from "react-icons"
-import { BookCheckIcon } from "lucide-react"
 
 export interface LinkItem {
   title: string
