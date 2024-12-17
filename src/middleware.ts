@@ -32,7 +32,9 @@ export default clerkMiddleware(async (authPromise, req) => {
         if (role == "university_admin" && req.nextUrl.pathname === "/") {
           return NextResponse.redirect(new URL("/admin", req.url))
         }
-
+        if (role == "department_admin" && req.nextUrl.pathname === "/") {
+          return NextResponse.redirect(new URL("/department_admin", req.url))
+        }
         //teacher role redirection
         if (role == "faculty" && req.nextUrl.pathname === "/") {
           return NextResponse.redirect(new URL("/teacher", req.url))
