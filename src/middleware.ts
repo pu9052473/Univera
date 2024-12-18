@@ -46,12 +46,12 @@ export default clerkMiddleware(async (authPromise, req) => {
         }
 
         //prevent non admin user to go to admin paths
-        if (
-          role !== "university_admin" &&
-          req.nextUrl.pathname.startsWith("/admin")
-        ) {
-          return NextResponse.redirect(new URL("/", req.url))
-        }
+        // if (
+        //   role !== "university_admin" &&
+        //   req.nextUrl.pathname.startsWith("/admin")
+        // ) {
+        //   return NextResponse.redirect(new URL("/", req.url))
+        // }
 
         //redirect auth users trying to access public routes (eg:"/sign-in")
         if (publicRoutes.includes(req.nextUrl.pathname)) {

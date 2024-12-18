@@ -77,11 +77,11 @@ export function ButtonV1({
   }
 }
 
-interface SubmitButtonProps {
+interface SubmitButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label?: string
   disabled?: boolean
   loading?: boolean
-  className?: string
 }
 
 export function Submit({

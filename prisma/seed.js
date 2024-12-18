@@ -49,6 +49,22 @@ async function main() {
     }
   })
 
+  // Create a student user
+  const studentUser = await prisma.user.create({
+    data: {
+      phone: "9898989898",
+      id: "user_2pWbVEq2ofULWoG6chkZCw0kwkw",
+      email: "dev-student1@karnavatiuniversity.edu.in",
+      name: "student1",
+      clerkId: "user_2pWbVEq2ofULWoG6chkZCw0kwkw",
+      roles: {
+        connect: {
+          id: 6
+        }
+      }
+    }
+  })
+
   // Create a university
   await prisma.university.create({
     data: {
@@ -137,6 +153,27 @@ async function main() {
     }
   })
 
+<<<<<<< HEAD
+  const dummyStudent = await prisma.student.create({
+    data:{
+      id:"user_2pWbVEq2ofULWoG6chkZCw0kwkw",
+      clerkId:"user_2pWbVEq2ofULWoG6chkZCw0kwkw",
+      prn:"1234567890",  
+      year:2,
+      semister:1,
+      guardianEmail:"gardianstudent1@gmail.com",
+      gaurdianPhone:"7894567898",
+      rollNo:1,
+      documents:[],
+      mentorId:dummyFaculty.clerkId,
+      departmentId:1,
+      courseId:1,
+      universityId:1,
+    }
+  })
+
+=======
+>>>>>>> main
 }
 
 main()

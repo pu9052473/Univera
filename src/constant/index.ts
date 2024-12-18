@@ -13,7 +13,8 @@ import {
   MdOutlineHealthAndSafety,
   MdPerson,
   MdPeople,
-  MdEditDocument
+  MdEditDocument,
+  MdForum
 } from "react-icons/md"
 
 export const Menuitems = {
@@ -47,7 +48,16 @@ export const Menuitems = {
     { title: "Curriculum", url: "/curriculum", icon: FaBook },
     { title: "Subjects", url: "/subjects", icon: MdClass },
     { title: "Events", url: "/events", icon: FaRegCalendarAlt },
-    { title: "Announcement", url: "/announcements", icon: FaBullhorn }
+    { title: "Announcement", url: "/announcements", icon: FaBullhorn },
+    { title: "Forums", url: "/forum", icon: MdForum }
+  ],
+  student: [
+    { title: "Dashboard", url: "/student", icon: MdSpaceDashboard },
+    { title: "Curriculum", url: "/curriculum", icon: FaBook },
+    { title: "Subjects", url: "/subjects", icon: MdClass },
+    { title: "Events", url: "/events", icon: FaRegCalendarAlt },
+    { title: "Announcement", url: "/announcements", icon: FaBullhorn },
+    { title: "Forums", url: "/forum", icon: MdForum }
   ]
 }
 
