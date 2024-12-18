@@ -2,20 +2,9 @@ import { NextResponse } from "next/server"
 import prisma from "@/lib/prisma" // Adjust the path to your Prisma client setup
 import { currentUser } from "@clerk/nextjs/server"
 
-export async function GET(req: Request) {
+export async function GET(req: Request, context: any) {
   try {
-    console.log("Incomming url at @/api/courses/ID", req.url)
-    const { searchParams } = await new URL(req.url)
-    const courseId = await searchParams.get("courseId")
-    // console.log("courseId: ",courseId)
-    // Validate courseId
-    if (!courseId) {
-      return NextResponse.json(
-        { message: "Course ID is required" },
-        { status: 400 }
-      )
-    }
-
+    const { courseId } = await context.params
     // Fetch course from the database
     const course = await prisma.course.findUnique({
       where: {
@@ -43,11 +32,10 @@ export async function GET(req: Request) {
   }
 }
 
-export async function PATCH(req: Request) {
+export async function PATCH(req: Request, context: any) {
   try {
     const { updatedcourse, userId, department } = await req.json() // Ensure valid payload
-    const { searchParams } = await new URL(req.url)
-    const courseId = await searchParams.get("courseId")
+    const { courseId } = await context.params
 
     const user = await currentUser()
     const role = user?.publicMetadata.role
@@ -90,10 +78,9 @@ export async function PATCH(req: Request) {
   }
 }
 
-export async function DELETE(req: Request) {
+export async function DELETE(req: Request, context: any) {
   try {
-    const { searchParams } = await new URL(req.url)
-    const courseId = await searchParams.get("courseId")
+    const { courseId } = await context.params
     const user = await currentUser()
     const role = user?.publicMetadata.role
 

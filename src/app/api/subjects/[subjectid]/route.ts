@@ -2,10 +2,9 @@ import { currentUser } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 
-export async function GET(req: Request) {
+export async function GET(req: Request, context: any) {
   try {
-    const { searchParams } = new URL(req.url)
-    const subjectId = searchParams.get("subjectId")
+    const { subjectId } = await context.params
     const user = await currentUser()
     const role = user?.publicMetadata.role
 
@@ -45,11 +44,10 @@ export async function GET(req: Request) {
   }
 }
 
-export async function PATCH(req: Request) {
+export async function PATCH(req: Request, context: any) {
   try {
-    const { searchParams } = new URL(req.url)
+    const { subjectId } = await context.params
     const { updatedSubject } = await req.json()
-    const subjectId = searchParams.get("subjectId")
     const user = await currentUser()
     // const {name,code,credits,semester} = await req.json()
     const role = user?.publicMetadata.role
@@ -91,10 +89,9 @@ export async function PATCH(req: Request) {
   }
 }
 
-export async function DELETE(req: Request) {
+export async function DELETE(req: Request, context: any) {
   try {
-    const { searchParams } = await new URL(req.url)
-    const subjectId = await searchParams.get("subjectId")
+    const { subjectId } = await context.params
     const user = await currentUser()
     const role = user?.publicMetadata.role
 

@@ -1,12 +1,9 @@
 "use client"
-import React, {
-  createContext,
-  useReducer,
-  useEffect,
-  useState,
-  useMemo
-} from "react"
+import React, { createContext, useReducer, useEffect, useMemo } from "react"
 import { useUser } from "@clerk/nextjs"
+import { useQuery } from "@tanstack/react-query"
+import { RotateCcw } from "lucide-react"
+import { ButtonV1 } from "@/components/(commnon)/ButtonV1"
 
 interface User {
   id: string
@@ -39,46 +36,58 @@ const UserReducer = (
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(UserReducer, null)
   const { user } = useUser()
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
+  const fetchUserData = async () => {
     if (user?.publicMetadata.role && user?.id) {
-      const fetchData = async () => {
-        try {
-          setLoading(true)
-          setError(null)
+      const response = await fetch(
+        `/api/profile?role=${user.publicMetadata.role}&userId=${user.id}`
+      )
 
-          const response = await fetch(
-            `/api/profile?role=${user.publicMetadata.role}&userId=${user.id}`
-          )
-
-          if (!response.ok) {
-            throw new Error(`Failed to fetch: ${response.statusText}`)
-          }
-
-          const data = await response.json()
-          dispatch({ type: "SET_USER", user: data.User })
-        } catch (err) {
-          console.log(`Error fetching user data @context/user: ${err}`)
-
-          setError("Failed to load user data.")
-        } finally {
-          setLoading(false)
-        }
+      if (!response.ok) {
+        throw new Error(`Failed to fetch: ${response.statusText}`)
       }
 
-      fetchData()
+      const data = await response.json()
+      return data.User
     }
-  }, [user])
+    throw new Error("User data is missing.")
+  }
+
+  const {
+    data,
+    isLoading,
+    error: fetchError,
+    isSuccess,
+    refetch
+  } = useQuery({
+    queryKey: ["user", user?.id],
+    queryFn: fetchUserData,
+    enabled: !!user?.id
+  })
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch({ type: "SET_USER", user: data })
+    }
+  }, [isSuccess, data])
 
   const contextValue = useMemo(
     () => ({ user: state, dispatch }),
     [state, dispatch]
   )
 
-  if (loading) return <div>Loading...</div>
-  if (error) return <div>Error: {error}</div>
+  if (isLoading) return <div>Loading...</div>
+
+  if (fetchError)
+    return (
+      <div className="text-red-500">
+        <p>Failed to load courses. Please try again later.</p>
+        <p className="text-sm text-gray-500">
+          {fetchError?.message || "An unexpected error occurred."}
+        </p>
+        <ButtonV1 icon={RotateCcw} label="Retry" onClick={() => refetch()} />
+      </div>
+    )
 
   return (
     <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
