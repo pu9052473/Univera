@@ -34,7 +34,9 @@ export default function Home() {
 
   useEffect(() => {
     // Initialize socket connection with the path to the WebSocket API
-    const socket = io("http://localhost:3001")
+    const socket = io("https://univera.onrender.com", {
+      transports: ["websocket", "polling"]
+    })
     socketRef.current = socket
 
     socketRef.current.on("connect", () => {

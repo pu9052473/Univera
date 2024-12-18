@@ -5,7 +5,12 @@ const cors = require("cors")
 
 const app = express()
 // Enable CORS for API routes
-app.use(cors({ origin: "http://localhost:3000", methods: ["GET", "POST"] }))
+app.use(cors({ 
+  origin: process.env.NEXT_PUBLIC_FRONTEND_URL || "http://localhost:3000", 
+  methods: ["GET", "POST"],
+  credentials: true,
+}))
+
 
 // Create HTTP server from Express app
 const server = http.createServer(app);
@@ -13,7 +18,7 @@ const server = http.createServer(app);
 // Enable CORS for Socket.IO
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:3000", // Frontend URL
+    origin: process.env.NEXT_PUBLIC_FRONTEND_URL || "http://localhost:3000", // Frontend URL
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -50,7 +55,7 @@ app.all("*", (req, res) => {
 })
 
 // Start the server on port 3001
-const port = 3001
+const port = process.env.NEXT_PUBLIC_PORT 
 server.listen(port, (err) => {
   if (err) throw err
   console.log(`> Ready on http://localhost:${port}`)
