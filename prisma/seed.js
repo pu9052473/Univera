@@ -14,7 +14,9 @@ async function main() {
       { rolename: "student" },
       { rolename: "non_teaching_staff" },
       { rolename: "non_teaching_staff_admin" },
-      { rolename: "principal" }
+      { rolename: "principal" },
+      { rolename: "head_of_department" },
+      { rolename: "dean" }
     ]
   })
 
@@ -130,6 +132,7 @@ async function main() {
       name:"Engineering Mathematics 1",
       code:"2ET100301T",
       credits:3,
+      departmentId:1,
       semester:1,
       courseId:1,
       universityId:1,
@@ -153,7 +156,6 @@ async function main() {
     }
   })
 
-<<<<<<< HEAD
   const dummyStudent = await prisma.student.create({
     data:{
       id:"user_2pWbVEq2ofULWoG6chkZCw0kwkw",
@@ -171,9 +173,6 @@ async function main() {
       universityId:1,
     }
   })
-
-=======
->>>>>>> main
 }
 
 main()

@@ -329,6 +329,7 @@ model Forum {
   name             String
   userId           String
   status           String
+  facultyId        String             @unique
   departmentId     Int
   courseId         Int
   subjectId        Int

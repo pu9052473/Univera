@@ -40,7 +40,8 @@ export const Menuitems = {
     { title: "Dashborad", url: "/department_admin", icon: MdSpaceDashboard },
     { title: "Course", url: "/courses", icon: MdEditDocument },
     { title: "Subjects", url: "/subject", icon: MdClass },
-    { title: "faculty", url: "/faculty", icon: MdPeople }
+    { title: "Faculty", url: "/list/teachers", icon: MdPeople },
+    { title: "Students", url: "/list/students", icon: MdPeople }
   ],
   faculty: [
     { title: "Dashboard", url: "/faculty", icon: MdSpaceDashboard },
