@@ -4,6 +4,7 @@ import { currentUser } from "@clerk/nextjs/server"
 
 export async function GET(req: Request) {
   try {
+    console.log("Incomming url at @/api/courses/ID", req.url)
     const { searchParams } = await new URL(req.url)
     const courseId = await searchParams.get("courseId")
     // console.log("courseId: ",courseId)

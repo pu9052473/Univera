@@ -24,7 +24,7 @@ export function ButtonV1({
 }: ButtonV1Props) {
   if (varient == "primary") {
     const primaryButtonClasses = clsx(
-      "py-2 pl-2 pr-3 text-white bg-Primary flex gap-1.5 items-center transition-all duration-300 ease-in-out hover:bg-[#1A3E99] hover:-translate-y-px hover:shadow-lg",
+      "py-2 pl-2 pr-3 text-white bg-Dark flex gap-1.5 items-center transition-all duration-300 ease-in-out hover:bg-[#1A3E99] hover:-translate-y-px hover:shadow-lg",
       props.className
     )
 
@@ -50,7 +50,7 @@ export function ButtonV1({
     )
   } else if (varient == "outline") {
     const primaryButtonClasses = clsx(
-      "py-2 pl-2 pr-3 text-white border-2 border-Primary bg-white text-Primary flex gap-1.5 items-center transition-all duration-300 ease-in-out hover:text-white hover:border-white hover:bg-[#1A3E99] hover:shadow-lg",
+      "py-2 pl-2 pr-3 text-white border-2 border-Dark bg-white text-Dark flex gap-1.5 items-center transition-all duration-300 ease-in-out hover:text-white hover:border-white hover:bg-[#1A3E99] hover:shadow-lg",
       props.className
     )
 
