@@ -1,18 +1,21 @@
 import prisma from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { findUserData } from "../profile/(helper)"
+import { currentUser } from "@clerk/nextjs/server"
 
 export async function POST(req: Request) {
   try {
     const { name, code, totalSemister, userId, department } = await req.json() // Ensure valid payload
 
+    const user = await currentUser()
+    const role = user?.publicMetadata.role
+
     //check user authorization
-    const user = await findUserData(userId)
-    if (!user || user.departmentAdmin?.id !== department.id) {
+    if (role !== "department_admin" && role !== "super_user") {
       return NextResponse.json(
-        { message: "Access denied" },
+        { message: "You are not allowed to create a Subject" },
         {
-          status: 403
+          status: 401
         }
       )
     }

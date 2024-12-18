@@ -42,7 +42,7 @@ export const Menuitems = {
     { title: "faculty", url: "/faculty", icon: MdPeople }
   ],
   faculty: [
-    { title: "Dashboard", url: "/teacher", icon: MdSpaceDashboard },
+    { title: "Dashboard", url: "/faculty", icon: MdSpaceDashboard },
     { title: "Students", url: "/students", icon: FaUsers },
     { title: "Curriculum", url: "/curriculum", icon: FaBook },
     { title: "Subjects", url: "/subjects", icon: MdClass },

@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import "./globals.css"
 import { ClerkProvider } from "@clerk/nextjs"
 import { Toaster } from "react-hot-toast"
+import { QueryProvider } from "@/utils/QueryProvider"
 
 export const metadata: Metadata = {
   title: "Univera: your own one stop soltuion",
@@ -42,7 +43,9 @@ export default function RootLayout({
             }
           }}
         />
-        <ClerkProvider>{children}</ClerkProvider>
+        <QueryProvider>
+          <ClerkProvider>{children}</ClerkProvider>
+        </QueryProvider>
       </body>
     </html>
   )

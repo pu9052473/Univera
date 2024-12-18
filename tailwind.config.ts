@@ -51,6 +51,7 @@ const config: Config = {
           "5": "hsl(var(--chart-5))"
         },
         Primary: "#87CEEB",
+        Dark:"#112C71",
         Secondary: "#CECDF9",
         TextTwo: "#0A2353",
         ColorOne: "#56E1E9",

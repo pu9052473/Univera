@@ -24,7 +24,7 @@ model User {
   address    String?
   clerkId    String    @unique
   gender     String?
-  dob        DateTime?
+  dob        String?
   birthPlace String?
 
   roles               Role[]             @relation("UserToRole")

@@ -5,6 +5,7 @@ import {
   EditableInputField
 } from "@/components/(commnon)/EditableInputField"
 import Image from "next/image"
+import toast from "react-hot-toast"
 
 interface ProfileProps {
   clerkUser: any
@@ -74,13 +75,29 @@ const Profile: React.FC<ProfileProps> = ({
     name: string
     value: string
   }) => {
-    setFormData((prevData) => ({ ...prevData, [name]: value }))
-    setIsDirty(true)
+    const defaultValue = defaults[name]
+
+    const isEqual = (() => {
+      // Handle null/undefined
+      if (defaultValue === null || value === null) {
+        return defaultValue === value
+      }
+
+      // Handle number/string conversion
+      if (typeof defaultValue === "number" && typeof value === "string") {
+        return defaultValue.toString() === value
+      }
+
+      // Default case
+      return defaultValue === value
+    })()
+    //update form if the value is not equal
+    if (!isEqual) setFormData((prevData) => ({ ...prevData, [name]: value }))
+    setIsDirty(!isEqual)
   }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log("formData")
 
     if (!editingField) return
 
@@ -93,13 +110,13 @@ const Profile: React.FC<ProfileProps> = ({
       setIsDirty(false)
       setEditingField(null)
     } else {
-      console.log("No changes detected")
+      toast.error("No changes detected")
     }
   }
 
   return (
     <div
-      className="flex flex-col items-center w-full min-h-screen p-4 sm:p-10 
+      className="flex flex-col items-center w-full h-fit p-4 sm:p-10 
                  bg-white rounded-md
                  text-TextTwo transition-all duration-300"
     >
@@ -175,11 +192,6 @@ const Profile: React.FC<ProfileProps> = ({
                 isEditing={editingField === "name"}
                 setEditingField={setEditingField}
                 isDirty={isDirty}
-                className="bg-Secondary/10 text-TextTwo 
-                           border-2 border-ColorOne/30 
-                           rounded-xl p-3 
-                           focus:border-ColorThree 
-                           transition-all duration-300"
               />
             )}
             {fields.includes("phone") && (
@@ -193,11 +205,6 @@ const Profile: React.FC<ProfileProps> = ({
                 isEditing={editingField === "phone"}
                 setEditingField={setEditingField}
                 isDirty={isDirty}
-                className="bg-Secondary/10 text-TextTwo 
-                           border-2 border-ColorOne/30 
-                           rounded-xl p-3 
-                           focus:border-ColorThree 
-                           transition-all duration-300"
               />
             )}
             {fields.includes("email") && (
@@ -212,10 +219,7 @@ const Profile: React.FC<ProfileProps> = ({
                 disabled={true}
                 setEditingField={setEditingField}
                 isDirty={isDirty}
-                className="bg-Secondary/10 text-TextTwo/70 
-                           border-2 border-ColorOne/30 
-                           rounded-xl p-3 
-                           opacity-60 cursor-not-allowed"
+                className="cursor-not-allowed"
               />
             )}
             {fields.includes("address") && (
@@ -223,24 +227,46 @@ const Profile: React.FC<ProfileProps> = ({
                 key={"address"}
                 label={"Address"}
                 placeholder={"Enter your Address"}
-                name={"Adress"}
+                name={"address"}
                 value={formData["address"]}
                 onChange={handleChange}
                 isEditing={editingField === "address"}
                 setEditingField={setEditingField}
                 isDirty={isDirty}
-                className="bg-Secondary/10 text-TextTwo 
-                           border-2 border-ColorOne/30 
-                           rounded-xl p-3 
-                           focus:border-ColorThree 
-                           transition-all duration-300"
+              />
+            )}
+            {fields.includes("dob") && (
+              <EditableInputField
+                key={"dob"}
+                label={"Date of Birth"}
+                placeholder={"Enter your dob"}
+                name={"dob"}
+                type={"date"}
+                value={formData["dob"]}
+                onChange={handleChange}
+                isEditing={editingField === "dob"}
+                setEditingField={setEditingField}
+                isDirty={isDirty}
+              />
+            )}
+            {fields.includes("birthPlace") && (
+              <EditableInputField
+                key={"birthPlace"}
+                label={"Place of Birth"}
+                placeholder={"Enter your birthPlace"}
+                name={"birthPlace"}
+                value={formData["birthPlace"]}
+                onChange={handleChange}
+                isEditing={editingField === "birthPlace"}
+                setEditingField={setEditingField}
+                isDirty={isDirty}
               />
             )}
             {fields.includes("gender") && (
               <EditableDropdownInput
                 isEditing={editingField === "gender"}
                 setEditingField={setEditingField}
-                label="Select an Option"
+                label="Gender"
                 options={[
                   { value: "male", label: "Male" },
                   { value: "female", label: "Female" },
@@ -248,6 +274,7 @@ const Profile: React.FC<ProfileProps> = ({
                 ]}
                 value={formData["gender"]}
                 name="gender"
+                isDirty={isDirty}
                 onChange={handleDropdownChange}
                 placeholder="Choose one"
               />
