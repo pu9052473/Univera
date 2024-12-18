@@ -6,7 +6,7 @@
     "install-all": "npm install && npm run setup-husky",
     "setup-husky": "npx husky install && [ ! -f .husky/pre-commit ] && npx husky add .husky/pre-commit 'npx lint-staged' || echo 'pre-commit hook already exists' && [ ! -f .husky/commit-msg ] && npx husky add .husky/commit-msg 'npx --no-install commitlint --edit \"$1\"' || echo 'commit-msg hook already exists'",
     "dev": "next dev",
-    "server":"node server.js",
+    "server": "node server.js",
     "build": "prisma generate && next build",
     "start": "next start",
     "prepare": "husky install",

@@ -153,6 +153,7 @@ async function main() {
     }
   })
 
+<<<<<<< HEAD
   const dummyStudent = await prisma.student.create({
     data:{
       id:"user_2pWbVEq2ofULWoG6chkZCw0kwkw",
@@ -171,6 +172,8 @@ async function main() {
     }
   })
 
+=======
+>>>>>>> main
 }
 
 main()
