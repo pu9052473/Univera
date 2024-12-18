@@ -16,30 +16,33 @@ model Role {
 }
 
 model User {
-  id                  String             @id @default(uuid())
-  email               String             @unique
-  name                String
-  phone               String?
-  address             String?
-  clerkId             String             @unique
-  gender              String?
-  dob                 DateTime?
-  birthPlace          String?
-  createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @default(now())
-  announcement        Announcement[]
+  id         String    @id @default(uuid())
+  email      String    @unique
+  name       String
+  phone      String?
+  address    String?
+  clerkId    String    @unique
+  gender     String?
+  dob        String?
+  birthPlace String?
+
+  roles               Role[]             @relation("UserToRole")
   chatMessage         ChatMessage[]
   course              Course?
   departmentAdmin     Department?        @relation("AdminToDepartment")
   departmentPrincipal Department?        @relation("PrincipalToDepartment")
   event               Event[]
   faculty             Faculty?
+  announcement Announcement[]
   forumStudent        Forum[]            @relation("UserToForum")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
   forumParticipant    ForumParticipant[]
   nonTeachingStaff    NonTeachingStaff?
   student             Student?
   university          University?
-  roles               Role[]             @relation("UserToRole")
+
 }
 
 model University {
@@ -190,7 +193,7 @@ model Subject {
   departmentId Int
   universityId Int
   resultId     Int?
-  syllabus     Json[]
+  syllabus     Json[] //{title,link}
   forumTags    String[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @default(now())

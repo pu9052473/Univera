@@ -37,7 +37,7 @@ export default clerkMiddleware(async (authPromise, req) => {
         }
         //teacher role redirection
         if (role == "faculty" && req.nextUrl.pathname === "/") {
-          return NextResponse.redirect(new URL("/teacher", req.url))
+          return NextResponse.redirect(new URL("/faculty", req.url))
         }
 
         //teacher role redirection

@@ -78,10 +78,10 @@ async function main() {
   const dAdmin = await prisma.user.create({
     data:{
       phone: "9898989898",
-      id: "user_2q5BOONWDEW7dqa8bX1AI1EXKVP",
-      email: "departmentadmin_btech@karnavatiuniversity.edu.in",
+      id: "user_2q5KypapxytUXjrf2IPf8Ng7gGF",
+      email: "departmentadmin_engineering@karnavatiuniversity.edu.in",
       name: "Engineering Admin",
-      clerkId: "user_2q5BOONWDEW7dku578@karnavatiuniversity.edu.inqa8bX1AI1EXKVP",
+      clerkId: "user_2q5KypapxytUXjrf2IPf8Ng7gGF",
       roles: {
         connect: {
           id: 3
@@ -99,7 +99,7 @@ async function main() {
       adminId:dAdmin.clerkId
     }
   })
-  //create faculty
+  //create faculty user
   const dummyFacultyUser = await prisma.user.create({
     data:{
       id:"user_2pWbD30knEj1V0jeyFkim67Bo73",

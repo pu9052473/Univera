@@ -13,6 +13,7 @@ import {
   MdOutlineHealthAndSafety,
   MdPerson,
   MdPeople,
+  MdEditDocument,
   MdForum
 } from "react-icons/md"
 
@@ -37,12 +38,12 @@ export const Menuitems = {
   ],
   department_admin: [
     { title: "Dashborad", url: "/department_admin", icon: MdSpaceDashboard },
-    { title: "Course", url: "/courses", icon: BookCheckIcon },
+    { title: "Course", url: "/courses", icon: MdEditDocument },
     { title: "Subjects", url: "/subject", icon: MdClass },
     { title: "faculty", url: "/faculty", icon: MdPeople }
   ],
   faculty: [
-    { title: "Dashboard", url: "/teacher", icon: MdSpaceDashboard },
+    { title: "Dashboard", url: "/faculty", icon: MdSpaceDashboard },
     { title: "Students", url: "/students", icon: FaUsers },
     { title: "Curriculum", url: "/curriculum", icon: FaBook },
     { title: "Subjects", url: "/subjects", icon: MdClass },
@@ -61,7 +62,6 @@ export const Menuitems = {
 }
 
 import { IconType } from "react-icons"
-import { BookCheckIcon } from "lucide-react"
 
 export interface LinkItem {
   title: string

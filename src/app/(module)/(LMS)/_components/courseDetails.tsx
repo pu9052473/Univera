@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import { EditableInputField } from "@/components/(commnon)/EditableInputField"
+import DeleteButton from "@/components/(commnon)/DeleteButton"
 
 interface CourseDetailsProps {
   user: any
@@ -89,7 +90,19 @@ export const CourseDetials: React.FC<CourseDetailsProps> = ({
     })()
     setIsDirty(!isEqual)
   }
-
+  async function handleDeleteClick() {
+    try {
+      const res = await axios.delete(
+        `/api/courses/${courseId}?courseId=${courseId}`
+      )
+      if (res.status === 200) {
+        toast.success(res.data.message)
+        router.push(`/courses`)
+      }
+    } catch (error) {
+      toast.error("Internal server error")
+    }
+  }
   const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -237,6 +250,7 @@ export const CourseDetials: React.FC<CourseDetailsProps> = ({
               <Button type="submit" disabled={!isValid || isSubmitting}>
                 Update
               </Button>
+              <DeleteButton label="Delete" onDelete={handleDeleteClick} />
               {/* </Link> */}
             </div>
           </form>
