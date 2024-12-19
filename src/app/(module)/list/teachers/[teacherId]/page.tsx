@@ -1,9 +1,24 @@
 "use client"
-import Link from "next/link"
+import { TeacherForm } from "@/app/(module)/list/_components/forms/TeacherForm"
 import Left from "@/components/Icons/Left"
-import { TeacherForm } from "../../_components/forms/TeacherForm"
+import { useQuery } from "@tanstack/react-query"
+import Link from "next/link"
+import { useParams } from "next/navigation"
+import axios from "axios"
 
-export default function SubjectsPage() {
+async function GetUser(userId: string) {
+  const { data } = await axios.get(`/api/list/teacher/${userId}`)
+  return data.faculty
+}
+
+export default function EditTeacherPage() {
+  const { teacherId } = useParams()
+
+  const { data } = useQuery({
+    queryKey: ["user"],
+    queryFn: () => GetUser(teacherId as string),
+    enabled: !!teacherId
+  })
   return (
     <section className="mt-8 max-w-lg mx-auto flex flex-col">
       <div className="mt-8 flex">
@@ -17,10 +32,10 @@ export default function SubjectsPage() {
       </div>
       <div className="h-full w-full flex flex-col items-center justify-center">
         <h1 className="text-xl text-gray-500 font-bold uppercase mt-8">
-          Add fucalty to the course:
+          Edit faculty to the course:
         </h1>
         <div className="h-full w-full flex flex-col gap-2">
-          <TeacherForm data={null} />
+          <TeacherForm data={data} />
         </div>
       </div>
     </section>

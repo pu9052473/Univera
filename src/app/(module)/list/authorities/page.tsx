@@ -1,5 +1,4 @@
 "use client"
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import Pagination from "../_components/Pagination"
 import { role } from "@/lib/data"
@@ -11,8 +10,6 @@ import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import { useContext } from "react"
 import { UserContext } from "@/context/user"
-import DeleteButton from "@/components/(commnon)/DeleteButton"
-import toast from "react-hot-toast"
 
 type Teacher = {
   id: number
@@ -41,20 +38,11 @@ const fetchDepartment = async (dId: number) => {
 const TeacherListPage = () => {
   const { user } = useContext(UserContext)
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["department"],
     queryFn: () => fetchDepartment(user?.departmentAdmin.id),
     enabled: !!user?.departmentAdmin.id
   })
-  const deleteFaculty = async (id: string) => {
-    try {
-      const res = await axios.delete(`/api/list/teacher/${id}`)
-      toast.success(res.data.message)
-      refetch()
-    } catch (error) {
-      toast.error("Something went wrong")
-    }
-  }
 
   const renderRow = (item: Teacher) => (
     <tr
@@ -62,13 +50,6 @@ const TeacherListPage = () => {
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
     >
       <td className="flex items-center gap-4 p-4">
-        {/* <Image
-          src={item.photo}
-          alt=""
-          width={40}
-          height={40}
-          className="md:hidden xl:block w-10 h-10 rounded-full object-cover"
-        /> */}
         <div className="flex flex-col">
           <h3 className="font-semibold">{item.name}</h3>
           <p className="text-xs text-gray-500">{item?.email}</p>
@@ -76,16 +57,11 @@ const TeacherListPage = () => {
       </td>
       <td>
         <div className="flex items-center gap-2">
-          <Link href={`/list/teachers/${item.id}`}>
+          <Link href={`/list/authorities/${item.id}`}>
             <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
               <Image src="/view.png" alt="" width={16} height={16} />
             </button>
           </Link>
-          <DeleteButton
-            label={"Delete"}
-            onDelete={() => deleteFaculty(String(item.id))}
-            className="px-2 py-2"
-          />
         </div>
       </td>
     </tr>
@@ -95,17 +71,19 @@ const TeacherListPage = () => {
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       {/* TOP */}
       <div className="flex items-center justify-between">
-        <h1 className="hidden md:block text-lg font-semibold">All Teachers</h1>
+        <h1 className="hidden md:block text-lg font-semibold">
+          All Authorities
+        </h1>
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <TableSearch />
           <div className="flex items-center gap-4 self-end"></div>
         </div>
       </div>
       {role === "admin" && (
-        <Link href={`/list/teachers/create`}>
+        <Link href={`/list/authorities/create`}>
           <div className="flex justify-end mt-2">
             <button className="flex items-center justify-center rounded-lg bg-Primary p-2">
-              Add Teacher
+              Add Authorities
             </button>
             {/* <FormModal table="teacher" type="create"/> */}
           </div>

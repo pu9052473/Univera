@@ -112,17 +112,17 @@ export default function WorkForm({
             value={subjectOptions
               .filter((s) => selectedSubjectIds.includes(s.id))
               .map((s) => ({ value: s.id, label: s.name }))}
-            className="mt-1"
+            className=""
           />
         </div>
       </div>
 
       {/* Debugging Output (Optional) */}
-      <div className="mt-4">
+      {/* <div className="mt-4">
         <p>Selected Subject IDs: {JSON.stringify(selectedSubjectIds)}</p>
-      </div>
+      </div> */}
 
-      <div className="flex gap-4">
+      <div className="flex gap-4 mt-4">
         {/* Back Button */}
         <Button
           type="button"

@@ -27,7 +27,6 @@ export function SubjectForm({
   submitBtnId,
   submitBtnLabel
 }: SubjectFormProps) {
-  console.log("subject from SubjectForm: ", subject)
   const [subjectName, setSubjectName] = useState<string>(subject?.name ?? "")
   const [subjectCode, setSubjectCode] = useState<string>(subject?.code ?? "")
   const [credits, setCredits] = useState<number>(subject?.credits ?? 0)
@@ -64,7 +63,6 @@ export function SubjectForm({
           credits: Number(credits),
           semester: Number(semester)
         }
-
         const res = await axios.patch(
           `/api/subjects/${subject?.id}?subjectId=${subject?.id}`,
           { updatedSubject }

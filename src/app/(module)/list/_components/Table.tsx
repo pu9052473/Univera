@@ -19,7 +19,7 @@ const Table = ({
           ))}
         </tr>
       </thead>
-      <tbody>{data.map((item) => renderRow(item))}</tbody>
+      {data && <tbody>{data.map((item) => renderRow(item))}</tbody>}
     </table>
   )
 }

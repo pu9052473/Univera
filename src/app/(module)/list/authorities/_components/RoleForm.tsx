@@ -7,10 +7,9 @@ interface RoleFormProps {
   roles: Role[]
   selectedRoleIds: number[]
   setSelectedRoleIds: (n: number[]) => void
-  handleTeacherSubmit: (e: React.MouseEvent<HTMLButtonElement>) => void
+  handleTeacherSubmit: () => void
   position: string
   setPosition: (s: string) => void
-  submitBtnId: string
 }
 
 export default function RoleForm({
@@ -20,8 +19,7 @@ export default function RoleForm({
   setSelectedRoleIds,
   handleTeacherSubmit,
   position,
-  setPosition,
-  submitBtnId
+  setPosition
 }: RoleFormProps) {
   const handleRoleSelection = (roleId: number) => {
     if (selectedRoleIds.includes(roleId)) {
@@ -33,15 +31,8 @@ export default function RoleForm({
     }
   }
 
-  const roleOptions = roles.filter(
-    (r) =>
-      r.rolename === "faculty" ||
-      r.rolename === "coordinator" ||
-      r.rolename === "lab_assitant"
-  )
-
   return (
-    <div>
+    <form>
       <div>
         <label className="text-sm">Position</label>
         <input
@@ -52,9 +43,9 @@ export default function RoleForm({
         />
 
         <label className="text-sm">Role</label>
-        {roleOptions &&
-          roleOptions.length > 0 &&
-          roleOptions.map((r: Role) => (
+        {roles &&
+          roles.length > 0 &&
+          roles.map((r: Role) => (
             <div className="flex gap-4" key={r.id}>
               <label htmlFor={r.rolename}>{r.rolename}</label>
               <input
@@ -74,7 +65,7 @@ export default function RoleForm({
         <Button
           type="button"
           className="flex justify-end"
-          onClick={() => setStep(2)}
+          onClick={() => setStep(1)}
         >
           Back
         </Button>
@@ -82,15 +73,12 @@ export default function RoleForm({
         {/* Next Button */}
         <Button
           type="button"
-          id={submitBtnId}
           className="flex justify-end"
           onClick={handleTeacherSubmit}
         >
           Submit
         </Button>
-
-        {/* delete button */}
       </div>
-    </div>
+    </form>
   )
 }
