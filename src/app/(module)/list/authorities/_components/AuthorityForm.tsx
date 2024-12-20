@@ -6,12 +6,14 @@ import axios from "axios"
 import { UserContext } from "@/context/user"
 import { useQuery } from "@tanstack/react-query"
 import { ButtonV1 } from "@/components/(commnon)/ButtonV1"
+import { Button } from "@/components/ui/button"
 import { RotateCcw } from "lucide-react"
 import toast from "react-hot-toast"
 import { useRouter } from "next/navigation"
-import { User } from "@prisma/client"
+import { Prisma, User } from "@prisma/client"
 import UserForm from "./UserForm"
 import RoleForm from "./RoleForm"
+import WorkForm from "./WorkForm"
 
 const fetchCourses = async (departmentId: string, userId: string) => {
   const { data } = await axios.get(`/api/courses`, {
@@ -24,65 +26,95 @@ async function fetchRoles() {
   return data.roles
 }
 
-interface TeacherFormProps {
-  data: User | null
+type UserWithRelations = Prisma.UserGetPayload<{
+  include: {
+    Department: true
+    roles: true
+    course: true
+  }
+}>
+interface AuthorityFormProps {
+  data: UserWithRelations | null
 }
-export function AuthorityForm({ data }: TeacherFormProps) {
+export function AuthorityForm({ data }: AuthorityFormProps) {
   const router = useRouter()
   const [fName, setFName] = useState<string>("")
   const [fEmail, setFEmail] = useState<string>("")
   const [fPassword, setFPassword] = useState<string>("")
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
-  // const [selectedSubjectIds, setSelectedSubjectIds] = useState<number[]>([])
   const [roleIds, setRoleIds] = useState<number[]>([])
   const [position, setPosition] = useState<string>("")
-
+  console.log(data)
   const [step, setStep] = useState(1)
   const { user } = useContext(UserContext)
   useEffect(() => {
     if (data) {
       setFName(data?.name)
       setFEmail(data?.email)
-      setSelectedCourse(data?.faculty.courseId)
+      setSelectedCourse(data.course?.id.toString() || "")
       setRoleIds(data?.roles.map((r) => r.id))
-      setPosition(data?.faculty.position)
     }
   }, [data])
 
   const {
-    // data: courses,
+    data: courses,
     error: coursesError,
-    refetch: refetchCourses
+    refetch: refetchCourses,
+    isRefetching: isCourseRefetching
   } = useQuery({
     queryKey: ["courses", user?.departmentAdmin.id, user?.id],
     queryFn: () => fetchCourses(user?.departmentAdmin.id, user?.id as string),
     enabled: !!user?.departmentAdmin?.id && !!user?.id
   })
+
   const {
     data: roles,
     error: rolesError,
-    refetch: rolesRefetch
+    refetch: rolesRefetch,
+    isRefetching: isRolesRefetching
   } = useQuery({
     queryKey: ["roles"],
     queryFn: fetchRoles,
     enabled: true
   })
 
-  async function handleSubmit() {
+  async function handleSubmit(e: React.MouseEvent<HTMLButtonElement>) {
+    const btnId = e.currentTarget.id
     try {
-      const res = await axios.post("/api/list/teacher/create", {
-        name: fName,
-        email: fEmail,
-        password: fPassword,
-        roleIds,
-        position,
-        courseId: selectedCourse,
-        departmentId: user?.departmentAdmin.id,
-        universityId: user?.departmentAdmin.universityId
-      })
-      if (res.status == 201) {
-        toast.success("Faculty Created successfully")
-        router.push("/list/teachers")
+      if (btnId == "save-authority") {
+        const res = await axios.post("/api/list/authorities/create", {
+          name: fName,
+          email: fEmail,
+          password: fPassword,
+          roleIds,
+          position,
+          courseId: selectedCourse,
+          departmentId: user?.departmentAdmin.id,
+          universityId: user?.departmentAdmin.universityId
+        })
+        if (res.status == 201) {
+          toast.success("Faculty Created successfully")
+          router.push("/list/authorities")
+        }
+      } else if (btnId == "update-authority") {
+        const res = await axios.patch(
+          `/api/list/authorities/${data?.clerkId}`,
+          {
+            name: fName,
+            email: fEmail,
+            password: fPassword,
+            roleIds,
+            position,
+            courseId: selectedCourse,
+            departmentId: user?.departmentAdmin.id,
+            universityId: user?.departmentAdmin.universityId
+          }
+        )
+        console.log("res: ", res)
+        if (res.status == 200) {
+          toast.success(res.data.message)
+          router.push("/list/authorities")
+        }
       }
     } catch (error) {
       toast.error("Something went wrong")
@@ -127,7 +159,7 @@ export function AuthorityForm({ data }: TeacherFormProps) {
     <div className="mt-8 max-w-2xl">
       {step == 1 && (
         <UserForm
-          isEditable={!data}
+          isEditing={!!data}
           setStep={setStep}
           name={fName}
           setName={setFName}
@@ -139,15 +171,53 @@ export function AuthorityForm({ data }: TeacherFormProps) {
       )}
       {step == 2 && (
         <RoleForm
-          handleTeacherSubmit={handleSubmit}
           selectedRoleIds={roleIds}
           setSelectedRoleIds={setRoleIds}
           roles={roles}
           setStep={setStep}
-          position={position}
-          setPosition={setPosition}
         />
       )}
+      {step == 2 && roleIds.includes(11) && (
+        <WorkForm
+          courses={courses}
+          selectedCourse={selectedCourse}
+          setSelectedCourse={setSelectedCourse}
+          departmentName={data?.Department?.name ?? user?.departmentAdmin.name}
+          departmentId={user?.departmentAdmin.id as number}
+        />
+      )}
+      <div className="flex gap-4 mt-4">
+        {step == 1 && (
+          <Button
+            type="button"
+            className="flex justify-end"
+            onClick={() => {
+              setStep(2)
+            }}
+          >
+            Next
+          </Button>
+        )}
+        {step == 2 && (
+          <div className="flex gap-4 w-full">
+            <Button
+              type="button"
+              className="flex justify-end"
+              onClick={() => setStep(1)}
+            >
+              Back
+            </Button>
+            <Button
+              id={data ? "update-authority" : "save-authority"}
+              type="button"
+              className="flex justify-end"
+              onClick={handleSubmit}
+            >
+              Submit
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

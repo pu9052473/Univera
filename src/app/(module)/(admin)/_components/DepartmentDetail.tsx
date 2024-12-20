@@ -81,7 +81,8 @@ function CreateAdminForm({ departmentId }: CreateAdminFormProps) {
         phone,
         password,
         role,
-        roleIds: [3]
+        roleIds: [3],
+        departmentId
       })
       if (!DAdmin) {
         throw new Error("Error creating user")

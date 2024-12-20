@@ -1,25 +1,23 @@
 "use client"
-import { TeacherForm } from "@/app/(module)/list/_components/forms/TeacherForm"
 import Left from "@/components/Icons/Left"
 import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import axios from "axios"
+import { AuthorityForm } from "../_components/AuthorityForm"
 
 async function GetUser(userId: string) {
-  const user = await axios.get("/api/profile", {
-    params: { userId }
-  })
-  return user.data.User
+  const { data } = await axios.get(`/api/list/authorities/${userId}`)
+  return data.authority
 }
 
 export default function EditTeacherPage() {
-  const { teacherId } = useParams()
+  const { authorityId } = useParams()
 
   const { data } = useQuery({
     queryKey: ["user"],
-    queryFn: () => GetUser(teacherId as string),
-    enabled: !!teacherId
+    queryFn: () => GetUser(authorityId as string),
+    enabled: !!authorityId
   })
   return (
     <section className="mt-8 max-w-lg mx-auto flex flex-col">
@@ -37,7 +35,7 @@ export default function EditTeacherPage() {
           Edit Authorities:
         </h1>
         <div className="h-full w-full flex flex-col gap-2">
-          <TeacherForm data={data} />
+          <AuthorityForm data={data} />
         </div>
       </div>
     </section>

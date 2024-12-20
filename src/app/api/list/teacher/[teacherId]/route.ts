@@ -76,7 +76,7 @@ export async function PATCH(req: Request, context: any) {
       data: {
         position,
         subject: {
-          connect: subjectIds.map((id: number) => ({ id }))
+          set: subjectIds.map((id: number) => ({ id })) // Ensures only specified subjects are connected
         }
       }
     })

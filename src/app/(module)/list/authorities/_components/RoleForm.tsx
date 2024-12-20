@@ -1,5 +1,4 @@
 import React from "react"
-import { Button } from "@/components/ui/button"
 import { Role } from "@prisma/client"
 
 interface RoleFormProps {
@@ -7,19 +6,12 @@ interface RoleFormProps {
   roles: Role[]
   selectedRoleIds: number[]
   setSelectedRoleIds: (n: number[]) => void
-  handleTeacherSubmit: () => void
-  position: string
-  setPosition: (s: string) => void
 }
 
 export default function RoleForm({
-  setStep,
   roles,
   selectedRoleIds,
-  setSelectedRoleIds,
-  handleTeacherSubmit,
-  position,
-  setPosition
+  setSelectedRoleIds
 }: RoleFormProps) {
   const handleRoleSelection = (roleId: number) => {
     if (selectedRoleIds.includes(roleId)) {
@@ -30,22 +22,19 @@ export default function RoleForm({
       setSelectedRoleIds([...selectedRoleIds, roleId])
     }
   }
-
+  const roleOptions = roles.filter(
+    (r) =>
+      r.rolename === "principal" ||
+      r.rolename === "head_of_department" ||
+      r.rolename === "dean"
+  )
   return (
     <form>
       <div>
-        <label className="text-sm">Position</label>
-        <input
-          value={position ?? ""}
-          onChange={(e) => setPosition(e.target.value)}
-          className="placeholder-transparent h-10 w-full bg-gray-200 rounded-lg border-gray-300 text-gray-900 p-1 mb-4"
-          type="text"
-        />
-
         <label className="text-sm">Role</label>
-        {roles &&
-          roles.length > 0 &&
-          roles.map((r: Role) => (
+        {roleOptions &&
+          roleOptions.length > 0 &&
+          roleOptions.map((r: Role) => (
             <div className="flex gap-4" key={r.id}>
               <label htmlFor={r.rolename}>{r.rolename}</label>
               <input
@@ -58,26 +47,6 @@ export default function RoleForm({
               />
             </div>
           ))}
-      </div>
-
-      <div className="flex gap-4 mt-4">
-        {/* Back Button */}
-        <Button
-          type="button"
-          className="flex justify-end"
-          onClick={() => setStep(1)}
-        >
-          Back
-        </Button>
-
-        {/* Next Button */}
-        <Button
-          type="button"
-          className="flex justify-end"
-          onClick={handleTeacherSubmit}
-        >
-          Submit
-        </Button>
       </div>
     </form>
   )

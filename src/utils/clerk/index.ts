@@ -8,7 +8,8 @@ export async function createUser({
   password,
   phone,
   role,
-  roleIds
+  roleIds,
+  departmentId
 }: {
   name: string
   phone: string
@@ -16,6 +17,7 @@ export async function createUser({
   password: string
   role: string
   roleIds: number[]
+  departmentId?: number
 }) {
   console.log(
     "name,email,password,phone,role,roleIds:",
@@ -35,7 +37,9 @@ export async function createUser({
 
     let user
 
-    if (existingUsers.data.length == 0) {
+    if (existingUsers.data.length > 0) {
+      user = existingUsers.data[0]
+    } else {
       console.log(existingUsers.data)
       user = await clerkclient.users.createUser({
         firstName: name,
@@ -48,27 +52,50 @@ export async function createUser({
       if (!user) {
         throw new Error("Error creating user")
       }
-    } else {
-      user = existingUsers.data[0]
-    }
-    //create prisma user
-    const prismaUser = await prisma.user.create({
-      data: {
-        id: user.id,
-        clerkId: user.id,
-        name,
-        email,
-        phone,
-        roles: {
-          connect: roleIds.map((id) => ({ id })) // Connect all roles
-        }
-      }
-    })
-    if (!prismaUser) {
-      throw new Error("Error creating user")
     }
 
-    return prismaUser
+    const existingPrismaUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      include: { roles: true }
+    })
+
+    if (!existingPrismaUser) {
+      //create prisma user
+      const prismaUser = await prisma.user.create({
+        data: {
+          id: user.id,
+          clerkId: user.id,
+          name,
+          email,
+          phone,
+          departmentId: departmentId ?? null,
+          roles: {
+            connect: roleIds.map((id) => ({ id })) // Connect all roles
+          }
+        }
+      })
+      if (!prismaUser) {
+        throw new Error("Error creating user")
+      }
+
+      return prismaUser
+    } else {
+      // Update existing Prisma user
+      const updatedPrismaUser = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          roles: {
+            connect: roleIds.map((id) => ({ id }))
+          }
+        }
+      })
+
+      if (!updatedPrismaUser) {
+        throw new Error("Error updating user roles")
+      }
+
+      return updatedPrismaUser
+    }
   } catch (error) {
     // console.error('Clerk error:', error.errors);
     console.log("Error creating user @utils/clerk", error)
@@ -116,8 +143,8 @@ export async function assignDean(departmentId: number, userId: string) {
     }
     const department = await prisma.department.update({
       where: { id: departmentId },
-      data: { principalId: userId },
-      include: { principal: true }
+      data: { deanId: userId },
+      include: { Dean: true }
     })
     return department
   } catch (error) {

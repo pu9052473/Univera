@@ -1,7 +1,6 @@
 "use client"
 
 import Pagination from "../_components/Pagination"
-import { role } from "@/lib/data"
 import Image from "next/image"
 import Link from "next/link"
 import TableSearch from "../_components/TableSearch"
@@ -10,6 +9,9 @@ import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import { useContext } from "react"
 import { UserContext } from "@/context/user"
+import { Role } from "@prisma/client"
+import DeleteButton from "@/components/(commnon)/DeleteButton"
+import toast from "react-hot-toast"
 
 type Teacher = {
   id: number
@@ -17,6 +19,7 @@ type Teacher = {
   email?: string
   subjects: string[]
   course: string[]
+  roles: Role[]
 }
 
 const columns = [
@@ -27,22 +30,43 @@ const columns = [
 ]
 
 const fetchDepartment = async (dId: number) => {
-  const department = await axios.get("/api/list/teacher", {
+  const department = await axios.get("/api/list/authorities", {
     params: {
       departmentId: dId
     }
   })
-  return department.data.faculties
+  return department.data.authorities
 }
 
 const TeacherListPage = () => {
   const { user } = useContext(UserContext)
-
-  const { data, isLoading } = useQuery({
+  const userRoles = user?.roles.map((r: Role) => r.id)
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["department"],
     queryFn: () => fetchDepartment(user?.departmentAdmin.id),
     enabled: !!user?.departmentAdmin.id
   })
+  const deleteAuthorityById = async (id: string, roles: Role[]) => {
+    try {
+      const rolesIds = roles.map((r) => r.id)
+      const res = await axios.delete(`/api/list/authorities/${id}`, {
+        data: { roleIds: rolesIds }
+      })
+      console.log(res.status)
+      if (res.status == 409) {
+        toast.error(res.data.message)
+      } else if (res.status == 200) {
+        toast.success(res.data.message)
+      }
+      refetch()
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message || "Something went wrong")
+      } else {
+        toast.error("An unexpected error occurred")
+      }
+    }
+  }
 
   const renderRow = (item: Teacher) => (
     <tr
@@ -62,6 +86,11 @@ const TeacherListPage = () => {
               <Image src="/view.png" alt="" width={16} height={16} />
             </button>
           </Link>
+          <DeleteButton
+            label={"Delete"}
+            onDelete={() => deleteAuthorityById(String(item.id), item.roles)}
+            className="px-2 py-2"
+          />
         </div>
       </td>
     </tr>
@@ -79,7 +108,7 @@ const TeacherListPage = () => {
           <div className="flex items-center gap-4 self-end"></div>
         </div>
       </div>
-      {role === "admin" && (
+      {userRoles && userRoles.includes(3) && (
         <Link href={`/list/authorities/create`}>
           <div className="flex justify-end mt-2">
             <button className="flex items-center justify-center rounded-lg bg-Primary p-2">
