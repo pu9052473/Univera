@@ -96,7 +96,7 @@ export async function createUser({
 
       return updatedPrismaUser
     }
-  } catch (error) {
+  } catch (error: any) {
     // console.error('Clerk error:', error.errors);
     console.log("Error creating user @utils/clerk", error)
   }

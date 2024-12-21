@@ -161,7 +161,7 @@ export async function DELETE(req: Request, context: any) {
     if (roleIds.includes(12)) {
       //dean role
       await prisma.department.update({
-        where: { principalId: authorityId },
+        where: { deanId: authorityId },
         data: {
           deanId: null
         }

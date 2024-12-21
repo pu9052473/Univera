@@ -13,6 +13,9 @@ import { useContext } from "react"
 import { UserContext } from "@/context/user"
 import DeleteButton from "@/components/(commnon)/DeleteButton"
 import toast from "react-hot-toast"
+import { ButtonV1 } from "@/components/(commnon)/ButtonV1"
+import { RotateCcw } from "lucide-react"
+import { CoursesSkeleton } from "@/components/(commnon)/Skeleton"
 
 type Teacher = {
   id: number
@@ -41,7 +44,7 @@ const fetchDepartment = async (dId: number) => {
 const TeacherListPage = () => {
   const { user } = useContext(UserContext)
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, error, isLoading, refetch } = useQuery({
     queryKey: ["department"],
     queryFn: () => fetchDepartment(user?.departmentAdmin.id),
     enabled: !!user?.departmentAdmin.id
@@ -54,6 +57,21 @@ const TeacherListPage = () => {
     } catch (error) {
       toast.error("Something went wrong")
     }
+  }
+  if (isLoading) {
+    return <CoursesSkeleton />
+  }
+
+  if (error) {
+    return (
+      <div className="text-red-500">
+        <p>Failed to load courses. Please try again later.</p>
+        <p className="text-sm text-gray-500">
+          {error?.message || "An unexpected error occurred."}
+        </p>
+        <ButtonV1 icon={RotateCcw} label="Retry" onClick={() => refetch()} />
+      </div>
+    )
   }
 
   const renderRow = (item: Teacher) => (

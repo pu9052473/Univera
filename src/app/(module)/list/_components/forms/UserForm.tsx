@@ -46,16 +46,20 @@ export default function UserForm({
         }}
       />
 
-      <label className="text-sm">Password</label>
-      <input
-        disabled={!isEditable}
-        value={password}
-        className="placeholder-transparent h-10 w-full bg-gray-200 rounded-lg border-gray-300 text-gray-900 p-1 mb-4"
-        type="text"
-        onChange={(e) => {
-          setPassword(e.target.value)
-        }}
-      />
+      {isEditable && (
+        <>
+          <label className="text-sm">Password</label>
+          <input
+            disabled={!isEditable}
+            value={password}
+            className="placeholder-transparent h-10 w-full bg-gray-200 rounded-lg border-gray-300 text-gray-900 p-1 mb-4"
+            type="text"
+            onChange={(e) => {
+              setPassword(e.target.value)
+            }}
+          />
+        </>
+      )}
 
       <Button
         type="button"

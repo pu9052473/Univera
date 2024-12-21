@@ -71,7 +71,7 @@ export async function POST(req: Request) {
       departmentId
     })
     if (!user) {
-      throw new Error("Error while creating faculty")
+      throw new Error("Error while creating authority")
     }
 
     //checks for principal

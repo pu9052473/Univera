@@ -7,6 +7,8 @@ import { Department } from "@prisma/client"
 import toast from "react-hot-toast"
 import { useRouter } from "next/navigation"
 import { Subject } from "@prisma/client"
+import Skeleton from "react-loading-skeleton"
+import "react-loading-skeleton/dist/skeleton.css" // Import default styles
 
 interface SubjectFormProps {
   courseName: string | null | undefined
@@ -91,14 +93,19 @@ export function SubjectForm({
             className="placeholder-transparent h-10 w-full bg-gray-200 rounded-lg border-gray-300 text-gray-900 p-1 mb-4"
             type="text"
           />
-
-          <label className="text-sm">Course Name</label>
-          <input
-            disabled
-            value={courseName ?? ""}
-            className="placeholder-transparent h-10 w-full bg-gray-200 rounded-lg border-gray-300 text-gray-900 p-1 mb-4"
-            type="text"
-          />
+          {/* {courseName ? (
+            <Skeleton height={40} width="60%" />
+          ) : ( */}
+          <>
+            <label className="text-sm">Course Name</label>
+            <input
+              disabled
+              value={courseName ?? "fetching course.."}
+              className="placeholder-transparent h-10 w-full bg-gray-200 rounded-lg border-gray-300 text-gray-900 p-1 mb-4"
+              type="text"
+            />
+          </>
+          {/* )} */}
 
           <label className="text-sm">Subject name</label>
           <input
