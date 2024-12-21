@@ -16,33 +16,36 @@ model Role {
 }
 
 model User {
-  id         String    @id @default(uuid())
-  email      String    @unique
-  name       String
-  phone      String?
-  address    String?
-  clerkId    String    @unique
-  gender     String?
-  dob        String?
-  birthPlace String?
+  id           String  @id @default(uuid())
+  email        String  @unique
+  name         String
+  phone        String?
+  address      String?
+  clerkId      String  @unique
+  gender       String?
+  dob          String?
+  birthPlace   String?
+  departmentId Int?
 
-  roles               Role[]             @relation("UserToRole")
+  roles               Role[]         @relation("UserToRole")
   chatMessage         ChatMessage[]
   course              Course?
-  departmentAdmin     Department?        @relation("AdminToDepartment")
-  departmentPrincipal Department?        @relation("PrincipalToDepartment")
+  departmentAdmin     Department?    @relation("AdminToDepartment")
+  departmentPrincipal Department?    @relation("PrincipalToDepartment")
+  departmentDean      Department?    @relation("DeanToDepartment")
   event               Event[]
   faculty             Faculty?
-  announcement Announcement[]
-  forumStudent        Forum[]            @relation("UserToForum")
+  announcement        Announcement[]
+  forumStudent        Forum[]        @relation("UserToForum")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  forumParticipant    ForumParticipant[]
-  nonTeachingStaff    NonTeachingStaff?
-  student             Student?
-  university          University?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @default(now())
+  forumParticipant ForumParticipant[]
+  nonTeachingStaff NonTeachingStaff?
+  student          Student?
+  university       University?
 
+  Department Department? @relation(fields: [departmentId], references: [id])
 }
 
 model University {
@@ -136,6 +139,7 @@ model Department {
   name             String
   code             String             @unique
   principalId      String?            @unique
+  deanId           String?            @unique
   universityId     Int
   adminId          String?            @unique
   createdAt        DateTime           @default(now())
@@ -146,6 +150,7 @@ model Department {
   courses          Course[]
   admin            User?              @relation("AdminToDepartment", fields: [adminId], references: [clerkId])
   principal        User?              @relation("PrincipalToDepartment", fields: [principalId], references: [clerkId])
+  Dean             User?              @relation("DeanToDepartment", fields: [deanId], references: [clerkId])
   university       University         @relation(fields: [universityId], references: [id])
   event            Event[]
   exam             Exam[]
@@ -156,6 +161,7 @@ model Department {
   students         Student[]
   subjects         Subject[]
   timeTable        TimeTable[]
+  User             User[]
 }
 
 model Course {
