@@ -33,10 +33,10 @@ export async function GET(req: Request, context: any) {
     )
   } catch (error) {
     console.log(
-      `Error while fetching subjects @api/subjects/[subjectId] ${error}`
+      `Error while updating subjects @api/subjects/[subjectId] ${error}`
     )
     return NextResponse.json(
-      { message: "Error fetching subject" },
+      { message: "Error updating subject" },
       {
         status: 500
       }

@@ -10,11 +10,14 @@ async function main() {
       { rolename: "super_user" },
       { rolename: "department_admin" },
       { rolename: "faculty" },
-      { rolename: "assistant_professor" },
+      { rolename: "coordinator" },
+      { rolename: "lab_assitant" },
       { rolename: "student" },
       { rolename: "non_teaching_staff" },
       { rolename: "non_teaching_staff_admin" },
-      { rolename: "principal" }
+      { rolename: "principal" },
+      { rolename: "head_of_department" },
+      { rolename: "dean" }
     ]
   })
 
@@ -44,6 +47,22 @@ async function main() {
       roles: {
         connect: {
           id: 1
+        }
+      }
+    }
+  })
+
+  // Create a student user
+  const studentUser = await prisma.user.create({
+    data: {
+      phone: "9898989898",
+      id: "user_2pWbVEq2ofULWoG6chkZCw0kwkw",
+      email: "dev-student1@karnavatiuniversity.edu.in",
+      name: "student1",
+      clerkId: "user_2pWbVEq2ofULWoG6chkZCw0kwkw",
+      roles: {
+        connect: {
+          id: 6
         }
       }
     }
@@ -114,6 +133,7 @@ async function main() {
       name:"Engineering Mathematics 1",
       code:"2ET100301T",
       credits:3,
+      departmentId:1,
       semester:1,
       courseId:1,
       universityId:1,
@@ -137,6 +157,23 @@ async function main() {
     }
   })
 
+  const dummyStudent = await prisma.student.create({
+    data:{
+      id:"user_2pWbVEq2ofULWoG6chkZCw0kwkw",
+      clerkId:"user_2pWbVEq2ofULWoG6chkZCw0kwkw",
+      prn:"1234567890",  
+      year:2,
+      semister:1,
+      guardianEmail:"gardianstudent1@gmail.com",
+      gaurdianPhone:"7894567898",
+      rollNo:1,
+      documents:[],
+      mentorId:dummyFaculty.clerkId,
+      departmentId:1,
+      courseId:1,
+      universityId:1,
+    }
+  })
 }
 
 main()

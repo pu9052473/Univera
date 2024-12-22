@@ -35,6 +35,9 @@ export async function POST(req: Request) {
         departmentId: Number(department.id)
       }
     })
+    if (!course) {
+      throw new Error("Error while creating course")
+    }
 
     return NextResponse.json({ message: "Course created", course })
   } catch (error) {

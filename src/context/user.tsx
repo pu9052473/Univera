@@ -1,5 +1,11 @@
 "use client"
-import React, { createContext, useReducer, useEffect, useMemo } from "react"
+import React, {
+  createContext,
+  useReducer,
+  useEffect,
+  useMemo,
+  useState
+} from "react"
 import { useUser } from "@clerk/nextjs"
 import { useQuery } from "@tanstack/react-query"
 import { RotateCcw } from "lucide-react"
@@ -34,8 +40,13 @@ const UserReducer = (
 }
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
+  const [isClient, setIsClient] = useState(false)
   const [state, dispatch] = useReducer(UserReducer, null)
   const { user } = useUser()
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const fetchUserData = async () => {
     if (user?.publicMetadata.role && user?.id) {
@@ -75,7 +86,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     () => ({ user: state, dispatch }),
     [state, dispatch]
   )
-
+  if (!isClient) return null // Avoid rendering on the server
   if (isLoading) return <div>Loading...</div>
 
   if (fetchError)

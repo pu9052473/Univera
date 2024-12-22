@@ -4,7 +4,8 @@ import {
   FaRegCalendarAlt,
   FaBullhorn,
   FaBook,
-  FaBuilding
+  FaBuilding,
+  FaUserTie
 } from "react-icons/fa"
 import {
   MdSpaceDashboard,
@@ -13,7 +14,8 @@ import {
   MdOutlineHealthAndSafety,
   MdPerson,
   MdPeople,
-  MdEditDocument
+  MdEditDocument,
+  MdForum
 } from "react-icons/md"
 
 export const Menuitems = {
@@ -39,7 +41,9 @@ export const Menuitems = {
     { title: "Dashborad", url: "/department_admin", icon: MdSpaceDashboard },
     { title: "Course", url: "/courses", icon: MdEditDocument },
     { title: "Subjects", url: "/subject", icon: MdClass },
-    { title: "faculty", url: "/faculty", icon: MdPeople }
+    { title: "Authorities", url: "/list/authorities", icon: FaUserTie },
+    { title: "Faculty", url: "/list/teachers", icon: MdPeople },
+    { title: "Students", url: "/list/students", icon: MdPeople }
   ],
   faculty: [
     { title: "Dashboard", url: "/faculty", icon: MdSpaceDashboard },
@@ -47,7 +51,16 @@ export const Menuitems = {
     { title: "Curriculum", url: "/curriculum", icon: FaBook },
     { title: "Subjects", url: "/subjects", icon: MdClass },
     { title: "Events", url: "/events", icon: FaRegCalendarAlt },
-    { title: "Announcement", url: "/announcements", icon: FaBullhorn }
+    { title: "Announcement", url: "/announcements", icon: FaBullhorn },
+    { title: "Forums", url: "/forum", icon: MdForum }
+  ],
+  student: [
+    { title: "Dashboard", url: "/student", icon: MdSpaceDashboard },
+    { title: "Curriculum", url: "/curriculum", icon: FaBook },
+    { title: "Subjects", url: "/subjects", icon: MdClass },
+    { title: "Events", url: "/events", icon: FaRegCalendarAlt },
+    { title: "Announcement", url: "/announcements", icon: FaBullhorn },
+    { title: "Forums", url: "/forum", icon: MdForum }
   ]
 }
 
