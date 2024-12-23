@@ -1,4 +1,3 @@
-//post route for teacher
 import { NextResponse } from "next/server"
 import {
   createUser,
@@ -8,13 +7,6 @@ import {
 } from "@/utils/clerk"
 import prisma from "@/lib/prisma"
 import { currentUser } from "@clerk/nextjs/server"
-
-const getRoleFromRoleIds = (roleIds: number[]): string => {
-  if (roleIds.includes(11)) return "head_of_department"
-  if (roleIds.includes(10)) return "principal"
-  if (roleIds.includes(12)) return "dean"
-  return "unknown" // Default role if no match
-}
 
 export async function POST(req: Request) {
   try {
@@ -65,7 +57,7 @@ export async function POST(req: Request) {
       name: name,
       email: email,
       password: password,
-      role: getRoleFromRoleIds(roleIds as Array<number>),
+      role: "authority",
       roleIds: roleIds as Array<number>,
       phone: "",
       departmentId

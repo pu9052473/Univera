@@ -9,14 +9,6 @@ import {
 import prisma from "@/lib/prisma"
 import { currentUser } from "@clerk/nextjs/server"
 
-const getRoleFromRoleIds = (roleIds: number[]): string => {
-  if (roleIds.includes(10)) return "head_of_department"
-  if (roleIds.includes(9)) return "principal"
-  if (roleIds.includes(11)) return "dean"
-  if (roleIds.includes(4)) return "faculty"
-  return "unknown" // Default role if no match
-}
-
 export async function POST(req: Request) {
   try {
     const {
@@ -61,7 +53,7 @@ export async function POST(req: Request) {
       name: name,
       email: email,
       password: password,
-      role: getRoleFromRoleIds(roleIds as Array<number>),
+      role: "faculty",
       roleIds: roleIds as Array<number>,
       phone: "",
       departmentId: Number(departmentId)
