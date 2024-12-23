@@ -5,7 +5,12 @@ import {
 } from "@clerk/nextjs/server"
 import { NextRequest, NextResponse } from "next/server"
 
-const publicRoutes = ["/api/webhook/register", "/sign-in(.*)", "/sign-up(.*)"]
+const publicRoutes = [
+  "/api/webhook/register",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/api/list/teacher/[teacherId]"
+]
 
 const isPublicRoutes = createRouteMatcher(publicRoutes)
 
@@ -35,9 +40,14 @@ export default clerkMiddleware(async (authPromise, req) => {
         if (role == "department_admin" && req.nextUrl.pathname === "/") {
           return NextResponse.redirect(new URL("/department_admin", req.url))
         }
+
         //teacher role redirection
         if (role == "faculty" && req.nextUrl.pathname === "/") {
-          return NextResponse.redirect(new URL("/faculty", req.url))
+          return NextResponse.redirect(new URL("/dashboard", req.url))
+        }
+
+        if (role == "authority" && req.nextUrl.pathname === "/") {
+          return NextResponse.redirect(new URL("/dashboard", req.url))
         }
 
         //teacher role redirection
@@ -46,12 +56,12 @@ export default clerkMiddleware(async (authPromise, req) => {
         }
 
         //prevent non admin user to go to admin paths
-        // if (
-        //   role !== "university_admin" &&
-        //   req.nextUrl.pathname.startsWith("/admin")
-        // ) {
-        //   return NextResponse.redirect(new URL("/", req.url))
-        // }
+        if (
+          role !== "university_admin" &&
+          req.nextUrl.pathname.startsWith("/admin")
+        ) {
+          return NextResponse.redirect(new URL("/", req.url))
+        }
 
         //redirect auth users trying to access public routes (eg:"/sign-in")
         if (publicRoutes.includes(req.nextUrl.pathname)) {
@@ -60,7 +70,7 @@ export default clerkMiddleware(async (authPromise, req) => {
           )
         }
       } catch (error) {
-        console.error(error)
+        console.error("error in middleware: ", error)
         return NextResponse.redirect(new URL("/error", req.url))
       }
     }

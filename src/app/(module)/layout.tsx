@@ -26,7 +26,7 @@ export default function ModuleLayout({
         <Menu />
       </div>
       {/* right */}
-      <div className="w-[86%] md:w-[92%] lg:w-[84%] xl:w-[86%] h-fit bg-[#F7F8FA] overflow-scroll">
+      <div className="w-[86%] md:w-[92%] lg:w-[84%] xl:w-[86%] h-fit min-h-screen bg-[#F7F8FA] overflow-scroll">
         <UserProvider>
           <Navbar />
           {children}

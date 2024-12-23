@@ -16,33 +16,38 @@ model Role {
 }
 
 model User {
-  id         String    @id @default(uuid())
-  email      String    @unique
-  name       String
-  phone      String?
-  address    String?
-  clerkId    String    @unique
-  gender     String?
-  dob        String?
-  birthPlace String?
+  id           String  @id @default(uuid())
+  email        String  @unique
+  name         String
+  phone        String?
+  address      String?
+  clerkId      String  @unique
+  gender       String?
+  dob          String?
+  birthPlace   String?
+  departmentId Int?
 
-  roles               Role[]             @relation("UserToRole")
-  chatMessage         ChatMessage[]
-  course              Course?
-  departmentAdmin     Department?        @relation("AdminToDepartment")
-  departmentPrincipal Department?        @relation("PrincipalToDepartment")
-  event               Event[]
-  faculty             Faculty?
-  announcement Announcement[]
-  forumStudent        Forum[]            @relation("UserToForum")
+  roles                 Role[]         @relation("UserToRole")
+  chatMessage           ChatMessage[]
+  course                Course?
+  departmentAdmin       Department?    @relation("AdminToDepartment")
+  departmentPrincipal   Department?    @relation("PrincipalToDepartment")
+  departmentDean        Department?    @relation("DeanToDepartment")
+  departmentCoordinator Department?    @relation("CoordinatorToDepartment")
+  event                 Event[]
+  faculty               Faculty?
+  announcement          Announcement[]
+  forumStudent          Forum[]        @relation("UserToForum")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  forumParticipant    ForumParticipant[]
-  nonTeachingStaff    NonTeachingStaff?
-  student             Student?
-  university          University?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @default(now())
+  forumParticipant ForumParticipant[]
+  nonTeachingStaff NonTeachingStaff?
+  student          Student?
+  university       University?
+  coordinatorClass Class[]            @relation("coordinator_to_class")
 
+  Department Department? @relation(fields: [departmentId], references: [id])
 }
 
 model University {
@@ -64,6 +69,7 @@ model University {
   nonTeachingStaff NonTeachingStaff[]
   result           Result[]
   students         Student[]
+  classes          Class[]
   subjects         Subject[]
   admin            User               @relation(fields: [adminId], references: [id])
 }
@@ -95,6 +101,8 @@ model Faculty {
   updatedAt      DateTime     @default(now())
   Assignment     Assignment[]
   attendance     Attendance[]
+  class          Class[]
+  mentorClass    Class?       @relation(name: "mentor_to_class")
   user           User         @relation(fields: [clerkId], references: [clerkId])
   course         Course       @relation(fields: [courseId], references: [id])
   department     Department   @relation(fields: [departmentId], references: [id])
@@ -114,6 +122,7 @@ model Student {
   guardianEmail String?
   gaurdianPhone String?
   rollNo        Int
+  classId       Int?
   documents     Json[]
   mentorId      String?
   departmentId  Int
@@ -128,6 +137,7 @@ model Student {
   department    Department   @relation(fields: [departmentId], references: [id])
   mentor        Faculty?     @relation(fields: [mentorId], references: [id])
   university    University   @relation(fields: [universityId], references: [id])
+  class         Class?       @relation(fields: [classId], references: [id])
   submissions   Submission[]
 }
 
@@ -136,6 +146,8 @@ model Department {
   name             String
   code             String             @unique
   principalId      String?            @unique
+  deanId           String?            @unique
+  coordinatorId    String?            @unique
   universityId     Int
   adminId          String?            @unique
   createdAt        DateTime           @default(now())
@@ -144,8 +156,10 @@ model Department {
   assignment       Assignment[]
   attendance       Attendance[]
   courses          Course[]
+  coordinator      User?              @relation("CoordinatorToDepartment", fields: [coordinatorId], references: [clerkId])
   admin            User?              @relation("AdminToDepartment", fields: [adminId], references: [clerkId])
   principal        User?              @relation("PrincipalToDepartment", fields: [principalId], references: [clerkId])
+  Dean             User?              @relation("DeanToDepartment", fields: [deanId], references: [clerkId])
   university       University         @relation(fields: [universityId], references: [id])
   event            Event[]
   exam             Exam[]
@@ -156,6 +170,8 @@ model Department {
   students         Student[]
   subjects         Subject[]
   timeTable        TimeTable[]
+  User             User[]
+  classes          Class[]
 }
 
 model Course {
@@ -183,6 +199,35 @@ model Course {
   timeTable     TimeTable[]
 }
 
+model Class {
+  id            Int      @id @unique @default(autoincrement())
+  name          String   @unique
+  code          String   @unique
+  semister      Int
+  departmentId  Int
+  mentorId      String?  @unique
+  universityId  Int
+  coordinatorId String?
+  courseId      Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+
+  announcement Announcement[]
+  assignment   Assignment[]
+  attendance   Attendance[]
+  department   Department     @relation(fields: [departmentId], references: [id])
+  university   University     @relation(fields: [universityId], references: [id])
+  exam         Exam[]
+  coordinator  User?          @relation("coordinator_to_class", fields: [coordinatorId], references: [clerkId])
+  mentor       Faculty?       @relation(name: "mentor_to_class", fields: [mentorId], references: [id])
+  faculties    Faculty[]
+  forums       Forum[]
+  result       Result[]
+  students     Student[]
+  subjects     Subject[]      @relation("class_to_Subject")
+  timeTable    TimeTable[]
+}
+
 model Subject {
   id           Int          @id @unique @default(autoincrement())
   name         String
@@ -205,6 +250,7 @@ model Subject {
   result       Result?      @relation(fields: [resultId], references: [id])
   university   University   @relation(fields: [universityId], references: [id])
   timeTable    TimeTable[]
+  classes      Class[]      @relation("class_to_Subject")
   faculties    Faculty[]    @relation("faculty_to_Subject")
 }
 
@@ -220,8 +266,10 @@ model Attendance {
   courseId     Int
   departmentId Int
   universityId Int
+  classId      Int
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @default(now())
+  class        Class      @relation(fields: [classId], references: [id])
   course       Course     @relation(fields: [courseId], references: [id])
   department   Department @relation(fields: [departmentId], references: [id])
   faculty      Faculty    @relation(fields: [facultyId], references: [clerkId])
@@ -249,8 +297,10 @@ model Assignment {
   subjectId      Int
   facultyId      String
   courseId       Int
+  classId        Int?
   departmentId   Int
   universityId   Int
+  class          Class?       @relation(fields: [classId], references: [id])
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @default(now())
   course         Course       @relation(fields: [courseId], references: [id])
@@ -274,6 +324,7 @@ model Result {
   universityId  Int
   courseId      Int
   examId        Int
+  class         Class[]
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @default(now())
   course        Course     @relation(fields: [courseId], references: [id])
@@ -300,6 +351,7 @@ model Exam {
   department   Department @relation(fields: [departmentId], references: [id])
   university   University @relation(fields: [universityId], references: [id])
   result       Result[]
+  class        Class[]
 }
 
 model ChatMessage {
@@ -332,12 +384,14 @@ model Forum {
   departmentId     Int
   courseId         Int
   subjectId        Int
+  classId          Int?
   moderatorId      String
   isPrivate        Boolean
   forumTags        String[]
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @default(now())
   ChatMessage      ChatMessage[]
+  class            Class?             @relation(fields: [classId], references: [id])
   course           Course             @relation(fields: [courseId], references: [id])
   department       Department         @relation(fields: [departmentId], references: [id])
   moderator        Faculty            @relation(fields: [moderatorId], references: [id])
@@ -347,21 +401,24 @@ model Forum {
 }
 
 model Announcement {
-  id           Int        @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   title        String?
   deccription  String
-  date         DateTime   @default(now())
+  date         DateTime @default(now())
   attachments  Json[]
   announcerId  String
   courseId     Int
   departmentId Int
+  classId      Int?
   universityId Int
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @default(now())
-  announcer    User       @relation(fields: [announcerId], references: [clerkId])
-  course       Course     @relation(fields: [courseId], references: [id])
-  department   Department @relation(fields: [departmentId], references: [id])
-  university   University @relation(fields: [universityId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  class      Class?     @relation(fields: [classId], references: [id])
+  announcer  User       @relation(fields: [announcerId], references: [clerkId])
+  course     Course     @relation(fields: [courseId], references: [id])
+  department Department @relation(fields: [departmentId], references: [id])
+  university University @relation(fields: [universityId], references: [id])
 }
 
 model TimeTable {
@@ -371,11 +428,13 @@ model TimeTable {
   toTime       String
   subjectId    Int
   courseId     Int
+  classId      Int
   departmentId Int
   facultyId    String
   lecturerId   String?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @default(now())
+  class        Class      @relation(fields: [classId], references: [id])
   course       Course     @relation(fields: [courseId], references: [id])
   department   Department @relation(fields: [departmentId], references: [id])
   facuty       Faculty    @relation("FacultyToAttendance", fields: [facultyId], references: [clerkId])
