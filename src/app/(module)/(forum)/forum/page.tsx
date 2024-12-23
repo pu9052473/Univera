@@ -50,7 +50,7 @@ const CoursesPage: React.FC = () => {
           }
 
           const data = await response.json()
-          setSubjects(data)
+          setSubjects(data.subjects)
         } catch (error: any) {
           console.log(
             error.message ||
@@ -147,7 +147,8 @@ const CourseCard: React.FC<CourseCardProps> = ({
           marginTop: "20px"
         }}
       >
-        <div style={{ color, fontWeight: "bold", fontSize: "1.2rem" }}>99+</div>
+        {/* notification-dynamicaly */}
+        <div style={{ color, fontWeight: "bold", fontSize: "1.2rem" }}></div>
         <div
           style={{
             backgroundColor: color,

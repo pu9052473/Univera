@@ -102,8 +102,8 @@ async function main() {
   //create faculty user
   const dummyFacultyUser = await prisma.user.create({
     data:{
-      id:"user_2pWbD30knEj1V0jeyFkim67Bo73",
-      clerkId:"user_2pWbD30knEj1V0jeyFkim67Bo73",
+      id:"user_2qUoc9yn4FAuUeisBgW5o2oZibb",
+      clerkId:"user_2qUoc9yn4FAuUeisBgW5o2oZibb",
       name:"dev faculty1",
       email:"dev-faculty1@karnavatiuniversity.edu.in",
       phone:"7894567898",
@@ -140,8 +140,8 @@ async function main() {
 
   const dummyFaculty = await prisma.faculty.create({
     data:{
-      id:"user_2pWbD30knEj1V0jeyFkim67Bo73",
-      clerkId:"user_2pWbD30knEj1V0jeyFkim67Bo73",
+      id:"user_2qUoc9yn4FAuUeisBgW5o2oZibb",
+      clerkId:"user_2qUoc9yn4FAuUeisBgW5o2oZibb",
       departmentId:1,
       courseId:1,
       universityId:1,
@@ -153,7 +153,6 @@ async function main() {
     }
   })
 
-<<<<<<< HEAD
   const dummyStudent = await prisma.student.create({
     data:{
       id:"user_2pWbVEq2ofULWoG6chkZCw0kwkw",
@@ -172,10 +171,8 @@ async function main() {
     }
   })
 
-=======
->>>>>>> main
-}
 
+}
 main()
   .then(async () => {
     console.log("data seeded succesfully")

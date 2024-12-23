@@ -307,7 +307,7 @@ model ChatMessage {
   message       String
   userId        String
   forumId       Int
-  attachmentUrl Json[]
+  attachments   Json[]
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now())
   Forum         Forum    @relation(fields: [forumId], references: [id])

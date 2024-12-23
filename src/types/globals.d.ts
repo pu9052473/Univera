@@ -4,10 +4,16 @@ export {}
 export type Roles = "university_admin" | "university_admin_staff" | "faculty"
 
 export type chatMessage = {
+  attachments: boolean
   id: number
   message: string
   userId: string
   forumId: number
+  attachments?: Array<{
+    url: string
+    fileType: string
+    fileName: string
+  }>
   createdAt: string
 }
 
