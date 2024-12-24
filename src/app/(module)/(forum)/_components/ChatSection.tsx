@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
-import { Send, Smile, Paperclip, File } from "lucide-react"
-import { chatMessage } from "@/types/globals"
+import { Send, Smile, Paperclip, File, Trash2 } from "lucide-react"
+import { chatMessage, UploadedFile } from "@/types/globals"
 import { UploadthingUploader } from "./UploadthingUploader"
 import { useUploadThing } from "@/utils/uploadthing"
 
@@ -11,13 +11,11 @@ interface ChatSectionProps {
   onInputChange: (value: string) => void
   onSendMessage: (
     message?: string,
-    attachments?: Array<{ url: string; fileType: string; fileName: string }>
+    attachments?: UploadedFile[]
   ) => Promise<void>
   onLeaveChat: () => void
-  uploadedFiles: Array<{ url: string; fileType: string; fileName: string }>
-  setUploadedFiles: (
-    value: Array<{ url: string; fileType: string; fileName: string }>
-  ) => void
+  uploadedFiles: UploadedFile[]
+  setUploadedFiles: React.Dispatch<React.SetStateAction<UploadedFile[]>>
   handleDeleteMessage: (id: number) => void
 }
 
@@ -33,9 +31,7 @@ interface FileWithPreview extends File {
 }
 
 // Update getFileType to handle both string URLs and attachment objects
-const getFileType = (
-  attachment: string | { url: string; fileType: string; fileName: string }
-): "image" | "other" => {
+const getFileType = (attachment: string | UploadedFile): "image" | "other" => {
   const url = typeof attachment === "string" ? attachment : attachment.url
   const extension = url.split(".").pop()?.toLowerCase()
   const imageExtensions = ["jpg", "jpeg", "png", "gif", "webp"]
@@ -139,51 +135,48 @@ export const ChatSection = ({
   }
 
   // function to upload attachments in uploadthing
-  const { startUpload, permittedFileInfo } = useUploadThing(
-    "attachmentsUploader",
-    {
-      onClientUploadComplete: (res) => {
-        // console.log("Uploaded files res:", res)
-        // console.log("Uploaded successfully!")
-        // Clean up previews before clearing files
-        const uploadedFileData = res.map((file) => ({
-          url: file.url,
-          fileType: file.name.split(".").pop()?.toLowerCase() || "",
-          fileName: file.name
-        }))
+  const { startUpload, routeConfig } = useUploadThing("attachmentsUploader", {
+    onClientUploadComplete: (res) => {
+      // console.log("Uploaded files res:", res)
+      // console.log("Uploaded successfully!")
+      // Clean up previews before clearing files
+      const uploadedFileData = res.map((file) => ({
+        url: file.url,
+        fileType: file.name.split(".").pop()?.toLowerCase() || "",
+        fileName: file.name
+      }))
 
-        setUploadedFiles((prev) => {
-          // console.log("setUploadedFiles calles")
-          const updatedFiles = [...prev, ...uploadedFileData]
-          // console.log("Updated files after setUploadedFiles:", updatedFiles)
+      setUploadedFiles((prev: UploadedFile[]) => {
+        // console.log("setUploadedFiles calles")
+        const updatedFiles = [...prev, ...uploadedFileData]
+        // console.log("Updated files after setUploadedFiles:", updatedFiles)
 
-          // Call onSendMessage with the updated files
-          onSendMessage(inputMessage.trim(), updatedFiles)
-          // console.log("Message sent with updated files:", updatedFiles)
+        // Call onSendMessage with the updated files
+        onSendMessage(inputMessage.trim() || "", updatedFiles)
+        // console.log("Message sent with updated files:", updatedFiles)
 
-          // return updatedFiles;
-        })
-        setUploading(false)
+        return updatedFiles
+      })
+      setUploading(false)
 
-        files.forEach((file) => {
-          if (file.preview) {
-            URL.revokeObjectURL(file.preview)
-          }
-        })
+      files.forEach((file) => {
+        if (file.preview) {
+          URL.revokeObjectURL(file.preview)
+        }
+      })
 
-        setFiles([])
-        setShowMediaOptions(false)
-        onInputChange("")
-      },
-      onUploadError: (error) => {
-        console.log("Error occurred while uploading: " + error.message)
-        setUploading(false)
-      },
-      onUploadBegin: () => {
-        setUploading(true)
-      }
+      setFiles([])
+      setShowMediaOptions(false)
+      onInputChange("")
+    },
+    onUploadError: (error) => {
+      console.log("Error occurred while uploading: " + error.message)
+      setUploading(false)
+    },
+    onUploadBegin: () => {
+      setUploading(true)
     }
-  )
+  })
 
   // Generate preview for files
   const generatePreview = (file: File) => {
@@ -226,9 +219,7 @@ export const ChatSection = ({
     }
   }, [files])
 
-  const renderAttachments = (
-    attachments: Array<{ url: string; fileType: string; fileName: string }>
-  ) => {
+  const renderAttachments = (attachments: UploadedFile[]) => {
     return attachments.map((attachment, index) => {
       const fileType = getFileType(attachment) // Add logic to get file type if needed
 
@@ -269,177 +260,69 @@ export const ChatSection = ({
   }
 
   const renderMessages = (messages: any[], userId: string) => {
-    return messages.map((msg) => (
-      <div
-        key={msg.id}
-        className={`flex ${
-          msg.userId === userId ? "justify-end" : "justify-start"
-        }`}
-      >
-        <div
-          className={`px-4 py-3 rounded-2xl max-w-[70%] relative group ${
-            msg.userId === userId
-              ? "bg-colorThree text-TextTwo"
-              : "bg-colorOne/10 text-textTwo"
-          }`}
-        >
-          {msg.userId !== userId && (
-            <div className="text-xs mb-1 opacity-70">{msg.userId}</div>
-          )}
-          <p className="text-sm leading-relaxed whitespace-pre-wrap">
-            {msg.message}
-          </p>
+    return messages.map((msg) => {
+      const isOwn = msg.userId === userId
 
-          {msg.attachments && renderAttachments(msg.attachments)}
+      return (
+        <div
+          key={msg.id}
+          className={`flex items-end gap-2 ${isOwn ? "justify-end" : "justify-start"} group/message`}
+        >
+          {!isOwn && (
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-white text-xs">
+              {msg.userId.charAt(0).toUpperCase()}
+            </div>
+          )}
 
           <div
-            className={`absolute bottom-0 -right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs ${
-              msg.userId === userId ? "text-TextTwo" : "text-textTwo/50"
+            className={`relative px-4 py-3 rounded-2xl max-w-[70%] transition-all duration-200 ${
+              isOwn
+                ? "bg-gradient-to-r from-colorThree to-colorThree/90 text-TextTwo rounded-br-sm"
+                : "bg-gradient-to-r from-colorOne/10 to-colorOne/5 text-textTwo rounded-bl-sm"
             }`}
           >
-            {new Date(msg.createdAt).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true
-            })}
-          </div>
+            {!isOwn && (
+              <div className="text-xs font-medium mb-1 opacity-70">
+                {msg.userId}
+              </div>
+            )}
 
-          <button
-            className="absolute top-0 right-0 text-xs text-red-500 opacity-0 group-hover:opacity-100"
-            onClick={() => handleDeleteMessage(msg.id)}
-          >
-            Delete
-          </button>
+            <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+              {msg.message}
+            </p>
+
+            {msg.attachments && renderAttachments(msg.attachments)}
+
+            <div
+              className={`absolute -bottom-5 ${isOwn ? "right-0" : "left-0"} text-xs opacity-0 group-hover/message:opacity-70 transition-opacity duration-300 ${
+                isOwn ? "text-TextTwo/70" : "text-textTwo/70"
+              }`}
+            >
+              {new Date(msg.createdAt).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true
+              })}
+            </div>
+
+            {isOwn && (
+              <button
+                onClick={() => handleDeleteMessage(msg.id)}
+                className="absolute -top-3 -right-3 p-1.5 rounded-full bg-red-500/90 text-white opacity-0 
+                  group-hover/message:opacity-100 transition-all duration-200 hover:bg-red-600 
+                  transform hover:scale-110 shadow-lg"
+              >
+                <Trash2 className="w-3 h-3" />
+              </button>
+            )}
+          </div>
         </div>
-      </div>
-    ))
+      )
+    })
   }
 
   return (
-    // <div className="bg-secondary/10 rounded-2xl shadow-2xl overflow-hidden relative">
-    //   {/* Chat Header */}
-    //   <div className="bg-primary text-TextTwo flex justify-between items-center p-4 shadow-md">
-    //     <div className="flex items-center space-x-3">
-    //       <div className="w-12 h-12 bg-colorOne/20 rounded-full flex items-center justify-center">
-    //         <span className="text-colorOne font-bold text-lg">FC</span>
-    //       </div>
-    //       <div>
-    //         <h2 className="text-lg font-semibold text-TextTwo">Forum Chat</h2>
-    //         <p className="text-xs text-secondary/70">3 members active</p>
-    //       </div>
-    //     </div>
-    //     <button
-    //       onClick={onLeaveChat}
-    //       className="bg-colorTwo text-textTwo px-4 py-2 rounded-lg hover:bg-colorTwo/90 transition-all duration-300 transform hover:scale-105 shadow-md"
-    //     >
-    //       Leave Chat
-    //     </button>
-    //   </div>
-
-    //   {/* Messages Container */}
-    //   <div className="h-[65vh] overflow-y-auto px-4 py-6 space-y-4 bg-secondary/5">
-    //     {Object.entries(groupedMessages).map(
-    //       ([dateKey, { date, messages }]) => (
-    //         <React.Fragment key={dateKey}>
-    //           <div className="flex items-center justify-center my-4">
-    //             <div className="h-px bg-textTwo/20 w-full"></div>
-    //             <span className="px-3 text-sm text-textTwo/70 rounded-sm bg-white">
-    //               {formatDate(date)}
-    //             </span>
-    //             <div className="h-px bg-textTwo/20 w-full"></div>
-    //           </div>
-
-    //           {/* Messages for this date using the new render function */}
-    //           {renderMessages(messages, userId)}
-    //         </React.Fragment>
-    //       )
-    //     )}
-
-    //     {messages.length === 0 && (
-    //       <div className="text-center py-10 opacity-50 text-colorThree">
-    //         No messages yet. Start chatting!
-    //       </div>
-    //     )}
-    //     <div ref={messagesEndRef} />
-    //   </div>
-
-    //   {/* File Input (Make sure this input is outside the media options to be always accessible) */}
-    //   {showMediaOptions && (
-    //     <div className="absolute bottom-20 right-4 bg-white border border-Secondary/30 shadow-lg rounded-xl overflow-hidden z-10 w-72">
-    //       <div className="p-3 border-b border-Secondary/30 bg-lamaSkyLight">
-    //         <h3 className="text-sm font-medium text-TextTwo">Upload Files</h3>
-    //       </div>
-    //       <div className="p-3">
-    //         <UploadthingUploader
-    //           files={files}
-    //           uploading={uploading}
-    //           setUploading={setUploading}
-    //           setShowMediaOptions={setShowMediaOptions}
-    //           onDrop={onDrop}
-    //           removeFile={removeFile}
-    //           permittedFileInfo={permittedFileInfo}
-    //         />
-    //       </div>
-    //     </div>
-    //   )}
-
-    //   {/* Emoji Picker */}
-    //   {showEmojiPicker && (
-    //     <div className="absolute bottom-20 left-4 bg-white shadow-lg rounded-xl p-3 z-10 w-64">
-    //       <div className="grid grid-cols-6 gap-2">
-    //         {["😀", "👍", "❤️", "😂", "🎉", "👏", "😍", "🤔", "🙌", "🚀"].map(
-    //           (emoji) => (
-    //             <button
-    //               key={emoji}
-    //               onClick={() => addEmoji(emoji)}
-    //               className="text-2xl hover:bg-secondary/20 rounded-md transition-colors"
-    //             >
-    //               {emoji}
-    //             </button>
-    //           )
-    //         )}
-    //       </div>
-    //     </div>
-    //   )}
-
-    //   {/* Message Input */}
-    //   <div className="p-4 bg-secondary/10 border-t border-primary/10">
-    //     <div className="bg-white rounded-xl flex items-center shadow-sm">
-    //       <button
-    //         onClick={toggleMediaOptions}
-    //         className="p-2 text-colorThree hover:bg-secondary/20 rounded-full m-1"
-    //       >
-    //         <Paperclip className="w-5 h-5" />
-    //       </button>
-    //       <button
-    //         onClick={toggleEmojiPicker}
-    //         className="p-2 text-colorTwo hover:bg-secondary/20 rounded-full m-1"
-    //       >
-    //         <Smile className="w-5 h-5" />
-    //       </button>
-    //       <input
-    //         ref={inputRef}
-    //         type="text"
-    //         value={inputMessage}
-    //         onChange={(e) => onInputChange(e.target.value)}
-    //         onKeyDown={handleKeyDown}
-    //         placeholder="Type your message..."
-    //         className="flex-1 p-3 bg-transparent rounded-xl focus:outline-none text-textTwo caret-colorOne"
-    //       />
-    //       <button
-    //         onClick={handleSend}
-    //         disabled={
-    //           uploading || (inputMessage.trim() === "" && files.length === 0)
-    //         }
-    //         className="mx-2 p-2 rounded-full border bg-black bg-colorThree cursor-pointer text-white transition-all duration-300 hover:scale-105 disabled:opacity-50"
-    //       >
-    //         <Send className="w-5 h-5" />
-    //       </button>
-    //     </div>
-    //   </div>
-    // </div>
-
-    <div className="chatbox-container h-[85vh] flex flex-col bg-secondary/10 rounded-2xl shadow-2xl relative overflow-hidden">
+    <div className="chatbox-container h-[85vh] flex flex-col bg-secondary/10 rounded-2xl relative overflow-hidden">
       {/* Header */}
       <header className="flex items-center justify-between bg-primary text-TextTwo p-4 shadow-md">
         <div className="flex items-center gap-4">
@@ -455,7 +338,7 @@ export const ChatSection = ({
           onClick={onLeaveChat}
           className="bg-colorTwo text-TextTwo px-4 py-2 rounded-lg hover:bg-colorTwo/90 transition-transform transform hover:scale-105 shadow-md"
         >
-          Leave Chat
+          Back
         </button>
       </header>
 
@@ -469,7 +352,7 @@ export const ChatSection = ({
                   {formatDate(date)}
                 </span>
               </div>
-              {renderMessages(messages, userId)}
+              {renderMessages(messages, String(userId))}
             </React.Fragment>
           )
         )}
@@ -495,7 +378,7 @@ export const ChatSection = ({
               setShowMediaOptions={setShowMediaOptions}
               onDrop={onDrop}
               removeFile={removeFile}
-              permittedFileInfo={permittedFileInfo}
+              routeConfig={routeConfig}
             />
           </div>
         </div>
@@ -520,37 +403,43 @@ export const ChatSection = ({
       )}
 
       {/* Input Section */}
-      <footer className="p-4 bg-secondary/10 border-t border-primary/10">
-        <div className="flex items-center justify-evenly bg-white rounded-xl shadow-md">
-          <button
-            onClick={toggleMediaOptions}
-            className="p-2 rounded-full text-colorThree hover:bg-secondary/20 transition-transform"
-          >
-            <Paperclip className="w-5 h-5" />
-          </button>
-          <button
-            onClick={toggleEmojiPicker}
-            className="p-2 rounded-full text-colorTwo hover:bg-secondary/20 transition-transform"
-          >
-            <Smile className="w-5 h-5" />
-          </button>
+      <footer className="p-2 sm:p-4 bg-secondary/10 border-t border-primary/10 w-full">
+        <div className="flex items-center justify-between bg-white rounded-xl shadow-md max-w-[95%] mx-auto">
+          <div className="flex items-center space-x-1 sm:space-x-2">
+            <button
+              onClick={toggleMediaOptions}
+              className="p-1.5 sm:p-2 rounded-full text-colorThree hover:bg-secondary/20"
+            >
+              <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+            <button
+              onClick={toggleEmojiPicker}
+              className="p-1.5 sm:p-2 rounded-full text-colorTwo hover:bg-secondary/20"
+            >
+              <Smile className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+          </div>
+
           <input
             ref={inputRef}
             type="text"
             value={inputMessage}
             onChange={(e) => onInputChange(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type your message..."
-            className="flex-1 bg-transparent py-2 focus:outline-none text-textTwo"
+            placeholder={
+              files.length === 0 ? "Type a message..." : "Add caption..."
+            }
+            className="flex-1 bg-transparent py-2 px-2 sm:px-3 focus:outline-none text-textTwo text-sm sm:text-base min-w-0"
           />
+
           <button
             onClick={handleSend}
             disabled={
               uploading || (inputMessage.trim() === "" && files.length === 0)
             }
-            className="p-2 rounded-full bg-colorThree text-black shadow-md transition-transform transform hover:scale-105 disabled:opacity-50"
+            className="p-1.5 sm:p-2 rounded-full bg-colorThree text-black shadow-md hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 ml-1 sm:ml-2"
           >
-            <Send className="w-5 h-5" />
+            <Send className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
       </footer>

@@ -1,14 +1,7 @@
 import { Input } from "@/components/ui/input"
 import { Submit } from "@/components/(commnon)/ButtonV1"
 import { MultiSelect } from "@/components/ui/MultiSelect"
-import {
-  PlusCircle,
-  MessageCircle,
-  TagIcon,
-  LockIcon,
-  ChevronRight,
-  ChevronLeft
-} from "lucide-react"
+import { PlusCircle, MessageCircle, TagIcon, LockIcon } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -17,7 +10,6 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
-import { useEffect, useState } from "react"
 
 interface ForumSidebarProps {
   forums: any[]
@@ -66,59 +58,28 @@ export const ForumSidebar = ({
     (forum) => !forum.isPrivate || (forum.isPrivate && userRole === "faculty") // in this the forums filtered if isPrivate is true and userRole is faculty, if not then filtered if isPrivate is false
   )
 
-  const [isCollapsed, setIsCollapsed] = useState(window.innerWidth < 769)
-
-  useEffect(() => {
-    const handleResize = () => setIsCollapsed(window.innerWidth < 769)
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
-
-  useEffect(() => {
-    if (selectedForumId === null) {
-      setIsCollapsed(false) // Expand sidebar when no forum is selected
-    } else {
-      setIsCollapsed(true) // Shrink sidebar when a forum is selected
-    }
-  }, [selectedForumId])
-
   return (
     <div
       className={`transition-all duration-300 flex flex-col min-h-full bg-Primary text-white rounded-2xl shadow-2xl border-2 border-[#56E1E9]/20 overflow-hidden relative
-    ${isCollapsed ? "w-16" : "w-[80vw] md:w-full"}`}
+      w-full`}
     >
-      {/* Top Section */}
       <div
-        className={`bg-[#5B58EB]/10 p-4 border-b border-[#56E1E9]/20 flex ${
-          isCollapsed
-            ? "flex-col items-center"
-            : "flex-row justify-between items-center"
-        }`}
+        className={`bg-[#5B58EB]/10 p-2 border-b border-[#56E1E9]/20 flex flex-row justify-between items-center`}
       >
-        {/* Forum Icon */}
-        <div className="flex items-center gap-3">
-          <MessageCircle className="text-Dark w-7 h-7" />
-          {!isCollapsed && (
-            <h2 className="text-2xl font-bold text-Dark">Forums</h2>
-          )}
+        <div className="flex items-center">
+          <MessageCircle className="text-Dark w-5 h-5" />
+          <h2 className="text-lg md:text-xl font-bold text-Dark">Forums</h2>
         </div>
 
-        {/* Create Forum Button */}
         <Dialog open={isForumDialogOpen} onOpenChange={setIsForumDialogOpen}>
           <DialogTrigger asChild>
             <button
-              className={`bg-Dark text-white p-2 flex justify-evenly items-center rounded-full hover:bg-[#5B58EB] transition-colors shadow-md ${
-                isCollapsed ? "mt-4" : "ml-4"
-              }`}
+              className={`bg-Dark text-white p-1.5 flex justify-evenly items-center rounded-full hover:bg-[#5B58EB] transition-colors shadow-md`}
             >
-              <PlusCircle className="w-6 h-6" />
-              {window.innerWidth > 425 && !isCollapsed && (
-                <span>Create Forum</span>
-              )}
+              <PlusCircle className="w-5 h-5" />
             </button>
           </DialogTrigger>
 
-          {/* Forum Creation Dialog */}
           <DialogContent className="bg-[#EDF9FD] text-[#0A2353] rounded-2xl shadow-2xl border-2 border-[#56E1E9]/30 w-[400px]">
             <DialogHeader>
               <DialogTitle className="text-[#112C71] text-xl font-bold flex items-center gap-3">
@@ -173,36 +134,18 @@ export const ForumSidebar = ({
             </DialogFooter>
           </DialogContent>
         </Dialog>
-
-        {/* Shrink Button */}
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className={`bg-Dark text-white p-2 rounded-full hover:bg-[#5B58EB] transition-colors shadow-md ${
-            isCollapsed ? "mt-4" : "ml-auto"
-          }`}
-        >
-          {isCollapsed ? (
-            <ChevronRight className="w-4 h-4" />
-          ) : (
-            <ChevronLeft className="w-4 h-4" />
-          )}
-        </button>
       </div>
 
-      {/* Tag Management Section */}
       {userRole === "faculty" && (
         <div className="p-4 border-b border-[#56E1E9]/20">
           <Dialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen}>
             <DialogTrigger asChild>
-              <button className="w-full py-2.5 bg-[#5B58EB] text-white rounded-lg hover:bg-[#BB63FF] transition-colors flex items-center justify-center gap-2.5 shadow-md">
+              <button className="w-full mx-auto py-2.5 bg-Dark text-white p-2 flex justify-evenly items-center rounded-md hover:bg-[#5B58EB] transition-colors shadow-md">
                 <TagIcon className="w-5 h-5" />
-                {window.innerWidth > 425 && !isCollapsed && (
-                  <span> Add New Tag</span>
-                )}
+                <span>Add New Tag</span>
               </button>
             </DialogTrigger>
 
-            {/* Tag Creation Dialog */}
             <DialogContent className="bg-[#EDF9FD] text-[#0A2353] rounded-2xl shadow-2xl border-2 border-[#56E1E9]/30 w-[350px]">
               <DialogHeader>
                 <DialogTitle className="text-[#112C71] text-xl font-bold flex items-center gap-3">
@@ -243,7 +186,6 @@ export const ForumSidebar = ({
         </div>
       )}
 
-      {/* Forum List Section */}
       <div className="flex-grow overflow-y-auto">
         {filteredForums.map((forum) => (
           <button
@@ -255,17 +197,11 @@ export const ForumSidebar = ({
                 : "hover:bg-[#BB63FF]/20"
             } transition-colors flex items-center gap-3`}
           >
-            {isCollapsed ? (
-              <MessageCircle className="w-6 h-6 text-[#BB63FF]" />
-            ) : (
-              <>
-                <MessageCircle className="w-6 h-6 text-[#BB63FF]" />
-                <span className="text-lg">{forum.name}</span>
-                <span className="text-sm text-[#5B58EB] ml-auto">
-                  {forum.forumTags.join(", ")}
-                </span>
-              </>
-            )}
+            <MessageCircle className="w-6 h-6 text-[#BB63FF]" />
+            <span className="text-lg">{forum.name}</span>
+            <span className="text-sm text-[#5B58EB] ml-auto">
+              {forum.forumTags.join(", ")}
+            </span>
           </button>
         ))}
       </div>

@@ -6,7 +6,7 @@ import io, { Socket } from "socket.io-client"
 import { ForumSidebar } from "@/app/(module)/(forum)/_components/ForumSidebar"
 import { ChatSection } from "@/app/(module)/(forum)/_components/ChatSection"
 import { useParams } from "next/navigation"
-import { chatMessage, Forum } from "@/types/globals"
+import { chatMessage, Forum, UploadedFile } from "@/types/globals"
 
 export default function Home() {
   const [forums, setForums] = useState<Forum[]>([])
@@ -22,9 +22,7 @@ export default function Home() {
   const [departmentId, setDepartmentId] = useState<number | null>(null)
   const [courseId, setCourseId] = useState<number | null>(null)
   const [isPrivate, setIsPrivate] = useState(false)
-  const [uploadedFiles, setUploadedFiles] = useState<
-    Array<{ url: string; fileType: string; fileName: string }>
-  >([])
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
 
   const userData = useUser()
   const userId = userData.user?.id
@@ -186,8 +184,8 @@ export default function Home() {
   }
 
   const sendMessage = async (
-    message: string,
-    attachments: Array<{ url: string; fileType: string; fileName: string }> = []
+    message?: string,
+    attachments: UploadedFile[] = []
   ) => {
     if (
       message &&
@@ -482,72 +480,123 @@ export default function Home() {
   // console.log("messages", messages)
   // console.log("forums", forums)
 
-  const [isCollapsed, setIsCollapsed] = useState(window.innerWidth < 768)
+  const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 540)
 
   useEffect(() => {
-    const handleResize = () => setIsCollapsed(window.innerWidth < 768)
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth <= 540)
+    }
+
     window.addEventListener("resize", handleResize)
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
   return (
-    <div className="h-[89vh] py-2 px-3 grid grid-cols-[auto,1fr] gap-4">
-      {/* Sidebar */}
-      <div
-        className={`transition-all duration-300 ${isCollapsed ? "w-16" : "w-[80vw] md:w-full"}`}
-      >
-        <ForumSidebar
-          forums={forums}
-          selectedForumId={selectedForumId}
-          tag={tag}
-          setTag={setTag}
-          addTag={addTag}
-          userRole={userRole}
-          isTagDialogOpen={isTagDialogOpen}
-          setIsTagDialogOpen={setIsTagDialogOpen}
-          isForumDialogOpen={isForumDialogOpen}
-          setIsForumDialogOpen={setIsForumDialogOpen}
-          onForumSelect={handleForumSelect}
-          forumName={forumName}
-          forumTags={forumTags}
-          selectedTags={selectedTags}
-          setSelectedTags={setSelectedTags}
-          createForum={createForum}
-          isPrivate={isPrivate}
-          setForumName={setForumName}
-          setIsPrivate={setIsPrivate}
-        />
-      </div>
-
-      {/* Chat Section */}
-      <div className="h-[85vh] overflow-hidden">
-        {selectedForumId ? (
-          <ChatSection
-            messages={messages}
-            userId={userId}
-            inputMessage={inputMessage}
-            onInputChange={setInputMessage}
-            onSendMessage={sendMessage}
-            onLeaveChat={handleLeaveChat}
-            uploadedFiles={uploadedFiles}
-            setUploadedFiles={setUploadedFiles}
-            handleDeleteMessage={handleDeleteMessage}
-          />
+    <div className="h-[89vh] py-2 px-3 flex">
+      {isMobileView ? (
+        selectedForumId === null ? (
+          // Mobile view: Show Sidebar only
+          <div
+            className={`transition-all duration-300 h-[85vh] w-[80vw] md:w-full`}
+          >
+            <ForumSidebar
+              forums={forums}
+              selectedForumId={selectedForumId}
+              tag={tag}
+              setTag={setTag}
+              addTag={addTag}
+              userRole={userRole}
+              isTagDialogOpen={isTagDialogOpen}
+              setIsTagDialogOpen={setIsTagDialogOpen}
+              isForumDialogOpen={isForumDialogOpen}
+              setIsForumDialogOpen={setIsForumDialogOpen}
+              onForumSelect={(id) => setSelectedForumId(id)}
+              forumName={forumName}
+              forumTags={forumTags}
+              selectedTags={selectedTags}
+              setSelectedTags={setSelectedTags}
+              createForum={createForum}
+              isPrivate={isPrivate}
+              setForumName={setForumName}
+              setIsPrivate={setIsPrivate}
+            />
+          </div>
         ) : (
-          !isCollapsed && (
-            <div className="h-[82.5vh] bg-white rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <h2 className="text-xl font-semibold text-gray-600">
-                  Please Select a Forum
-                </h2>
-                <p className="mt-2 text-gray-500">
-                  Choose a forum from the sidebar to start chatting
-                </p>
-              </div>
-            </div>
-          )
-        )}
-      </div>
+          // Mobile view: Show Chatbox only
+          <div className="h-[85vh] w-full overflow-hidden">
+            <ChatSection
+              messages={messages}
+              userId={userId}
+              inputMessage={inputMessage}
+              onInputChange={setInputMessage}
+              onSendMessage={sendMessage}
+              onLeaveChat={handleLeaveChat}
+              uploadedFiles={uploadedFiles}
+              setUploadedFiles={setUploadedFiles}
+              handleDeleteMessage={handleDeleteMessage}
+            />
+          </div>
+        )
+      ) : (
+        // Desktop view: Show Sidebar and Chatbox side by side
+        <>
+          <div
+            className={`transition-all duration-300 h-[85vh] w-[30%] md:w-[25%]`}
+          >
+            <ForumSidebar
+              forums={forums}
+              selectedForumId={selectedForumId}
+              tag={tag}
+              setTag={setTag}
+              addTag={addTag}
+              userRole={userRole}
+              isTagDialogOpen={isTagDialogOpen}
+              setIsTagDialogOpen={setIsTagDialogOpen}
+              isForumDialogOpen={isForumDialogOpen}
+              setIsForumDialogOpen={setIsForumDialogOpen}
+              onForumSelect={handleForumSelect}
+              forumName={forumName}
+              forumTags={forumTags}
+              selectedTags={selectedTags}
+              setSelectedTags={setSelectedTags}
+              createForum={createForum}
+              isPrivate={isPrivate}
+              setForumName={setForumName}
+              setIsPrivate={setIsPrivate}
+            />
+          </div>
+
+          {/* Chat Section */}
+          <div className="h-[85vh] w-full overflow-hidden">
+            {selectedForumId ? (
+              <ChatSection
+                messages={messages}
+                userId={userId}
+                inputMessage={inputMessage}
+                onInputChange={setInputMessage}
+                onSendMessage={sendMessage}
+                onLeaveChat={handleLeaveChat}
+                uploadedFiles={uploadedFiles}
+                setUploadedFiles={setUploadedFiles}
+                handleDeleteMessage={handleDeleteMessage}
+              />
+            ) : (
+              !isMobileView && (
+                <div className="h-[90vh]  rounded-lg flex items-center justify-center">
+                  <div className="text-center">
+                    <h2 className="text-xl font-semibold text-gray-600">
+                      Please Select a Forum
+                    </h2>
+                    <p className="mt-2 text-gray-500">
+                      Choose a forum from the sidebar to start chatting
+                    </p>
+                  </div>
+                </div>
+              )
+            )}
+          </div>
+        </>
+      )}
     </div>
   )
 }

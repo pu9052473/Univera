@@ -162,8 +162,7 @@ async function main() {
       email: "coordinator_uit@ku.edu.in",
       phone: "7894567898",
       roles: {
-        connect: { id: 5 },
-        connect: { id: 4 }
+        connect: [5,4].map((id) => ({ id }))
       }
     }
   })
@@ -216,8 +215,7 @@ async function main() {
       email: "swetang_ce@ku.edu.in",
       phone: "7894567898",
       roles: {
-        connect: { id: 4 },
-        connect: { id: 11 }
+        connect: [11,4].map((id) => ({ id }))
       }
     }
   })
@@ -312,8 +310,7 @@ async function main() {
       courseId: 1,
       universityId: 1,
       subject: {
-        connect: { id: subject1.id },
-        connect: { id: subject2.id }
+        connect: [subject1.id, subject2.id].map((id) => ({ id }))
       }
     }
   })
@@ -326,8 +323,7 @@ async function main() {
       courseId: 1,
       universityId: 1,
       subject: {
-        connect: { id: subject1.id },
-        connect: { id: subject3.id }
+        connect: [subject1.id, subject3.id].map((id) => ({ id }))
       }
     }
   })
@@ -339,8 +335,7 @@ async function main() {
       courseId: 1,
       universityId: 1,
       subject: {
-        connect: { id: subject2.id },
-        connect: { id: subject3.id }
+        connect: [subject2.id, subject3.id].map((id) => ({ id }))
       }
     }
   })
@@ -353,8 +348,7 @@ async function main() {
       courseId: 1,
       universityId: 1,
       subject: {
-        connect: { id: subject4.id },
-        connect: { id: subject3.id }
+        connect: [subject4.id, subject3.id].map((id) => ({ id }))
       }
     }
   })
@@ -367,8 +361,7 @@ async function main() {
       courseId: 1,
       universityId: 1,
       subject: {
-        connect: { id: subject4.id },
-        connect: { id: subject1.id }
+        connect: [subject4.id, subject1.id].map((id) => ({ id }))
       }
     }
   })
@@ -421,7 +414,34 @@ async function main() {
       universityId: 1
     }
   })
+  const class1 = await prisma.class.create({
+    data: {
+      id: 1,
+      name: "Class 1",
+      code: "2ET100301T",
+      semister: 1,
+      departmentId: 1,
+      universityId: 1,
+      coordinatorId: dummyCoordinatorUser.clerkId,
+      mentorId: dummyFaculty1.clerkId,
+      courseId: course1.id,
+    }
+  })
+  const class2 = await prisma.class.create({
+    data: {
+      id: 2,
+      name: "Class 2",
+      code: "2ET100302T",
+      semister: 1,
+      departmentId: 1,
+      universityId: 1,
+      coordinatorId: dummyCoordinatorUser.clerkId,
+      mentorId: dummyFaculty2.clerkId,
+      courseId: course1.id,
+    }
+  })
 }
+
 main()
   .then(async () => {
     console.log("data seeded succesfully")
@@ -433,3 +453,5 @@ main()
     await prisma.$disconnect()
     process.exit(1)
   })
+
+

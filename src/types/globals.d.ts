@@ -30,6 +30,12 @@ export type Forum = {
   status: string
 }
 
+export type UploadedFile = {
+  url: string
+  fileType: string
+  fileName: string
+}
+
 declare global {
   interface CustomJwtSessionClaims {
     metadata: {

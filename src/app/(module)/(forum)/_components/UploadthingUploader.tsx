@@ -23,7 +23,7 @@ interface UploadthingUploaderProps {
   setShowMediaOptions: (value: boolean) => void
   onDrop: (files: File[]) => void
   removeFile: (index: number) => void
-  permittedFileInfo: any
+  routeConfig: any
 }
 
 export function UploadthingUploader({
@@ -31,7 +31,7 @@ export function UploadthingUploader({
   uploading,
   onDrop,
   removeFile,
-  permittedFileInfo
+  routeConfig
 }: UploadthingUploaderProps) {
   // Get appropriate icon based on file type
   const getFileIcon = (fileType: string) => {
@@ -53,9 +53,7 @@ export function UploadthingUploader({
   }
 
   // Determine allowed file types
-  const fileTypes = permittedFileInfo?.config
-    ? Object.keys(permittedFileInfo.config)
-    : []
+  const fileTypes = routeConfig?.config ? Object.keys(routeConfig.config) : []
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
