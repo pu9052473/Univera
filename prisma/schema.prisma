@@ -201,7 +201,7 @@ model Course {
 
 model Class {
   id            Int      @id @unique @default(autoincrement())
-  name          String   @unique
+  name          String
   code          String   @unique
   semister      Int
   departmentId  Int

@@ -46,16 +46,16 @@ export const Menuitems = {
     { title: "Students", url: "/list/students", icon: MdPeople }
   ],
   authority: [
-    { title: "Dashboard", url: "/faculty", icon: MdSpaceDashboard },
+    { title: "Dashboard", url: "/dashboard", icon: MdSpaceDashboard },
     { title: "Students", url: "/students", icon: FaUsers },
-    { title: "Curriculum", url: "/curriculum", icon: FaBook },
+    { title: "Classes", url: "/classes", icon: FaBook },
     { title: "Subjects", url: "/subjects", icon: MdClass },
     { title: "Events", url: "/events", icon: FaRegCalendarAlt },
     { title: "Announcement", url: "/announcements", icon: FaBullhorn },
     { title: "Forums", url: "/forum", icon: MdForum }
   ],
   faculty: [
-    { title: "Dashboard", url: "/faculty", icon: MdSpaceDashboard },
+    { title: "Dashboard", url: "/dashboard", icon: MdSpaceDashboard },
     { title: "Students", url: "/students", icon: FaUsers },
     { title: "Curriculum", url: "/curriculum", icon: FaBook },
     { title: "Subjects", url: "/subjects", icon: MdClass },

@@ -23,9 +23,6 @@ import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import { UserContext } from "@/context/user"
-
-//Schema
-
 const CreatePage = () => {
   const { user } = useContext(UserContext)
   const router = useRouter()

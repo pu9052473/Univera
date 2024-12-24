@@ -5,17 +5,10 @@ import { DataTable } from "../_components/dataTable"
 import { columns } from "../_components/columns"
 import { UserContext } from "@/context/user"
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { fetchCourses } from "../_helper"
 import { CoursesSkeleton } from "@/components/(commnon)/Skeleton"
 import { ButtonV1 } from "@/components/(commnon)/ButtonV1"
 import { RotateCcw } from "lucide-react"
-
-const fetchCourses = async (departmentId: string, userId: string) => {
-  const { data } = await axios.get(`/api/courses`, {
-    params: { departmentId, userId }
-  })
-  return data?.courses || []
-}
 
 const CoursesTable = () => {
   const { user } = useContext(UserContext)
