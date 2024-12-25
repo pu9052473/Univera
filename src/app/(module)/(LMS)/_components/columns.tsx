@@ -56,10 +56,10 @@ export const columns: ColumnDef<Course>[] = [
             align="end"
             className="bg-white border border-gray-300 shadow-lg rounded-md"
           >
-            <Link href={`/subject/${id}`}>
+            <Link href={`/courses/${id}`}>
               <DropdownMenuItem>
                 <Pencil className="h-4 w-4 mr-2" />
-                Add Subject
+                edit course
               </DropdownMenuItem>
             </Link>
           </DropdownMenuContent>

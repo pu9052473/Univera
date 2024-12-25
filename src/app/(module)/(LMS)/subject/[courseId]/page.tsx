@@ -65,7 +65,7 @@ export default function SubjectsPage() {
             <Link
               key={subject.id}
               href={`/subject/${courseId}/edit/${subject.id}`}
-              className="group  bg-gradient-to-tr from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-400 rounded-lg shadow-md p-6 transition-transform transform hover:scale-105"
+              className="group  bg-gradient-to-tr from-gray-100 to-gray-200 hover:from-Secondary hover:to-Secondary/50 rounded-lg shadow-md p-6 transition-transform transform hover:scale-105"
             >
               <div className="relative">
                 {/* Optional Placeholder for Image */}
