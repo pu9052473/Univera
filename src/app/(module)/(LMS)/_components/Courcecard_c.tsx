@@ -54,7 +54,7 @@ export const Courcecard_c: React.FC<CourseCardProps> = ({ course }) => {
             variant="outline"
             className="w-full transition-all duration-300 hover:bg-gray-700 hover:text-white border-gray-400 text-gray-700"
           >
-            edit courses
+            Edit Course
           </Button>
         </Link>
       </CardFooter>

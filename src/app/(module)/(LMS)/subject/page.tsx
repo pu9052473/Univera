@@ -1,6 +1,6 @@
 "use client"
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useContext, useEffect, useState } from "react"
+
+import React, { useContext, useState } from "react"
 import { UserContext } from "@/context/user"
 import axios from "axios"
 
@@ -22,24 +22,24 @@ const fetchCourses = async (departmentId: string, userId: string) => {
 const SubjectPage = () => {
   const { user } = useContext(UserContext)
 
-  const [loading, setLoading] = useState(true)
-  const [page, setPage] = useState(1)
-  const [hasMore, setHasMore] = useState(true)
   const [filter, setFilter] = useState("")
 
   const {
-    data: courses,
+    data: courses = [], // Default to an empty array to avoid errors
     error,
     refetch,
     isLoading
   } = useQuery({
-    queryKey: ["courses", user?.departmentAdmin.id, user?.id],
-    queryFn: () => fetchCourses(user?.departmentAdmin.id, user?.id as string),
+    queryKey: ["courses", user?.departmentAdmin?.id, user?.id],
+    queryFn: () =>
+      fetchCourses(user?.departmentAdmin?.id || "", user?.id || ""),
     enabled: !!user?.departmentAdmin?.id && !!user?.id
   })
+
   const filteredCourses = courses.filter((course: any) =>
     course.name.toLowerCase().includes(filter.toLowerCase())
   )
+
   if (isLoading) {
     return <CoursesSkeleton />
   }
@@ -49,7 +49,7 @@ const SubjectPage = () => {
       <div className="text-red-500">
         <p>Failed to load courses. Please try again later.</p>
         <p className="text-sm text-gray-500">
-          {error?.message || "An unexpected error occurred."}
+          {(error as Error)?.message || "An unexpected error occurred."}
         </p>
         <ButtonV1 icon={RotateCcw} label="Retry" onClick={() => refetch()} />
       </div>
@@ -70,23 +70,15 @@ const SubjectPage = () => {
           className="max-w-sm"
         />
       </div>
-      {loading && page === 1 ? (
-        <CoursesSkeleton />
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredCourses.map((course: any) => (
-            <CourseCard key={course.id} course={course} />
-          ))}
-        </div>
-      )}
-      {hasMore && (
-        <div className="flex justify-center mt-4">
-          {/* <Button
-            onClick={() => setPage((prev) => prev + 1)}
-            disabled={loading}
-          >
-            {loading ? "Loading..." : "Load More"}
-          </Button> */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredCourses.map((course: any) => (
+          <CourseCard key={course.id} course={course} />
+        ))}
+      </div>
+      {/* Optional "Load More" section */}
+      {filteredCourses.length === 0 && (
+        <div className="text-center text-gray-500 mt-4">
+          No courses found. Try a different filter.
         </div>
       )}
     </div>
