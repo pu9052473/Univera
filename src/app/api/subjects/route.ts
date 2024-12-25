@@ -71,6 +71,7 @@ export async function GET(req: Request) {
         courseId: Number(courseId) // Ensure correct type handling for `courseId`
       }
     })
+    // console.log("subjects api: ", subjects)
     if (!subjects) {
       throw new Error("Error while getting subjects")
     }
