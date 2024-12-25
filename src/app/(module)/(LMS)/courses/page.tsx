@@ -51,7 +51,7 @@ const CoursesGrid = () => {
   }
 
   const filteredCourses =
-    courses?.filter((course) =>
+    courses?.filter((course: any) =>
       course.name.toLowerCase().includes(filter.toLowerCase())
     ) || []
 

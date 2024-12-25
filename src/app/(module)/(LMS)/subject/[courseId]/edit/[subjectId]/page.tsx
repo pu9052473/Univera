@@ -115,7 +115,6 @@ export default function EditSubjectPage() {
               courseName={course?.name}
               departmentName={user?.departmentAdmin.name}
               submitBtnLabel={"Update"}
-              onSubmit={handleUpdateSubject}
             />
 
             {/* Delete Button */}

@@ -26,45 +26,9 @@ const SubjectPage = () => {
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const [filter, setFilter] = useState("")
-  const [sortColumn, setSortColumn] = useState("name")
-  const [sortDirection, setSortDirection] = useState("asc")
-  const [courses, setCourses] = useState([]) // Define courses state
-
-  useEffect(() => {
-    async function fetchCourses() {
-      setLoading(true)
-      console.log("fetching courses")
-      try {
-        const { data } = await axios.get(`/api/courses`, {
-          params: {
-            departmentId: user?.departmentAdmin.id,
-            userId: user?.id,
-            page,
-            sortColumn,
-            sortDirection
-          }
-        })
-        const newCourses = data?.courses || []
-        setCourses((prev) =>
-          page === 1 ? newCourses : [...prev, ...newCourses]
-        )
-        setHasMore(newCourses.length > 0)
-      } catch (error) {
-        console.error("Error fetching courses:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchCourses()
-  }, [user?.departmentAdmin.id, user?.id, page, sortColumn, sortDirection])
-
-  const filteredCourses = courses.filter((course) =>
-    course.name.toLowerCase().includes(filter.toLowerCase())
-  )
 
   const {
-    data: queryCourses,
+    data: courses,
     error,
     refetch,
     isLoading
@@ -73,14 +37,10 @@ const SubjectPage = () => {
     queryFn: () => fetchCourses(user?.departmentAdmin.id, user?.id as string),
     enabled: !!user?.departmentAdmin?.id && !!user?.id
   })
-
-  useEffect(() => {
-    if (queryCourses) {
-      setCourses(queryCourses)
-    }
-  }, [queryCourses])
-
-  if (isLoading || loading) {
+  const filteredCourses = courses.filter((course: any) =>
+    course.name.toLowerCase().includes(filter.toLowerCase())
+  )
+  if (isLoading) {
     return <CoursesSkeleton />
   }
 
@@ -114,7 +74,7 @@ const SubjectPage = () => {
         <CoursesSkeleton />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredCourses.map((course) => (
+          {filteredCourses.map((course: any) => (
             <CourseCard key={course.id} course={course} />
           ))}
         </div>
