@@ -1,38 +1,34 @@
 "use client"
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useContext, useEffect, useState } from "react"
 import { UserContext } from "@/context/user"
 import axios from "axios"
-<<<<<<< HEAD
-import { SubjectCard } from "../_components/SubjectCard"
+
+import { CourseCard } from "../_components/CourseCard"
 import { CoursesSkeleton } from "@/components/(commnon)/Skeleton"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { ArrowUpDown } from "lucide-react"
-=======
-import { SubjectTable } from "../_components/Table"
-import { Scolumns } from "../_components/Scolumns"
+
 import { useQuery } from "@tanstack/react-query"
 import { ButtonV1 } from "@/components/(commnon)/ButtonV1"
 import { RotateCcw } from "lucide-react"
-import { CoursesSkeleton } from "@/components/(commnon)/Skeleton"
+
 const fetchCourses = async (departmentId: string, userId: string) => {
   const { data } = await axios.get(`/api/courses`, {
     params: { departmentId, userId }
   })
   return data?.courses || []
 }
->>>>>>> c7408b05f8c98afeef7beae439d7e8d9704de972
 
 const SubjectPage = () => {
   const { user } = useContext(UserContext)
-<<<<<<< HEAD
+
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const [filter, setFilter] = useState("")
   const [sortColumn, setSortColumn] = useState("name")
   const [sortDirection, setSortDirection] = useState("asc")
+  const [courses, setCourses] = useState([]) // Define courses state
 
   useEffect(() => {
     async function fetchCourses() {
@@ -61,28 +57,14 @@ const SubjectPage = () => {
     }
 
     fetchCourses()
-  }, [user?.department?.id, page, sortColumn, sortDirection])
+  }, [user?.departmentAdmin.id, user?.id, page, sortColumn, sortDirection])
 
   const filteredCourses = courses.filter((course) =>
     course.name.toLowerCase().includes(filter.toLowerCase())
   )
 
-  const toggleSort = (column) => {
-    if (column === sortColumn) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc")
-    } else {
-      setSortColumn(column)
-      setSortDirection("asc")
-    }
-    setPage(1)
-=======
-
-  // // Optional: Pagination
-  // const [page, setPage] = useState(1)
-  // const [hasMore, setHasMore] = useState(true)
-
   const {
-    data: courses,
+    data: queryCourses,
     error,
     refetch,
     isLoading
@@ -92,9 +74,14 @@ const SubjectPage = () => {
     enabled: !!user?.departmentAdmin?.id && !!user?.id
   })
 
-  if (isLoading) {
+  useEffect(() => {
+    if (queryCourses) {
+      setCourses(queryCourses)
+    }
+  }, [queryCourses])
+
+  if (isLoading || loading) {
     return <CoursesSkeleton />
->>>>>>> c7408b05f8c98afeef7beae439d7e8d9704de972
   }
 
   if (error) {
@@ -108,6 +95,7 @@ const SubjectPage = () => {
       </div>
     )
   }
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold">Courses</h1>
@@ -121,27 +109,13 @@ const SubjectPage = () => {
           onChange={(e) => setFilter(e.target.value)}
           className="max-w-sm"
         />
-        <div className="flex space-x-2">
-          <Button variant="ghost" onClick={() => toggleSort("name")}>
-            Title
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-          <Button variant="ghost" onClick={() => toggleSort("code")}>
-            Code
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-          <Button variant="ghost" onClick={() => toggleSort("subject")}>
-            Total subjects
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
       </div>
       {loading && page === 1 ? (
         <CoursesSkeleton />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredCourses.map((course) => (
-            <SubjectCard key={course.id} course={course} />
+            <CourseCard key={course.id} course={course} />
           ))}
         </div>
       )}

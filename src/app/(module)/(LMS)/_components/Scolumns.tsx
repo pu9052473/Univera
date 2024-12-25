@@ -81,7 +81,7 @@ export const Scolumns: ColumnDef<fullCourseData>[] = [
             <Link href={`/subject/${id}`}>
               <DropdownMenuItem>
                 <Pencil className="h-4 w-4 mr-2" />
-                Add Subject
+                add subject
               </DropdownMenuItem>
             </Link>
           </DropdownMenuContent>
