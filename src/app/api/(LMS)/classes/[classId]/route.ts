@@ -25,6 +25,23 @@ export async function GET(req: Request, context: any) {
     const Class = await prisma.class.findFirst({
       where: {
         id: Number(classId)
+      },
+      include: {
+        mentor: true,
+        coordinator: true,
+        course: {
+          include: {
+            faculties: {
+              include: {
+                user: {
+                  include: {
+                    roles: true
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     })
 

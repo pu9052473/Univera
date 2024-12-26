@@ -35,7 +35,7 @@ const initForm = {
   semister: 0
 }
 
-export const ClassDetials: React.FC<ClassDetailsProps> = ({
+export const ClassEditForm: React.FC<ClassDetailsProps> = ({
   defaults,
   user,
   classId

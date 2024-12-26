@@ -59,7 +59,7 @@ export async function GET(req: Request) {
 
     // Validate user belongs to the department (optional, based on schema)
     const user = await findUserData(userId)
-    if (!user || user.Department?.id !== Number(departmentId)) {
+    if (!user) {
       return NextResponse.json({ message: "Access denied" }, { status: 403 })
     }
 

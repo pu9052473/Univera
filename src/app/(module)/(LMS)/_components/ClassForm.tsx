@@ -56,6 +56,8 @@ export default function ClassForm({
       if (response.status === 201) {
         toast.success(response.data.message)
         router.push(`/classes`)
+      } else {
+        toast.success(response.data.message)
       }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {

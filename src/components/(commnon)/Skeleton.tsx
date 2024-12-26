@@ -67,3 +67,36 @@ export const ClassesCardSkeleton = () => {
     </Card>
   )
 }
+
+export const ClassDetailsSkeleton = () => {
+  return (
+    <div className="w-full max-w-6xl mx-auto p-4 space-y-6">
+      <Card className="w-full bg-white shadow-lg">
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+            {/* Image Skeleton */}
+            <div className="relative w-full md:w-48 h-32 rounded-lg overflow-hidden">
+              <Skeleton height="100%" containerClassName="w-full h-full" />
+            </div>
+
+            {/* Info Skeleton */}
+            <div className="flex-grow space-y-2 w-full">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
+                <div className="w-full md:w-2/3">
+                  <Skeleton width="80%" height={32} /> {/* Class name */}
+                  <div className="flex gap-2 mt-2">
+                    <Skeleton width={120} height={24} /> {/* Semester badge */}
+                    <Skeleton width={100} height={24} /> {/* Code badge */}
+                  </div>
+                </div>
+                <div className="w-24 h-10">
+                  <Skeleton height="100%" /> {/* Edit button */}
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
