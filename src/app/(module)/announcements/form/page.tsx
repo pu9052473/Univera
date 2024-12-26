@@ -25,7 +25,6 @@ export default function CreateAnnouncement() {
   const [uploading, setUploading] = useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const isStudent = user?.roles.some((role: any) => role.rolename === "student")
   const router = useRouter()
 
   useEffect(() => {
@@ -249,14 +248,12 @@ export default function CreateAnnouncement() {
               >
                 Event
               </option>
-              {!isStudent && (
-                <option
-                  value="private"
-                  className="px-4 py-2 hover:bg-lamaSkyLight text-TextTwo"
-                >
-                  Private
-                </option>
-              )}
+              <option
+                value="private"
+                className="px-4 py-2 hover:bg-lamaSkyLight text-TextTwo"
+              >
+                Private
+              </option>
             </select>
             {/* Custom arrow icon */}
             <div className="relative">

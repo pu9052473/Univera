@@ -83,17 +83,19 @@ export default function AnnouncementsPage() {
           <h1 className="text-2xl font-semibold text-TextTwo text-center sm:text-left">
             Announcements
           </h1>
-          <button
-            onClick={() => router.push("/announcements/form")}
-            className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-ColorThree border border-ColorThree 
-            hover:bg-ColorThree hover:text-white transition-all duration-200 gap-2 group/create w-full sm:w-auto"
-          >
-            <FilePlus
-              size={18}
-              className="transition-transform group-hover/create:rotate-12"
-            />
-            Create Announcement
-          </button>
+          {!isStudent && (
+            <button
+              onClick={() => router.push("/announcements/form")}
+              className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-ColorThree border border-ColorThree 
+                       hover:bg-ColorThree hover:text-white transition-all duration-200 gap-2 group/create w-full sm:w-auto"
+            >
+              <FilePlus
+                size={18}
+                className="transition-transform group-hover/create:rotate-12"
+              />
+              Create Announcement
+            </button>
+          )}
         </div>
 
         <div className="bg-white rounded-xl shadow-lg overflow-hidden p-4">

@@ -47,7 +47,6 @@ async function getCourseById(courseId: number) {
       include: {
         subjects: true,
         faculties: true,
-        announcement: true,
         assignment: true,
         students: true,
         hod: true,
