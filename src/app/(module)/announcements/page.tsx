@@ -55,7 +55,13 @@ export default function AnnouncementsPage() {
   })
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return (
+      <div className="flex items-center justify-center h-full w-full">
+        <>
+          <Loader2 size={16} className="animate-spin" />
+        </>
+      </div>
+    )
   }
 
   if (error) {
