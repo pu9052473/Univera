@@ -4,6 +4,7 @@ import { UserContext } from "@/context/user"
 import { useUser } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import React, { useContext, useEffect, useState } from "react"
+import toast from "react-hot-toast"
 import { IoChevronForward } from "react-icons/io5"
 
 const colorPalette = {
@@ -22,10 +23,6 @@ const CoursesPage: React.FC = () => {
   const userRole = userData.user?.publicMetadata.role
   const [subjects, setSubjects] = useState([])
 
-  console.log("subjects", subjects)
-  console.log("user", user)
-  console.log("userRole", userRole)
-
   useEffect(() => {
     if (user) {
       const fetchSubjects = async () => {
@@ -38,24 +35,19 @@ const CoursesPage: React.FC = () => {
                 : null
 
           if (!courseId) {
-            console.error("No valid courseId found for userRole:", userRole)
+            toast.error("No valid courseId found for userRole")
             return
           }
 
           const response = await fetch(`/api/subjects?courseId=${courseId}`)
           if (!response.ok) {
-            throw new Error(
-              "Failed to fetch the subjects @app/(module)/forum/page"
-            )
+            toast.error("Failed to fetch the subjects")
           }
 
           const data = await response.json()
           setSubjects(data.subjects)
         } catch (error: any) {
-          console.log(
-            error.message ||
-              "An error occurred while fetching subjects @app/(module)/forum/page"
-          )
+          toast.error("An error occurred while fetching subjects:", error)
         }
       }
 

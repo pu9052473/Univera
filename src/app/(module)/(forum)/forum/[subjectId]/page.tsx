@@ -7,6 +7,7 @@ import { ForumSidebar } from "@/app/(module)/(forum)/_components/ForumSidebar"
 import { ChatSection } from "@/app/(module)/(forum)/_components/ChatSection"
 import { useParams } from "next/navigation"
 import { chatMessage, Forum, UploadedFile } from "@/types/globals"
+import toast from "react-hot-toast"
 
 export default function Home() {
   const [forums, setForums] = useState<Forum[]>([])
@@ -40,16 +41,14 @@ export default function Home() {
     })
     socketRef.current = socket
 
-    socketRef.current.on("connect", () => {
-      console.log("WebSocket connected:", socketRef.current?.id)
-    })
+    socketRef.current.on("connect", () => {})
 
-    socketRef.current.on("connect_error", (error) => {
-      console.log("WebSocket connection error:", error)
+    socketRef.current.on("connect_error", () => {
+      toast.error("WebSocket connection error")
     })
 
     socketRef.current.on("connect_timeout", () => {
-      console.log("WebSocket connection timed out")
+      toast.error("WebSocket connection timed out")
     })
 
     socketRef.current.on("disconnect", (reason) => {
@@ -66,8 +65,7 @@ export default function Home() {
         const res = await fetch(
           `/api/subjects/forum/messages?forumId=${selectedForumId}`
         )
-        if (!res.ok)
-          console.log("Failed to fetch messages from DB @(module)/forum/page")
+        if (!res.ok) toast.error("Failed to fetch messages from DB")
 
         const dbMessages = await res.json()
 
@@ -83,7 +81,7 @@ export default function Home() {
 
         setMessages(mergeMessages(filteredDbMessages, localMessages))
       } catch (error) {
-        console.log("Error fetching messages from DB:", error)
+        if (error) toast.error("Error fetching messages from DB")
         setMessages(localMessages) // Fallback to local messages if DB fetch fails
       }
     }
@@ -91,12 +89,9 @@ export default function Home() {
     fetchMessages()
 
     // On socket connection
-    socketRef.current.on("connect", () => {
-      console.log("Connected to WebSocket server")
-    })
+    socketRef.current.on("connect", () => {})
 
     socketRef.current?.emit("join_forum", selectedForumId) // Join the forum room
-    console.log("Connected to WebSocket server with forum", selectedForumId)
 
     socketRef.current.on("receive_message", (newMessage: any) => {
       setMessages((prev) => {
@@ -145,13 +140,11 @@ export default function Home() {
       : []
 
     const allMessages = [...safeExistingMessages, ...safeNewMessages]
-    // console.log("All messages before deduplication:", allMessages)
 
     // Remove duplicates based on the `id` field
     const uniqueMessages = Array.from(
       new Map(allMessages.map((msg) => [msg.id, msg])).values()
     )
-    // console.log("Unique messages after deduplication:", uniqueMessages)
 
     return uniqueMessages
   }
@@ -163,8 +156,7 @@ export default function Home() {
         const response = await fetch(
           `/api/subjects/forum?subjectId=${subjectId}`
         )
-        if (!response.ok)
-          throw new Error("Failed to fetch the forums @app/page")
+        if (!response.ok) toast.error("Failed to fetch the forums")
 
         const data = await response.json()
         // console.log("forums from DB", data)
@@ -200,16 +192,12 @@ export default function Home() {
         attachments: attachments,
         createdAt: new Date().toISOString()
       }
-
-      // console.log("New message with attachments:", newMessage);
-
       // it recreting same message again cause of time difference of minor milliseconds, so we storing only unique messages when it's already in local storage
 
       // Fetch existing messages from localStorage
       const storedMessages = JSON.parse(
         localStorage.getItem(`forum_${selectedForumId}`) || "[]"
       )
-      // console.log("Stored messages:", storedMessages);
 
       // Check if the message is a duplicate, mean already in the local storage
       const isDuplicate = storedMessages.some(
@@ -221,7 +209,6 @@ export default function Home() {
               new Date(newMessage.createdAt).getTime()
           ) < 50 // Allowing minor time difference
       )
-      // console.log("Is duplicate:", isDuplicate);
 
       if (!isDuplicate) {
         // Add the new message to the localStorage
@@ -230,14 +217,12 @@ export default function Home() {
           `forum_${selectedForumId}`,
           JSON.stringify(updatedMessages)
         )
-        // console.log("Updated messages in local:",JSON.parse(localStorage.getItem(`forum_${selectedForumId}`) || "[]"))
       }
 
       if (socketRef.current) {
         socketRef.current.emit("send_message", newMessage)
-        console.log("Socket is connected, sending message...", newMessage)
       } else {
-        console.log("Socket is not connected.")
+        toast.error("Socket is not connected.")
       }
 
       setUploadedFiles([])
@@ -293,11 +278,10 @@ export default function Home() {
       })
 
       if (response.ok) {
-        console.log("Messages stored successfully.")
         localStorage.removeItem(`forum_${selectedForumId}`)
       }
     } catch (error) {
-      console.log("Error saving messages:", error)
+      if (error) toast.error("Error saving messages")
     }
   }
 
@@ -326,15 +310,12 @@ export default function Home() {
     )
 
     // Remove from state
-    // console.log("messages before", messages)
     setMessages(messages.filter((message: any) => message.id !== id))
-    // console.log("messages after", messages)
 
     // reover from local storage
     const localMessages = JSON.parse(
       localStorage.getItem(`forum_${selectedForumId}`) || "[]"
     )
-    // console.log("localMessages before", localMessages)
 
     const updatedMessages = localMessages.filter(
       (message: any) => message.id !== id
@@ -344,7 +325,6 @@ export default function Home() {
       `forum_${selectedForumId}`,
       JSON.stringify(updatedMessages)
     )
-    // console.log("localMessages after", localMessages)
   }
 
   const deleteMessagesFromDB = async (
@@ -363,18 +343,13 @@ export default function Home() {
       })
 
       if (!response.ok) {
-        console.log(
-          "Failed to delete messages from DB /@module)/(forum)/forum/[subjectId]/page"
-        )
+        toast.error("Failed to delete messages from DB")
       }
 
       localStorage.removeItem("deletedMessageIds")
       return await response.json()
     } catch (error) {
-      console.log(
-        "error while delete messages from DB /@module)/(forum)/forum/[subjectId]/page",
-        error
-      )
+      if (error) toast.error("error while delete messages from DB")
     }
   }
 
@@ -391,14 +366,12 @@ export default function Home() {
         body: JSON.stringify({ subjectId, tag })
       })
 
-      if (!res.ok) throw new Error("Failed to add tag")
+      if (!res.ok) toast.error("Failed to create tag")
 
       setTag("") // Clear the input
       setIsTagDialogOpen(false) // Close dialog
     } catch (error) {
-      console.log(
-        `error while creating tag @(module)/(forum)/forum/[subjectId]/page${error}`
-      )
+      if (error) toast.error("error while creating tag")
     }
   }
 
@@ -409,14 +382,14 @@ export default function Home() {
         const res = await fetch(
           `/api/subjects/forum/helper?route=subjectDetails&subjectId=${subjectId}`
         )
-        if (!res.ok) throw new Error("Failed to fetch subject details")
+        if (!res.ok) toast.error("Failed to fetch subject details")
 
         const data = await res.json()
         setForumTags(data.forumTags || [])
         setDepartmentId(data.departmentId)
         setCourseId(data.courseId)
       } catch (error) {
-        console.log("Error fetching subject details:", error)
+        if (error) toast.error("Error fetching subject details")
       }
     }
 
@@ -431,7 +404,7 @@ export default function Home() {
         `/api/subjects/forum/helper?route=facultyDetails&courseId=${courseId}`
       )
       if (!facultyRes.ok) {
-        throw new Error("Failed to fetch faculty data")
+        toast.error("Failed to fetch faculty data")
       }
 
       const facultyList = await facultyRes.json()
@@ -462,7 +435,7 @@ export default function Home() {
         })
       })
 
-      if (!res.ok) throw new Error("Failed to create forum")
+      if (!res.ok) toast.error("Failed to create forum")
 
       const newForum = await res.json()
       // console.log("Forum created successfully:", newForum)
@@ -472,13 +445,9 @@ export default function Home() {
       setSelectedTags([]) // Clear selected tags
       setIsForumDialogOpen(false) // Close dialog
     } catch (error) {
-      console.log("Error creating forum:", error)
+      if (error) toast.error("Error creating forum")
     }
   }
-
-  // console.log("selected forum", selectedForumId)
-  // console.log("messages", messages)
-  // console.log("forums", forums)
 
   const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 540)
 
