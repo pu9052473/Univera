@@ -1,10 +1,28 @@
 import prisma from "@/lib/prisma"
+import { currentUser } from "@clerk/nextjs/server"
 import { Prisma } from "@prisma/client"
 import { NextResponse } from "next/server"
 
 export async function PATCH(req: Request) {
   const { searchParams } = new URL(req.url)
   const id = searchParams.get("id")
+
+  const user = await currentUser()
+  const role = user?.publicMetadata.role
+
+  //check user authorization
+  if (
+    role !== "authority" &&
+    role !== "university_admin" &&
+    role !== "department_admin"
+  ) {
+    return NextResponse.json(
+      { message: "You are not allowed to delete a announcement" },
+      {
+        status: 401
+      }
+    )
+  }
 
   try {
     const {
@@ -97,6 +115,22 @@ export async function PATCH(req: Request) {
 
 export async function DELETE(req: Request) {
   const { id } = await req.json()
+  const user = await currentUser()
+  const role = user?.publicMetadata.role
+
+  //check user authorization
+  if (
+    role !== "authority" &&
+    role !== "university_admin" &&
+    role !== "department_admin"
+  ) {
+    return NextResponse.json(
+      { message: "You are not allowed to delete a announcement" },
+      {
+        status: 401
+      }
+    )
+  }
 
   if (!id) {
     console.log("Validation failed. Missing id @api/announcements:")

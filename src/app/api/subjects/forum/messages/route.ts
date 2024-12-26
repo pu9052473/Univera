@@ -1,4 +1,6 @@
 import prisma from "@/lib/prisma"
+import { currentUser } from "@clerk/nextjs/server"
+import { NextResponse } from "next/server"
 
 // Reusable function to fetch messages by forumId
 async function fetchMessagesByForumId(forumId: number) {
@@ -40,6 +42,19 @@ export async function GET(req: Request) {
 
 // POST function for saving new messages and avoiding duplicates
 export async function POST(req: Request) {
+  const user = await currentUser()
+  const role = user?.publicMetadata.role
+
+  //check user authorization
+  if (role !== "authority" && role !== "faculty" && role !== "student") {
+    return NextResponse.json(
+      { message: "You are not allowed to create a messages" },
+      {
+        status: 401
+      }
+    )
+  }
+
   try {
     const { selectedForumId, processedMessages } = await req.json()
 
@@ -59,10 +74,6 @@ export async function POST(req: Request) {
     const newMessages = processedMessages.filter(
       (msg: any) => !existingMessageIds.has(msg.id)
     )
-
-    // console.log("Incoming messages:", processedMessages);
-    // console.log("Existing message IDs:", existingMessageIds);
-    // console.log("New messages to save:", newMessages);
 
     // If there are new messages, insert them into the database
     if (newMessages.length > 0) {
@@ -92,6 +103,19 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  const user = await currentUser()
+  const role = user?.publicMetadata.role
+
+  //check user authorization
+  if (role !== "authority" && role !== "faculty" && role !== "student") {
+    return NextResponse.json(
+      { message: "You are not allowed to delete a messages" },
+      {
+        status: 401
+      }
+    )
+  }
+
   try {
     const { forumId, messageIds } = await req.json()
 

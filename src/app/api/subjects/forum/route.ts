@@ -1,7 +1,21 @@
 import prisma from "@/lib/prisma"
+import { currentUser } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 
 export async function POST(req: Request) {
+  const user = await currentUser()
+  const role = user?.publicMetadata.role
+
+  //check user authorization
+  if (role !== "authority" && role !== "faculty" && role !== "student") {
+    return NextResponse.json(
+      { message: "You are not allowed to create a forum" },
+      {
+        status: 401
+      }
+    )
+  }
+
   try {
     const {
       name,
@@ -13,17 +27,6 @@ export async function POST(req: Request) {
       forumTags,
       subjectId
     } = await req.json()
-    console.log(
-      "name, departmentId, courseId, userId, moderatorId, isPrivate, forumTags, subjectId",
-      name,
-      departmentId,
-      courseId,
-      userId,
-      moderatorId,
-      isPrivate,
-      forumTags,
-      subjectId
-    )
     if (
       !name ||
       !departmentId ||

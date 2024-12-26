@@ -1,7 +1,20 @@
 import { NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
+import { currentUser } from "@clerk/nextjs/server"
 
 export async function POST(req: Request) {
+  const user = await currentUser()
+  const role = user?.publicMetadata.role
+
+  //check user authorization
+  if (role !== "authority" && role !== "faculty" && role !== "student") {
+    return NextResponse.json(
+      { message: "You are not allowed to create a forum tags" },
+      {
+        status: 401
+      }
+    )
+  }
   try {
     const { subjectId, tag } = await req.json()
 

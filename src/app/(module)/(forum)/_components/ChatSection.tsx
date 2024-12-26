@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import { Send, Smile, Paperclip, File, Trash2 } from "lucide-react"
 import { chatMessage, UploadedFile } from "@/types/globals"
-import { UploadthingUploader } from "../../../../components/(commnon)/UploadthingUploader"
+import { UploadthingUploader } from "@/components/(commnon)/UploadthingUploader"
 import { useUploadThing } from "@/utils/uploadthing"
 
 interface ChatSectionProps {

@@ -45,7 +45,7 @@ model User {
   forumParticipant ForumParticipant[]
   nonTeachingStaff NonTeachingStaff?
   student          Student?
-  University       University?
+  universityAdmin  University?        @relation("universityAdmin")
   coordinatorClass Class[]            @relation("coordinator_to_class")
 
   Department Department? @relation(fields: [departmentId], references: [id])
@@ -73,7 +73,7 @@ model University {
   students         Student[]
   classes          Class[]
   subjects         Subject[]
-  admin            User               @relation(fields: [adminId], references: [id])
+  admin            User               @relation("universityAdmin",fields: [adminId], references: [id])
   users            User[]             @relation("UserToUniversity")
 }
 

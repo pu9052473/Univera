@@ -2,11 +2,12 @@
 
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import { Loader2 } from "lucide-react"
-import { UploadthingUploader } from "../../../../components/(commnon)/UploadthingUploader"
+import { UploadthingUploader } from "@/components/(commnon)/UploadthingUploader"
 import { UserContext } from "@/context/user"
 import { useUploadThing } from "@/utils/uploadthing"
 import { UploadedFile } from "@/types/globals"
 import { useRouter, useSearchParams } from "next/navigation"
+import toast from "react-hot-toast"
 
 interface FileWithPreview extends File {
   preview?: string
@@ -56,10 +57,7 @@ export default function CreateAnnouncement() {
           setFiles(existingFiles)
         }
       } catch (error) {
-        console.error(
-          "Error fetching announcement @app/(module)/announcements/create:",
-          error
-        )
+        if (error) toast.error("Failed to fetch the announcements")
       } finally {
         setIsLoading(false)
       }
@@ -77,8 +75,8 @@ export default function CreateAnnouncement() {
         }
       })
     },
-    onUploadError: (error) => {
-      console.log("Error occurred while uploading: " + error.message)
+    onUploadError: () => {
+      toast.error("Failed to upload file")
       setUploading(false)
     },
     onUploadBegin: () => {
