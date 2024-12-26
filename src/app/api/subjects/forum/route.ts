@@ -1,15 +1,22 @@
 import prisma from "@/lib/prisma"
+import { currentUser } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 
 export async function POST(req: Request) {
-  try {
-    if (req.method !== "POST") {
-      return NextResponse.json(
-        { error: `Only POST requests are allowed ` },
-        { status: 405 }
-      )
-    }
+  const user = await currentUser()
+  const role = user?.publicMetadata.role
 
+  //check user authorization
+  if (role !== "authority" && role !== "faculty" && role !== "student") {
+    return NextResponse.json(
+      { message: "You are not allowed to create a forum" },
+      {
+        status: 401
+      }
+    )
+  }
+
+  try {
     const {
       name,
       departmentId,
@@ -20,17 +27,6 @@ export async function POST(req: Request) {
       forumTags,
       subjectId
     } = await req.json()
-    console.log(
-      "name, departmentId, courseId, userId, moderatorId, isPrivate, forumTags, subjectId",
-      name,
-      departmentId,
-      courseId,
-      userId,
-      moderatorId,
-      isPrivate,
-      forumTags,
-      subjectId
-    )
     if (
       !name ||
       !departmentId ||
@@ -81,18 +77,7 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
-  const subjectIdParams = searchParams.get("subjectId")
-  const subjectId = subjectIdParams ? parseInt(subjectIdParams, 10) : NaN
-
-  console.log("subjectId from ", subjectId)
-
-  // Validate the conversion
-  if (isNaN(subjectId)) {
-    return NextResponse.json(
-      { error: "Invalid subjectId, must be a number" },
-      { status: 400 }
-    )
-  }
+  const subjectId = searchParams.get("subjectId")
 
   if (!subjectId) {
     console.error("Validation failed. Missing subjectId @api/subjects:")
@@ -104,7 +89,7 @@ export async function GET(req: Request) {
 
   try {
     const forums = await prisma.forum.findMany({
-      where: { subjectId }
+      where: { subjectId: Number(subjectId) }
     })
 
     return NextResponse.json(forums, { status: 200 })

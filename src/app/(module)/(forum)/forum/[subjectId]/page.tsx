@@ -6,7 +6,8 @@ import io, { Socket } from "socket.io-client"
 import { ForumSidebar } from "@/app/(module)/(forum)/_components/ForumSidebar"
 import { ChatSection } from "@/app/(module)/(forum)/_components/ChatSection"
 import { useParams } from "next/navigation"
-import { chatMessage, Forum } from "@/types/globals"
+import { chatMessage, Forum, UploadedFile } from "@/types/globals"
+import toast from "react-hot-toast"
 
 export default function Home() {
   const [forums, setForums] = useState<Forum[]>([])
@@ -22,33 +23,32 @@ export default function Home() {
   const [departmentId, setDepartmentId] = useState<number | null>(null)
   const [courseId, setCourseId] = useState<number | null>(null)
   const [isPrivate, setIsPrivate] = useState(false)
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
 
   const userData = useUser()
   const userId = userData.user?.id
   const userRole = userData.user?.publicMetadata.role as string
   const socketRef = useRef<Socket | null>(null) // Store socket in a ref
   const { subjectId } = useParams()
-  console.log("userId", userId)
-  console.log("subjectId", subjectId)
-  console.log("userRole", userRole)
+  // console.log("userId", userId)
+  // console.log("subjectId", subjectId)
+  // console.log("userRole", userRole)
 
   useEffect(() => {
     // Initialize socket connection with the path to the WebSocket API
-    const socket = io("https://univera.onrender.com", {
+    const socket = io(process.env.NEXT_PUBLIC_WEBSOCKET_URL, {
       transports: ["websocket", "polling"]
     })
     socketRef.current = socket
 
-    socketRef.current.on("connect", () => {
-      console.log("WebSocket connected:", socketRef.current?.id)
-    })
+    socketRef.current.on("connect", () => {})
 
-    socketRef.current.on("connect_error", (error) => {
-      console.error("WebSocket connection error:", error)
+    socketRef.current.on("connect_error", () => {
+      toast.error("WebSocket connection error")
     })
 
     socketRef.current.on("connect_timeout", () => {
-      console.error("WebSocket connection timed out")
+      toast.error("WebSocket connection timed out")
     })
 
     socketRef.current.on("disconnect", (reason) => {
@@ -65,13 +65,23 @@ export default function Home() {
         const res = await fetch(
           `/api/subjects/forum/messages?forumId=${selectedForumId}`
         )
-        if (!res.ok)
-          console.log("Failed to fetch messages from DB @(module)/forum/page")
+        if (!res.ok) toast.error("Failed to fetch messages from DB")
 
         const dbMessages = await res.json()
-        setMessages(mergeMessages(dbMessages, localMessages))
+
+        // Fetch deletedMessageIds from localStorage
+        const deletedMessageIds = new Set(
+          JSON.parse(localStorage.getItem("deletedMessageIds") || "[]")
+        )
+
+        // Filter out messages that are in deletedMessageIds
+        const filteredDbMessages = dbMessages.filter(
+          (message: { id: number }) => !deletedMessageIds.has(message.id)
+        )
+
+        setMessages(mergeMessages(filteredDbMessages, localMessages))
       } catch (error) {
-        console.log("Error fetching messages:", error)
+        if (error) toast.error("Error fetching messages from DB")
         setMessages(localMessages) // Fallback to local messages if DB fetch fails
       }
     }
@@ -79,17 +89,31 @@ export default function Home() {
     fetchMessages()
 
     // On socket connection
-    socketRef.current.on("connect", () => {
-      console.log("Connected to WebSocket server")
-    })
+    socketRef.current.on("connect", () => {})
 
     socketRef.current?.emit("join_forum", selectedForumId) // Join the forum room
-    console.log("Connected to WebSocket server with forum", selectedForumId)
 
-    // Listen for new messages from the server
     socketRef.current.on("receive_message", (newMessage: any) => {
-      console.log("Received message from server:", newMessage)
-      setMessages((prev) => [...prev, newMessage]) // Add new message
+      setMessages((prev) => {
+        // Check if the message is a duplicate
+        const isDuplicate = prev.some(
+          (msg) =>
+            msg.message === newMessage.message &&
+            msg.forumId === newMessage.forumId &&
+            Math.abs(
+              new Date(msg.createdAt).getTime() -
+                new Date(newMessage.createdAt).getTime()
+            ) < 50 // Allowing minor time difference
+        )
+
+        // If the message is not a duplicate, add it to the state
+        if (!isDuplicate) {
+          const updatedMessages = [...prev, newMessage]
+          return updatedMessages
+        }
+
+        return prev
+      })
     })
 
     // On socket disconnection
@@ -116,13 +140,11 @@ export default function Home() {
       : []
 
     const allMessages = [...safeExistingMessages, ...safeNewMessages]
-    console.log("All messages before deduplication:", allMessages)
 
     // Remove duplicates based on the `id` field
     const uniqueMessages = Array.from(
       new Map(allMessages.map((msg) => [msg.id, msg])).values()
     )
-    console.log("Unique messages after deduplication:", uniqueMessages)
 
     return uniqueMessages
   }
@@ -134,11 +156,10 @@ export default function Home() {
         const response = await fetch(
           `/api/subjects/forum?subjectId=${subjectId}`
         )
-        if (!response.ok)
-          throw new Error("Failed to fetch the forums @app/page")
+        if (!response.ok) toast.error("Failed to fetch the forums")
 
         const data = await response.json()
-        console.log("forums from DB", data)
+        // console.log("forums from DB", data)
         setForums(data)
       } catch (error: any) {
         console.log(
@@ -154,33 +175,57 @@ export default function Home() {
     setSelectedForumId(forumId)
   }
 
-  const sendMessage = async () => {
-    if (inputMessage.trim() && selectedForumId) {
+  const sendMessage = async (
+    message?: string,
+    attachments: UploadedFile[] = []
+  ) => {
+    if (
+      message &&
+      (message.trim() || attachments.length > 0) &&
+      selectedForumId
+    ) {
       const newMessage = {
         id: Date.now(),
-        message: inputMessage,
+        message: message.trim(),
         userId,
         forumId: selectedForumId,
+        attachments: attachments,
         createdAt: new Date().toISOString()
       }
+      // it recreting same message again cause of time difference of minor milliseconds, so we storing only unique messages when it's already in local storage
 
-      // Storing message locally
-      const localMessages = JSON.parse(
+      // Fetch existing messages from localStorage
+      const storedMessages = JSON.parse(
         localStorage.getItem(`forum_${selectedForumId}`) || "[]"
       )
-      const updatedMessages = [...localMessages, newMessage]
-      localStorage.setItem(
-        `forum_${selectedForumId}`,
-        JSON.stringify(updatedMessages)
+
+      // Check if the message is a duplicate, mean already in the local storage
+      const isDuplicate = storedMessages.some(
+        (msg: any) =>
+          msg.message === newMessage.message &&
+          msg.forumId === newMessage.forumId &&
+          Math.abs(
+            new Date(msg.createdAt).getTime() -
+              new Date(newMessage.createdAt).getTime()
+          ) < 50 // Allowing minor time difference
       )
+
+      if (!isDuplicate) {
+        // Add the new message to the localStorage
+        const updatedMessages = [...storedMessages, newMessage]
+        localStorage.setItem(
+          `forum_${selectedForumId}`,
+          JSON.stringify(updatedMessages)
+        )
+      }
 
       if (socketRef.current) {
         socketRef.current.emit("send_message", newMessage)
-        console.log("Socket is connected, sending message...", newMessage)
       } else {
-        console.log("Socket is not connected.")
+        toast.error("Socket is not connected.")
       }
 
+      setUploadedFiles([])
       setInputMessage("")
     }
   }
@@ -196,6 +241,14 @@ export default function Home() {
           if (localMessages.length > 0) {
             saveChatMessages(selectedForumId, localMessages) // call the function to save chat
           }
+
+          const deletedMessageIds = JSON.parse(
+            localStorage.getItem(`deletedMessageIds`) || "[]"
+          )
+
+          if (deletedMessageIds.length > 0) {
+            deleteMessagesFromDB(selectedForumId, deletedMessageIds)
+          }
         },
         1 * 60 * 1000
       ) // every minutes call the function
@@ -209,19 +262,26 @@ export default function Home() {
     selectedForumId: number,
     localMessages: any[]
   ) => {
+    const processedMessages = localMessages.map((msg) => ({
+      message: msg.message,
+      userId: msg.userId,
+      forumId: msg.forumId,
+      attachments: Array.isArray(msg.attachments) ? msg.attachments : [], // Ensure it's an array
+      createdAt: msg.createdAt
+    }))
+
     try {
       const response = await fetch("/api/subjects/forum/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ selectedForumId, localMessages })
+        body: JSON.stringify({ selectedForumId, processedMessages })
       })
 
       if (response.ok) {
-        console.log("Messages stored successfully.")
         localStorage.removeItem(`forum_${selectedForumId}`)
       }
     } catch (error) {
-      console.log("Error saving messages:", error)
+      if (error) toast.error("Error saving messages")
     }
   }
 
@@ -234,6 +294,63 @@ export default function Home() {
       await saveChatMessages(selectedForumId, localMessages)
     }
     setSelectedForumId(null)
+  }
+
+  const handleDeleteMessage = (id: number) => {
+    // Fetch existing deletedMessageIds from localStorage
+    const deletedMessageIds = new Set<number>(
+      JSON.parse(localStorage.getItem("deletedMessageIds") || "[]")
+    )
+
+    // Add the message ID to the deletedMessageIds array
+    deletedMessageIds.add(id)
+    localStorage.setItem(
+      "deletedMessageIds",
+      JSON.stringify(Array.from(deletedMessageIds))
+    )
+
+    // Remove from state
+    setMessages(messages.filter((message: any) => message.id !== id))
+
+    // reover from local storage
+    const localMessages = JSON.parse(
+      localStorage.getItem(`forum_${selectedForumId}`) || "[]"
+    )
+
+    const updatedMessages = localMessages.filter(
+      (message: any) => message.id !== id
+    )
+
+    localStorage.setItem(
+      `forum_${selectedForumId}`,
+      JSON.stringify(updatedMessages)
+    )
+  }
+
+  const deleteMessagesFromDB = async (
+    forumId: number,
+    messageIds: number[]
+  ) => {
+    if (!forumId || !messageIds.length) return
+
+    console.log("messages befor dele from DB", messageIds)
+
+    try {
+      const response = await fetch("/api/subjects/forum/messages", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ forumId, messageIds })
+      })
+
+      if (!response.ok) {
+        toast.error("Failed to delete messages from DB")
+      }
+
+      localStorage.removeItem("deletedMessageIds")
+      return await response.json()
+    } catch (error) {
+      if (error) toast.error("error while delete messages from DB")
+    }
   }
 
   const addTag = async () => {
@@ -249,14 +366,12 @@ export default function Home() {
         body: JSON.stringify({ subjectId, tag })
       })
 
-      if (!res.ok) throw new Error("Failed to add tag")
+      if (!res.ok) toast.error("Failed to create tag")
 
       setTag("") // Clear the input
       setIsTagDialogOpen(false) // Close dialog
     } catch (error) {
-      console.log(
-        `error while creating tag @(module)/(forum)/forum/[subjectId]/page${error}`
-      )
+      if (error) toast.error("error while creating tag")
     }
   }
 
@@ -267,14 +382,14 @@ export default function Home() {
         const res = await fetch(
           `/api/subjects/forum/helper?route=subjectDetails&subjectId=${subjectId}`
         )
-        if (!res.ok) throw new Error("Failed to fetch subject details")
+        if (!res.ok) toast.error("Failed to fetch subject details")
 
         const data = await res.json()
         setForumTags(data.forumTags || [])
         setDepartmentId(data.departmentId)
         setCourseId(data.courseId)
       } catch (error) {
-        console.log("Error fetching subject details:", error)
+        if (error) toast.error("Error fetching subject details")
       }
     }
 
@@ -289,7 +404,7 @@ export default function Home() {
         `/api/subjects/forum/helper?route=facultyDetails&courseId=${courseId}`
       )
       if (!facultyRes.ok) {
-        throw new Error("Failed to fetch faculty data")
+        toast.error("Failed to fetch faculty data")
       }
 
       const facultyList = await facultyRes.json()
@@ -320,61 +435,137 @@ export default function Home() {
         })
       })
 
-      if (!res.ok) throw new Error("Failed to create forum")
+      if (!res.ok) toast.error("Failed to create forum")
 
       const newForum = await res.json()
-      console.log("Forum created successfully:", newForum)
+      // console.log("Forum created successfully:", newForum)
 
       setForums((prev) => [...prev, newForum])
       setForumName("") // Clear the input
       setSelectedTags([]) // Clear selected tags
       setIsForumDialogOpen(false) // Close dialog
     } catch (error) {
-      console.log("Error creating forum:", error)
+      if (error) toast.error("Error creating forum")
     }
   }
 
-  console.log("selected forum", selectedForumId)
-  console.log("messages", messages)
-  console.log("forums", forums)
+  const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 540)
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth <= 540)
+    }
+
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   return (
-    <div className="h-[90%] bg-[#CECDF9] p-3.5 grid grid-cols-12 gap-4">
-      <div className="col-span-3 min-h-full">
-        <ForumSidebar
-          forums={forums}
-          selectedForumId={selectedForumId}
-          tag={tag}
-          setTag={setTag}
-          addTag={addTag}
-          userRole={userRole}
-          isTagDialogOpen={isTagDialogOpen}
-          setIsTagDialogOpen={setIsTagDialogOpen}
-          isForumDialogOpen={isForumDialogOpen}
-          setIsForumDialogOpen={setIsForumDialogOpen}
-          onForumSelect={handleForumSelect}
-          forumName={forumName}
-          forumTags={forumTags}
-          selectedTags={selectedTags}
-          setSelectedTags={setSelectedTags}
-          createForum={createForum}
-          isPrivate={isPrivate}
-          setForumName={setForumName}
-          setIsPrivate={setIsPrivate}
-        />
-      </div>
-      <div className="col-span-9 min-h-full grid grid-rows-[auto,1fr] gap-4">
-        {selectedForumId && (
-          <ChatSection
-            messages={messages}
-            userId={userId}
-            inputMessage={inputMessage}
-            onInputChange={setInputMessage}
-            onSendMessage={sendMessage}
-            onLeaveChat={handleLeaveChat}
-          />
-        )}
-      </div>
+    <div className="h-[89vh] py-2 px-3 flex">
+      {isMobileView ? (
+        selectedForumId === null ? (
+          // Mobile view: Show Sidebar only
+          <div
+            className={`transition-all duration-300 h-[85vh] w-[80vw] md:w-full`}
+          >
+            <ForumSidebar
+              forums={forums}
+              selectedForumId={selectedForumId}
+              tag={tag}
+              setTag={setTag}
+              addTag={addTag}
+              userRole={userRole}
+              isTagDialogOpen={isTagDialogOpen}
+              setIsTagDialogOpen={setIsTagDialogOpen}
+              isForumDialogOpen={isForumDialogOpen}
+              setIsForumDialogOpen={setIsForumDialogOpen}
+              onForumSelect={(id) => setSelectedForumId(id)}
+              forumName={forumName}
+              forumTags={forumTags}
+              selectedTags={selectedTags}
+              setSelectedTags={setSelectedTags}
+              createForum={createForum}
+              isPrivate={isPrivate}
+              setForumName={setForumName}
+              setIsPrivate={setIsPrivate}
+            />
+          </div>
+        ) : (
+          // Mobile view: Show Chatbox only
+          <div className="h-[85vh] w-full overflow-hidden">
+            <ChatSection
+              messages={messages}
+              userId={userId}
+              inputMessage={inputMessage}
+              onInputChange={setInputMessage}
+              onSendMessage={sendMessage}
+              onLeaveChat={handleLeaveChat}
+              uploadedFiles={uploadedFiles}
+              setUploadedFiles={setUploadedFiles}
+              handleDeleteMessage={handleDeleteMessage}
+            />
+          </div>
+        )
+      ) : (
+        // Desktop view: Show Sidebar and Chatbox side by side
+        <>
+          <div
+            className={`transition-all duration-300 h-[85vh] w-[30%] md:w-[25%]`}
+          >
+            <ForumSidebar
+              forums={forums}
+              selectedForumId={selectedForumId}
+              tag={tag}
+              setTag={setTag}
+              addTag={addTag}
+              userRole={userRole}
+              isTagDialogOpen={isTagDialogOpen}
+              setIsTagDialogOpen={setIsTagDialogOpen}
+              isForumDialogOpen={isForumDialogOpen}
+              setIsForumDialogOpen={setIsForumDialogOpen}
+              onForumSelect={handleForumSelect}
+              forumName={forumName}
+              forumTags={forumTags}
+              selectedTags={selectedTags}
+              setSelectedTags={setSelectedTags}
+              createForum={createForum}
+              isPrivate={isPrivate}
+              setForumName={setForumName}
+              setIsPrivate={setIsPrivate}
+            />
+          </div>
+
+          {/* Chat Section */}
+          <div className="h-[85vh] w-full overflow-hidden">
+            {selectedForumId ? (
+              <ChatSection
+                messages={messages}
+                userId={userId}
+                inputMessage={inputMessage}
+                onInputChange={setInputMessage}
+                onSendMessage={sendMessage}
+                onLeaveChat={handleLeaveChat}
+                uploadedFiles={uploadedFiles}
+                setUploadedFiles={setUploadedFiles}
+                handleDeleteMessage={handleDeleteMessage}
+              />
+            ) : (
+              !isMobileView && (
+                <div className="h-[90vh]  rounded-lg flex items-center justify-center">
+                  <div className="text-center">
+                    <h2 className="text-xl font-semibold text-gray-600">
+                      Please Select a Forum
+                    </h2>
+                    <p className="mt-2 text-gray-500">
+                      Choose a forum from the sidebar to start chatting
+                    </p>
+                  </div>
+                </div>
+              )
+            )}
+          </div>
+        </>
+      )}
     </div>
   )
 }

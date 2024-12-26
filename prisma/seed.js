@@ -162,7 +162,11 @@ async function main() {
       email: "coordinator_uit@ku.edu.in",
       phone: "7894567898",
       roles: {
+<<<<<<< HEAD
         connect: [5, 4].map((id) => ({ id }))
+=======
+        connect: [5,4].map((id) => ({ id }))
+>>>>>>> main
       }
     }
   })
@@ -216,7 +220,11 @@ async function main() {
       phone: "7894567898",
       departmentId: 1,
       roles: {
+<<<<<<< HEAD
         connect: [11, 4].map((id) => ({ id }))
+=======
+        connect: [11,4].map((id) => ({ id }))
+>>>>>>> main
       }
     }
   })
@@ -415,6 +423,32 @@ async function main() {
       universityId: 1
     }
   })
+  const class1 = await prisma.class.create({
+    data: {
+      id: 1,
+      name: "Class 1",
+      code: "2ET100301T",
+      semister: 1,
+      departmentId: 1,
+      universityId: 1,
+      coordinatorId: dummyCoordinatorUser.clerkId,
+      mentorId: dummyFaculty1.clerkId,
+      courseId: course1.id,
+    }
+  })
+  const class2 = await prisma.class.create({
+    data: {
+      id: 2,
+      name: "Class 2",
+      code: "2ET100302T",
+      semister: 1,
+      departmentId: 1,
+      universityId: 1,
+      coordinatorId: dummyCoordinatorUser.clerkId,
+      mentorId: dummyFaculty2.clerkId,
+      courseId: course1.id,
+    }
+  })
 }
 
 main()
@@ -428,3 +462,5 @@ main()
     await prisma.$disconnect()
     process.exit(1)
   })
+
+

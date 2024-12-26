@@ -1,4 +1,6 @@
 import prisma from "@/lib/prisma"
+import { currentUser } from "@clerk/nextjs/server"
+import { NextResponse } from "next/server"
 
 // Reusable function to fetch messages by forumId
 async function fetchMessagesByForumId(forumId: number) {
@@ -40,8 +42,25 @@ export async function GET(req: Request) {
 
 // POST function for saving new messages and avoiding duplicates
 export async function POST(req: Request) {
+  const user = await currentUser()
+  const role = user?.publicMetadata.role
+
+  //check user authorization
+  if (role !== "authority" && role !== "faculty" && role !== "student") {
+    return NextResponse.json(
+      { message: "You are not allowed to create a messages" },
+      {
+        status: 401
+      }
+    )
+  }
+
   try {
-    const { selectedForumId, localMessages } = await req.json()
+    const { selectedForumId, processedMessages } = await req.json()
+
+    if (!processedMessages || !Array.isArray(processedMessages)) {
+      throw new Error("Invalid or missing 'messages' in request")
+    }
 
     // Fetch existing message IDs for the given forumId
     const existingMessages = await fetchMessagesByForumId(
@@ -52,7 +71,7 @@ export async function POST(req: Request) {
     const existingMessageIds = new Set(existingMessages.map((msg) => msg.id))
 
     // Filter out any messages that already exist in the database
-    const newMessages = localMessages.filter(
+    const newMessages = processedMessages.filter(
       (msg: any) => !existingMessageIds.has(msg.id)
     )
 
@@ -62,7 +81,8 @@ export async function POST(req: Request) {
         data: newMessages.map((msg: any) => ({
           message: msg.message,
           userId: msg.userId,
-          forumId: Number(msg.forumId)
+          forumId: Number(msg.forumId),
+          attachments: msg.attachments
         }))
       })
     }
@@ -76,6 +96,68 @@ export async function POST(req: Request) {
     return new Response(
       JSON.stringify({
         error: `Failed to save message @api/erp/forum/messages ${error}`
+      }),
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(req: Request) {
+  const user = await currentUser()
+  const role = user?.publicMetadata.role
+
+  //check user authorization
+  if (role !== "authority" && role !== "faculty" && role !== "student") {
+    return NextResponse.json(
+      { message: "You are not allowed to delete a messages" },
+      {
+        status: 401
+      }
+    )
+  }
+
+  try {
+    const { forumId, messageIds } = await req.json()
+
+    if (!forumId || !Array.isArray(messageIds)) {
+      throw new Error("Invalid or missing 'messages' in request")
+    }
+    console.log("come in delete message api")
+
+    // Fetch existing message IDs for the given forumId
+    const existingMessages = await fetchMessagesByForumId(Number(forumId))
+
+    // Create a set of existing message IDs
+    const existingMessageIds = new Set(existingMessages.map((msg) => msg.id))
+
+    // Filter out message IDs that are not in the database
+    const messagesToDelete = messageIds.filter((id) =>
+      existingMessageIds.has(id)
+    )
+
+    console.log("Messages to delete (existing in DB):", messagesToDelete)
+
+    if (messagesToDelete.length > 0) {
+      // Delete only messages that exist in the database
+      await prisma.chatMessage.deleteMany({
+        where: {
+          forumId: Number(forumId),
+          id: { in: messageIds }
+        }
+      })
+    }
+
+    return new Response(
+      JSON.stringify({ message: "Messages deleted successfully" }),
+      {
+        status: 200
+      }
+    )
+  } catch (error) {
+    console.log("Failed to delete message @api/erp/forum/messages", error)
+    return new Response(
+      JSON.stringify({
+        error: `Failed to delete message @api/erp/forum/messages ${error}`
       }),
       { status: 500 }
     )
