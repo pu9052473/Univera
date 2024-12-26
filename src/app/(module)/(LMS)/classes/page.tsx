@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import { ClassesCardSkeleton } from "@/components/(commnon)/Skeleton"
 
-export async function fetchClasses(courseId: number) {
+async function fetchClasses(courseId: number) {
   const { data } = await axios.get(`/api/classes`, {
     params: { courseId }
   })

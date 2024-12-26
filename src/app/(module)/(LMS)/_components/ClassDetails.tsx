@@ -23,7 +23,7 @@ const ClassDetails = ({ Class, isLoading = false }: ClassDetailsProps) => {
   }
 
   return (
-    <div className="w-full mx-auto p-4 space-y-6">
+    <div className="w-full mx-auto space-y-6">
       <Card className="w-full bg-white shadow-lg">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">

@@ -162,11 +162,7 @@ async function main() {
       email: "coordinator_uit@ku.edu.in",
       phone: "7894567898",
       roles: {
-<<<<<<< HEAD
         connect: [5, 4].map((id) => ({ id }))
-=======
-        connect: [5,4].map((id) => ({ id }))
->>>>>>> main
       }
     }
   })
@@ -220,11 +216,7 @@ async function main() {
       phone: "7894567898",
       departmentId: 1,
       roles: {
-<<<<<<< HEAD
         connect: [11, 4].map((id) => ({ id }))
-=======
-        connect: [11,4].map((id) => ({ id }))
->>>>>>> main
       }
     }
   })
