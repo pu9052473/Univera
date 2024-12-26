@@ -3,13 +3,6 @@ import { NextResponse } from "next/server"
 
 export async function POST(req: Request) {
   try {
-    if (req.method !== "POST") {
-      return NextResponse.json(
-        { error: `Only POST requests are allowed ` },
-        { status: 405 }
-      )
-    }
-
     const {
       name,
       departmentId,
@@ -81,18 +74,7 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
-  const subjectIdParams = searchParams.get("subjectId")
-  const subjectId = subjectIdParams ? parseInt(subjectIdParams, 10) : NaN
-
-  console.log("subjectId from ", subjectId)
-
-  // Validate the conversion
-  if (isNaN(subjectId)) {
-    return NextResponse.json(
-      { error: "Invalid subjectId, must be a number" },
-      { status: 400 }
-    )
-  }
+  const subjectId = searchParams.get("subjectId")
 
   if (!subjectId) {
     console.error("Validation failed. Missing subjectId @api/subjects:")
@@ -104,7 +86,7 @@ export async function GET(req: Request) {
 
   try {
     const forums = await prisma.forum.findMany({
-      where: { subjectId }
+      where: { subjectId: Number(subjectId) }
     })
 
     return NextResponse.json(forums, { status: 200 })

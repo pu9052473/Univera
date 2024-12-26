@@ -20,7 +20,7 @@ interface UploadthingUploaderProps {
   files: FileWithPreview[]
   uploading: boolean
   setUploading: (value: boolean) => void
-  setShowMediaOptions: (value: boolean) => void
+  setShowMediaOptions?: (value: boolean) => void
   onDrop: (files: File[]) => void
   removeFile: (index: number) => void
   routeConfig: any
@@ -144,7 +144,7 @@ export function UploadthingUploader({
 
       {/* Upload Status */}
       {uploading && (
-        <div className="bg-lamaPurpleLight text-ColorThree p-3 rounded-lg flex items-center justify-center">
+        <div className="bg-lamaPurpleLight text-ColorThree p-3 rounded-lg flex items-center justify-center cursor-default">
           <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
             <circle
               className="opacity-25"

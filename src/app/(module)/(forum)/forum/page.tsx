@@ -22,9 +22,9 @@ const CoursesPage: React.FC = () => {
   const userRole = userData.user?.publicMetadata.role
   const [subjects, setSubjects] = useState([])
 
-  console.log("subjects", subjects)
-  console.log("user", user)
-  console.log("userRole", userRole)
+  // console.log("subjects", subjects)
+  // console.log("user", user)
+  // console.log("userRole", userRole)
 
   useEffect(() => {
     if (user) {
