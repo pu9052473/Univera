@@ -170,7 +170,7 @@ export async function PATCH(res: Request, context: any) {
         })
 
         return NextResponse.json(
-          { message: "Faculty removed successfully", data: Class },
+          { message: "Faculty removed successfully", class: Class },
           { status: 200 }
         )
       } catch (error) {
@@ -180,6 +180,64 @@ export async function PATCH(res: Request, context: any) {
           { status: 500 }
         )
       }
+    }
+
+    // Update class with new coordinator
+    if (updatedClass.coordinatorId) {
+      const updatedClassData = await prisma.class.update({
+        where: {
+          id: Number(classId)
+        },
+        data: {
+          coordinator: {
+            connect: { id: updatedClass.coordinatorId }
+          }
+        }
+      })
+      if (!updatedClassData) {
+        return NextResponse.json(
+          { message: "Error updating coordinator" },
+          { status: 500 }
+        )
+      }
+      return NextResponse.json(
+        {
+          message: "Coordinator updated successfully",
+          data: updatedClassData
+        },
+        {
+          status: 200
+        }
+      )
+    }
+
+    // Update class with new Mentor
+    if (updatedClass.mentorId) {
+      const updatedClassData = await prisma.class.update({
+        where: {
+          id: Number(classId)
+        },
+        data: {
+          mentor: {
+            connect: { id: updatedClass.mentorId }
+          }
+        }
+      })
+      if (!updatedClassData) {
+        return NextResponse.json(
+          { message: "Error updating coordinator" },
+          { status: 500 }
+        )
+      }
+      return NextResponse.json(
+        {
+          message: "Mentor updated successfully",
+          class: updatedClassData
+        },
+        {
+          status: 200
+        }
+      )
     }
 
     //else update class details

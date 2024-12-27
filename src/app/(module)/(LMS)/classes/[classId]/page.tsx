@@ -93,7 +93,13 @@ export default function ClassEditPage() {
                   {tab === "coordinator" && (
                     <div className="space-y-4">
                       {Class?.coordinator ? (
-                        <UserCard User={Class.coordinator} />
+                        <UserCard
+                          type="coordinator"
+                          User={Class.coordinator}
+                          refetch={refetch}
+                          classId={classId as string}
+                          Users={Class.course.faculties}
+                        />
                       ) : (
                         Class?.course && (
                           <AddCoordinator
@@ -109,7 +115,13 @@ export default function ClassEditPage() {
                   {tab === "mentor" && (
                     <div className="space-y-4">
                       {Class?.mentor ? (
-                        <UserCard User={Class.mentor} />
+                        <UserCard
+                          type="mentor"
+                          User={Class.mentor}
+                          refetch={refetch}
+                          classId={classId as string}
+                          Users={Class.course.faculties}
+                        />
                       ) : (
                         Class?.course && (
                           <AddMentor
