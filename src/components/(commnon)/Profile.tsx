@@ -131,7 +131,7 @@ const Profile: React.FC<ProfileProps> = ({
           <div className="flex flex-col items-center md:items-start">
             <h1
               className="text-2xl md:text-3xl font-extrabold mb-4 
-                         text-Primary text-center md:text-left 
+                         text-Dark text-center md:text-left 
                          drop-shadow-md"
             >
               {defaults && defaults.name}&#39;s Profile

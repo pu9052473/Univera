@@ -74,9 +74,15 @@ export default function EditSubjectPage() {
       if (res.status === 200) {
         toast.success(res.data.message)
         router.push(`/subject/${courseId}`)
+      } else {
+        toast.error(res.data.message)
       }
     } catch (error) {
-      toast.error("Internal server error")
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message || "Something went wrong")
+      } else {
+        toast.error("An unexpected error occurred")
+      }
     }
   }
 
@@ -111,9 +117,9 @@ export default function EditSubjectPage() {
               subject={defaults}
               submitBtnId="subject-update"
               courseId={Number(courseId)}
-              department={user?.departmentAdmin}
+              department={user?.Department}
               courseName={course?.name}
-              departmentName={user?.departmentAdmin.name}
+              departmentName={user?.Department.name}
               submitBtnLabel={"Update"}
             />
 

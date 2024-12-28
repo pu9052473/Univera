@@ -48,13 +48,16 @@ export async function POST(req: Request) {
     ) {
       throw new Error("All fields are required")
     }
+
     //creating a clerk teacher
     const user = await createUser({
       name: name,
       email: email,
       password: password,
       role: "faculty",
-      roleIds: roleIds as Array<number>,
+      universityId,
+      courseId,
+      roleIds: [...roleIds, 4] as Array<number>,
       phone: "",
       departmentId: Number(departmentId)
     })
@@ -77,23 +80,20 @@ export async function POST(req: Request) {
     if (roleIds.includes(11)) {
       await assignDean(Number(departmentId), user.clerkId)
     }
-    let faculty
     //create a faculty data if user is faculty
-    if (roleIds.includes(4)) {
-      faculty = await prisma.faculty.create({
-        data: {
-          id: user.clerkId,
-          courseId: Number(courseId),
-          position: position,
-          clerkId: user.clerkId,
-          universityId: Number(universityId),
-          departmentId: Number(departmentId),
-          subject: {
-            connect: subjectIds.map((id: number) => ({ id }))
-          }
+    const faculty = await prisma.faculty.create({
+      data: {
+        id: user.clerkId,
+        courseId: Number(courseId),
+        position: position,
+        clerkId: user.clerkId,
+        universityId: Number(universityId),
+        departmentId: Number(departmentId),
+        subject: {
+          connect: subjectIds.map((id: number) => ({ id }))
         }
-      })
-    }
+      }
+    })
     if (faculty) {
       return NextResponse.json(
         { message: "Faculty created successfully", user: user, faculty },

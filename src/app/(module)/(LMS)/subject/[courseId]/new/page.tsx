@@ -1,38 +1,27 @@
 "use client"
 
 import Link from "next/link"
-import toast from "react-hot-toast"
 import { SubjectForm } from "../../../_components/SubjectForm"
 import { UserContext } from "@/context/user"
-import { useContext, useEffect, useState } from "react"
+import { useContext } from "react"
 import { useParams } from "next/navigation"
 import axios from "axios"
-import { Course } from "@prisma/client"
+import { useQuery } from "@tanstack/react-query"
 import Left from "@/components/Icons/Left"
 
 export default function NewSubjectPage() {
   const { user } = useContext(UserContext)
   const { courseId } = useParams()
-  const [course, setCourse] = useState<Course | null>(null)
 
-  async function fetchCourse() {
-    try {
-      const res = await axios.get(
-        `/api/courses/${courseId}?courseId=${courseId}`
-      )
-      console.log("res: ", res)
-      setCourse(res.data.course)
-    } catch (error) {
-      console.log(error)
-      toast.error("Something went wrong while fetching course details.")
-    }
+  async function fetchCourse(courseId: string) {
+    const res = await axios.get(`/api/courses/${courseId}?courseId=${courseId}`)
+    return res.data.course
   }
-
-  useEffect(() => {
-    if (courseId) {
-      fetchCourse()
-    }
-  }, [courseId])
+  const { data: course } = useQuery({
+    queryKey: ["course", courseId],
+    queryFn: () => fetchCourse(courseId as string),
+    enabled: !!courseId
+  })
 
   return (
     <section className="mt-8 max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -54,9 +43,9 @@ export default function NewSubjectPage() {
         </h2>
         <SubjectForm
           courseId={Number(courseId)}
-          department={user?.departmentAdmin}
+          department={user?.Department}
           courseName={course?.name}
-          departmentName={user?.departmentAdmin.name}
+          departmentName={user?.Department.name}
           submitBtnId="submit"
           submitBtnLabel={"Create"}
         />

@@ -9,6 +9,7 @@ type DepartmentDetailProps = {
     principalId: string | null
     adminId: string | null
     admin: { name: string }
+    universityId: number
   } | null
 }
 
@@ -49,7 +50,12 @@ function DepartmentDetail({ department }: DepartmentDetailProps) {
           </button>
         )}
       </div>
-      {isCreating && <CreateAdminForm departmentId={department.id} />}
+      {isCreating && (
+        <CreateAdminForm
+          departmentId={department.id}
+          universityId={department.universityId}
+        />
+      )}
     </div>
   )
 }
@@ -58,9 +64,10 @@ export default DepartmentDetail
 
 type CreateAdminFormProps = {
   departmentId: number
+  universityId: number
 }
 
-function CreateAdminForm({ departmentId }: CreateAdminFormProps) {
+function CreateAdminForm({ departmentId, universityId }: CreateAdminFormProps) {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -81,6 +88,7 @@ function CreateAdminForm({ departmentId }: CreateAdminFormProps) {
         phone,
         password,
         role,
+        universityId,
         roleIds: [3],
         departmentId
       })

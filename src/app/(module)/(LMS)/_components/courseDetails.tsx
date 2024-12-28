@@ -98,9 +98,15 @@ export const CourseDetials: React.FC<CourseDetailsProps> = ({
       if (res.status === 200) {
         toast.success(res.data.message)
         router.push(`/courses`)
+      } else {
+        toast.success(res.data.message)
       }
     } catch (error) {
-      toast.error("Internal server error")
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message || "Something went wrong")
+      } else {
+        toast.error("An unexpected error occurred")
+      }
     }
   }
   const router = useRouter()
@@ -122,7 +128,7 @@ export const CourseDetials: React.FC<CourseDetailsProps> = ({
     const payload = {
       updatedcourse: values,
       userId: user.id,
-      department: user?.departmentAdmin
+      department: user?.Department
     }
 
     try {
@@ -131,14 +137,19 @@ export const CourseDetials: React.FC<CourseDetailsProps> = ({
         `/api/courses/${courseId}?courseId=${courseId}`,
         payload
       )
-      if (response.status !== 200) {
-        throw new Error("Error while updating course")
+      if (response.status == 200) {
+        toast.success(response.data.message)
+        router.push(`/courses`)
+        setIsDirty(false)
+      } else {
+        toast.error(response.data.message)
       }
-      router.push(`/courses`)
-      setIsDirty(false)
-      toast.success("Course updated")
-    } catch (e) {
-      toast.error("Something went wrong")
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message || "Something went wrong")
+      } else {
+        toast.error("An unexpected error occurred")
+      }
     } finally {
       setLoading(false)
     }

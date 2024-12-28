@@ -35,9 +35,9 @@ export default function RoleForm({
 
   const roleOptions = roles.filter(
     (r) =>
-      r.rolename === "faculty" ||
       r.rolename === "coordinator" ||
-      r.rolename === "lab_assitant"
+      r.rolename === "lab_assitant" ||
+      r.rolename === "mentor"
   )
 
   return (

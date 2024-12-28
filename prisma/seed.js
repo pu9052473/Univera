@@ -22,29 +22,14 @@ async function main() {
     ]
   })
 
-  //create a super user
-  await prisma.user.create({
-    data: {
-      id: "user_2pt3xWxXnLZhNLryELX1JgcK2IS",
-      clerkId: "user_2pt3xWxXnLZhNLryELX1JgcK2IS",
-      email: "kp648027@gmail.com",
-      name: "kishan patel",
-      phone: "8888888888",
-      roles: {
-        connect: {
-          id: 2
-        }
-      }
-    }
-  })
   // Create a university admin user
   const universityAdmin = await prisma.user.create({
     data: {
       phone: "9898989898",
-      id: "user_2oo7c0B50nyD00rgejt5Q8e44cg",
+      id: "user_2qqzgMCkR992I5nTTHPywz73Q8N",
       email: "ku578@ku.edu.in",
       name: "University Admin",
-      clerkId: "user_2oo7c0B50nyD00rgejt5Q8e44cg",
+      clerkId: "user_2qqzgMCkR992I5nTTHPywz73Q8N",
       roles: {
         connect: {
           id: 1
@@ -53,59 +38,46 @@ async function main() {
     }
   })
 
-  // Create a student user
-  const studentUser1 = await prisma.user.create({
+  // Create a university
+  const university = await prisma.university.create({
     data: {
-      phone: "9898989898",
-      id: "user_2qcpGWy1HfRZAtNQrQqI2Ypj1fS",
-      email: "dev-student1@ku.edu.in",
-      name: "student 1",
-      clerkId: "user_2qcpGWy1HfRZAtNQrQqI2Ypj1fS",
-      roles: {
-        connect: {
-          id: 7
-        }
-      }
+      name: "Karnavati University",
+      location: "Ahmedabad, India",
+      established: 2000,
+      users:{
+        connect:{id:universityAdmin.id}
+      },
+      adminId: universityAdmin.id
     }
   })
-  const studentUser2 = await prisma.user.create({
+  
+  //create a super user
+  await prisma.user.create({
     data: {
-      phone: "9898989898",
-      id: "user_2qcpKoQwKdThSkf4UJNGVuNJGO2",
-      email: "dev-student2@ku.edu.in",
-      name: "student 2",
-      clerkId: "user_2qcpKoQwKdThSkf4UJNGVuNJGO2",
+      id: "user_2pt3xWxXnLZhNLryELX1JgcK2IS",
+      clerkId: "user_2pt3xWxXnLZhNLryELX1JgcK2IS",
+      email: "kp648027@gmail.com",
+      name: "kishan patel",
+      phone: "8888888888",
+      universityId:1,
       roles: {
         connect: {
-          id: 7
-        }
-      }
-    }
-  })
-  const studentUser3 = await prisma.user.create({
-    data: {
-      phone: "9898989898",
-      id: "user_2qcpQH8urvrc576oy83BL99BVqI",
-      email: "dev-student3@ku.edu.in",
-      name: "student 3",
-      clerkId: "user_2qcpQH8urvrc576oy83BL99BVqI",
-      roles: {
-        connect: {
-          id: 7
+          id: 2
         }
       }
     }
   })
 
-  // Create a university
-  await prisma.university.create({
-    data: {
-      name: "Karnavati University",
-      location: "Ahmedabad, India",
-      established: 2000,
-      adminId: universityAdmin.id
-    }
-  })
+    //create department
+    const department = await prisma.department.create({
+      data: {
+        id: 1,
+        name: "United Institute Of Technology",
+        code: "KU113",
+        universityId: 1,
+      }
+    })
+
   //create department admin
   const dAdmin = await prisma.user.create({
     data: {
@@ -113,6 +85,11 @@ async function main() {
       id: "user_2qXaLB1laV2FKevYXvv5PrOvYaU",
       email: "uit_admin@ku.edu.in",
       name: "UIT Admin",
+      departmentId: 1,
+      universityId: 1,
+      departmentAdmin:{
+        connect:{id:department.id}
+      },
       clerkId: "user_2qXaLB1laV2FKevYXvv5PrOvYaU",
       roles: {
         connect: {
@@ -130,10 +107,15 @@ async function main() {
       name: "Nilax Modi",
       email: "principal_uit@ku.edu.in",
       phone: "7894567898",
+      departmentId: 1,
+      universityId:1,
       roles: {
         connect: {
           id: 10
         }
+      },
+      departmentPrincipal:{
+        connect:{id:department.id}
       }
     }
   })
@@ -146,87 +128,26 @@ async function main() {
       name: "Mohak shah",
       email: "dean_uit@ku.edu.in",
       phone: "7894567898",
+      departmentId: 1,
+      universityId: 1,
       roles: {
         connect: {
           id: 12
         }
-      }
-    }
-  })
-  const dummyCoordinatorUser = await prisma.user.create({
-    // Coordinator
-    data: {
-      id: "user_2qcq0dsXmDJf2muj5MjxJ8un7N8",
-      clerkId: "user_2qcq0dsXmDJf2muj5MjxJ8un7N8",
-      name: "Raj Patel",
-      email: "coordinator_uit@ku.edu.in",
-      phone: "7894567898",
-      roles: {
-        connect: [5,4].map((id) => ({ id }))
+      },
+      departmentDean:{
+        connect:{id:department.id}
       }
     }
   })
 
-  //create department
-  await prisma.department.create({
-    data: {
-      id: 1,
-      name: "United Institute Of Technology",
-      code: "KU113",
-      universityId: 1,
-      principalId: dummyPrincipalUser.clerkId,
-      deanId: dummyDeanUser.clerkId,
-      adminId: dAdmin.clerkId
-    }
-  })
-
-  //create faculty user
-  const dummyFacultyUser1 = await prisma.user.create({
-    data: {
-      id: "user_2qcqFPWKzXDe3Ar5mMwLj9acj6O",
-      clerkId: "user_2qcqFPWKzXDe3Ar5mMwLj9acj6O",
-      name: "Kishan Patel",
-      email: "kishanpatel@ku.edu.in",
-      phone: "7894567898",
-      roles: {
-        connect: { id: 4 }
-      }
-    }
-  })
-  const dummyFacultyUser2 = await prisma.user.create({
-    data: {
-      id: "user_2qcqJyj0xvsPWSWdqt7csG7Ysdb",
-      clerkId: "user_2qcqJyj0xvsPWSWdqt7csG7Ysdb",
-      name: "Uday Panchal",
-      email: "udaypanchal@ku.edu.in",
-      phone: "7894567898",
-      roles: {
-        connect: { id: 4 }
-      }
-    }
-  })
-
-  const dummyHodUser = await prisma.user.create({
-    // HOD
-    data: {
-      id: "user_2qcqOVn3ZSTCeUmQVWwIH0o6VTn",
-      clerkId: "user_2qcqOVn3ZSTCeUmQVWwIH0o6VTn",
-      name: "Swetang Pandit",
-      email: "swetang_ce@ku.edu.in",
-      phone: "7894567898",
-      roles: {
-        connect: [11,4].map((id) => ({ id }))
-      }
-    }
-  })
-
+  
   const course1 = await prisma.course.create({
     data: {
       id: 1,
       code: "CS101",
       name: "Btech Computer Science",
       universityId: 1,
-      hodId: dummyHodUser.clerkId,
       totalSemister: 8,
       departmentId: 1
     }
@@ -243,15 +164,137 @@ async function main() {
     }
   })
 
+  const dummyCoordinatorUser = await prisma.user.create({
+    // Coordinator
+    data: {
+      id: "user_2qcq0dsXmDJf2muj5MjxJ8un7N8",
+      clerkId: "user_2qcq0dsXmDJf2muj5MjxJ8un7N8",
+      name: "Raj Patel",
+      email: "coordinator_uit@ku.edu.in",
+      phone: "7894567898",
+      departmentId: 1,
+      courseId: 1,
+      universityId: 1,
+      roles: {
+        connect: [5, 4].map((id) => ({ id }))
+      }
+    }
+  })
+
+  //create faculty user
+  const dummyFacultyUser1 = await prisma.user.create({
+    data: {
+      id: "user_2qcqFPWKzXDe3Ar5mMwLj9acj6O",
+      clerkId: "user_2qcqFPWKzXDe3Ar5mMwLj9acj6O",
+      name: "Kishan Patel",
+      email: "kishanpatel@ku.edu.in",
+      phone: "7894567898",
+      departmentId: 1,
+      courseId: 1,
+      universityId: 1,
+      roles: {
+        connect: { id: 4 }
+      }
+    }
+  })
+  const dummyFacultyUser2 = await prisma.user.create({
+    data: {
+      id: "user_2qcqJyj0xvsPWSWdqt7csG7Ysdb",
+      clerkId: "user_2qcqJyj0xvsPWSWdqt7csG7Ysdb",
+      name: "Uday Panchal",
+      email: "udaypanchal@ku.edu.in",
+      departmentId: 1,
+      courseId: 1,
+      universityId: 1,
+      phone: "7894567898",
+      roles: {
+        connect: { id: 4 }
+      }
+    }
+  })
+
+  const dummyHodUser = await prisma.user.create({
+    // HOD
+    data: {
+      id: "user_2qcqOVn3ZSTCeUmQVWwIH0o6VTn",
+      clerkId: "user_2qcqOVn3ZSTCeUmQVWwIH0o6VTn",
+      name: "Swetang Pandit",
+      email: "swetang_ce@ku.edu.in",
+      phone: "7894567898",
+      departmentId: 1,
+      courseId: 1,
+      hodCourse:{
+        connect:{id:course1.id}
+      },
+      universityId: 1,
+      roles: {
+        connect: [11, 4].map((id) => ({ id }))
+      }
+    }
+  })
+
+// Create a student user
+const studentUser1 = await prisma.user.create({
+  data: {
+    phone: "9898989898",
+    id: "user_2qcpGWy1HfRZAtNQrQqI2Ypj1fS",
+    email: "dev-student1@ku.edu.in",
+    name: "student 1",
+    departmentId: department.id,
+    courseId: course1.id,
+    universityId: university.id,
+    clerkId: "user_2qcpGWy1HfRZAtNQrQqI2Ypj1fS",
+    roles: {
+      connect: {
+        id: 7
+      }
+    }
+  }
+})
+const studentUser2 = await prisma.user.create({
+  data: {
+    phone: "9898989898",
+    id: "user_2qcpKoQwKdThSkf4UJNGVuNJGO2",
+    email: "dev-student2@ku.edu.in",
+    name: "student 2",
+    clerkId: "user_2qcpKoQwKdThSkf4UJNGVuNJGO2",
+    departmentId: department.id,
+    courseId: course1.id,
+    universityId: university.id,
+    roles: {
+      connect: {
+        id: 7
+      }
+    }
+  }
+})
+const studentUser3 = await prisma.user.create({
+  data: {
+    phone: "9898989898",
+    id: "user_2qcpQH8urvrc576oy83BL99BVqI",
+    email: "dev-student3@ku.edu.in",
+    name: "student 3",
+    clerkId: "user_2qcpQH8urvrc576oy83BL99BVqI",
+    departmentId: department.id,
+    courseId: course1.id,
+    universityId: university.id,
+    roles: {
+      connect: {
+        id: 7
+      }
+    }
+  }
+})
+
   const subject1 = await prisma.subject.create({
     data: {
       id: 1,
       name: "Engineering Mathematics 1",
       code: "2ET100301T",
       credits: 3,
-      departmentId: 1,
       semester: 1,
       courseId: course1.id,
+      departmentId:department.id,
       universityId: 1,
       departmentId: 1,
       forumTags: []
@@ -264,7 +307,7 @@ async function main() {
       name: "Engineering Physics 1",
       code: "2ET100301T",
       credits: 3,
-      departmentId: 1,
+      departmentId:department.id,
       semester: 1,
       courseId: course1.id,
       universityId: 1,
@@ -279,11 +322,10 @@ async function main() {
       name: "C language",
       code: "2ET100301T",
       credits: 3,
-      departmentId: 1,
+      departmentId:department.id,
       semester: 1,
       courseId: course1.id,
       universityId: 1,
-      departmentId: 1,
       forumTags: []
     }
   })
@@ -293,11 +335,10 @@ async function main() {
       name: "Python Programing",
       code: "2ET105401T",
       credits: 3,
-      departmentId: 1,
+      departmentId:department.id,
       semester: 1,
       courseId: course1.id,
       universityId: 1,
-      departmentId: 1,
       forumTags: []
     }
   })
@@ -425,6 +466,7 @@ async function main() {
       coordinatorId: dummyCoordinatorUser.clerkId,
       mentorId: dummyFaculty1.clerkId,
       courseId: course1.id,
+      universityId: 1
     }
   })
   const class2 = await prisma.class.create({
@@ -438,6 +480,7 @@ async function main() {
       coordinatorId: dummyCoordinatorUser.clerkId,
       mentorId: dummyFaculty2.clerkId,
       courseId: course1.id,
+      universityId: 1
     }
   })
 }
