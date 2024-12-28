@@ -1,6 +1,4 @@
 "use client"
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import React, { useContext } from "react"
 import * as z from "zod"
 import axios from "axios"
@@ -45,15 +43,23 @@ const CreatePage = () => {
     const payload = {
       ...values,
       userId: user.id, // Clerk's user ID
-      department: user?.departmentAdmin
+      department: user?.Department
     }
 
     try {
-      await axios.post(`/api/courses`, payload)
-      toast.success("Course created")
-      router.push(`/courses`)
-    } catch (e) {
-      toast.error("Something went wrong")
+      const res = await axios.post(`/api/courses`, payload)
+      if (res.status === 200) {
+        toast.success(res.data.message)
+        router.push(`/courses`)
+      } else {
+        toast.error(res.data.message)
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message || "Something went wrong")
+      } else {
+        toast.error("An unexpected error occurred")
+      }
     }
   }
 

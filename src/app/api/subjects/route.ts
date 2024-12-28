@@ -9,7 +9,6 @@ export async function POST(req: Request) {
     const user = await currentUser()
     const role = user?.publicMetadata.role
     //check user authorization
-    // console.log(role)
     if (role !== "department_admin" && role !== "super_user") {
       return NextResponse.json(
         { message: "You are not allowed to create a Subject" },
@@ -23,7 +22,6 @@ export async function POST(req: Request) {
     if (!department || !courseId || !name || !code || !credits || !semester) {
       return new NextResponse("Missing fields", { status: 400 })
     }
-
     // Create a new course in the database
     const course = await prisma.subject.create({
       data: {
@@ -31,12 +29,18 @@ export async function POST(req: Request) {
         code,
         credits: Number(credits),
         semester: Number(semester),
-        courseId: Number(courseId),
-        universityId: Number(department.universityId),
-        departmentId: Number(department.id)
+        course: {
+          connect: { id: Number(courseId) }
+        },
+        department: {
+          connect: { id: Number(department.id) }
+        },
+        university: {
+          connect: { id: Number(department.universityId) }
+        }
       }
     })
-    // console.log("course:",course)
+
     if (!course) {
       throw new Error("Error while creating course")
     }
@@ -71,7 +75,6 @@ export async function GET(req: Request) {
         courseId: Number(courseId) // Ensure correct type handling for `courseId`
       }
     })
-    // console.log("subjects api: ", subjects)
     if (!subjects) {
       throw new Error("Error while getting subjects")
     }

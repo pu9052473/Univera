@@ -55,7 +55,7 @@ export async function PATCH(req: Request, context: any) {
     //check user authorization
     if (role !== "department_admin" && role !== "super_user") {
       return NextResponse.json(
-        { message: "You are not allowed to create a Subject" },
+        { message: "You are not allowed to update a Subject" },
         {
           status: 401
         }
@@ -98,10 +98,8 @@ export async function DELETE(req: Request, context: any) {
     //check user authorization
     if (role !== "department_admin" && role !== "super_user") {
       return NextResponse.json(
-        { message: "You are not allowed to create a Subject" },
-        {
-          status: 401
-        }
+        { message: "You are not allowed to delete a Subject" },
+        { status: 401 }
       )
     }
 

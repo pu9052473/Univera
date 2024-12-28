@@ -50,12 +50,17 @@ export async function POST(req: Request) {
         name,
         code,
         semister: Number(semister),
-        courseId: Number(courseId),
-        departmentId: Number(departmentId),
-        universityId: Number(universityId)
+        course: {
+          connect: { id: Number(courseId) }
+        },
+        department: {
+          connect: { id: Number(departmentId) }
+        },
+        university: {
+          connect: { id: Number(universityId) }
+        }
       }
     })
-
     // Fetch subjects matching the courseId and semister
     const subjects = await prisma.subject.findMany({
       where: {

@@ -143,7 +143,7 @@ export const ClassEditForm: React.FC<ClassDetailsProps> = ({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>ClassName Name</FormLabel>
+                <FormLabel>Edit Class Details</FormLabel>
                 <FormControl>
                   <EditableInputField
                     key={"name"}

@@ -6,14 +6,12 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
     const universityId = searchParams.get("universityId") as string
-    console.log("universityId: ", universityId)
 
     const departments = await prisma.department.findMany({
       where: {
         universityId: Number(universityId)
       }
     })
-    console.log()
 
     if (!departments) {
       throw new Error("error while fetching Departments")

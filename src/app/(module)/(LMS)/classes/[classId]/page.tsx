@@ -21,7 +21,6 @@ export default function ClassEditPage() {
   const { user } = useContext(UserContext)
   const { classId } = useParams()
   const [activeTab, setActiveTab] = useState("coordinator")
-
   const {
     data: Class,
     error: ClassError,
@@ -52,8 +51,11 @@ export default function ClassEditPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto sm:px-2 p-2">
-        <ClassDetails Class={Class} isLoading={isLoading} />
-
+        <ClassDetails
+          Class={Class}
+          UserRoles={user?.roles}
+          isLoading={isLoading}
+        />
         <div className="mt-8 bg-white rounded-xl shadow-sm">
           <Tabs
             value={activeTab}
@@ -68,10 +70,10 @@ export default function ClassEditPage() {
                     value={tab}
                     className={`
                       flex-1 min-w-[120px] capitalize py-4 px-4
-                      text-sm sm:text-base font-medium
-                      text-TextTwo transition-all duration-200
-                      hover:text-Primary
-                      data-[state=active]:text-Primary
+                      text-sm sm:text-base font-bold
+                      text-black transition-all duration-200
+                      hover:text-Dark
+                      data-[state=active]:text-Dark
                       data-[state=active]:border-b-2
                       data-[state=active]:border-Dark
                       focus:outline-none focus:ring-2 focus:ring-Dark/20

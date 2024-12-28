@@ -48,13 +48,16 @@ export async function POST(req: Request) {
     ) {
       throw new Error("All fields are required")
     }
+
     //creating a clerk teacher
     const user = await createUser({
       name: name,
       email: email,
       password: password,
       role: "faculty",
-      roleIds: roleIds as Array<number>,
+      universityId,
+      courseId,
+      roleIds: [...roleIds, 4] as Array<number>,
       phone: "",
       departmentId: Number(departmentId)
     })

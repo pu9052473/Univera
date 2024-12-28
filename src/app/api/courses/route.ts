@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     //check user authorization
     if (role !== "department_admin" && role !== "super_user") {
       return NextResponse.json(
-        { message: "You are not allowed to create a Subject" },
+        { message: "You are not allowed to create a Course" },
         {
           status: 401
         }
@@ -31,8 +31,12 @@ export async function POST(req: Request) {
         name,
         code,
         totalSemister,
-        universityId: Number(department.universityId),
-        departmentId: Number(department.id)
+        university: {
+          connect: { id: Number(department.universityId) }
+        },
+        department: {
+          connect: { id: Number(department.id) }
+        }
       }
     })
     if (!course) {
@@ -41,7 +45,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: "Course created", course })
   } catch (error) {
-    console.error("[COURSES]/create", error)
+    console.log("[COURSES]/create", error)
     return new NextResponse("Internal Error", { status: 500 })
   }
 }
@@ -75,7 +79,7 @@ export async function GET(req: Request) {
       { status: 200 }
     )
   } catch (error) {
-    console.error("Error fetching courses:", error)
+    console.log("Error fetching courses:", error)
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }

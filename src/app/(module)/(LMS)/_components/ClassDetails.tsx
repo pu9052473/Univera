@@ -11,16 +11,21 @@ import { ClassDetailsSkeleton } from "@/components/(commnon)/Skeleton"
 interface ClassDetailsProps {
   Class?: Class
   isLoading?: boolean
+  UserRoles: { rolename: string; id: number }[]
 }
 
-const ClassDetails = ({ Class, isLoading = false }: ClassDetailsProps) => {
+const ClassDetails = ({
+  Class,
+  isLoading = false,
+  UserRoles
+}: ClassDetailsProps) => {
   if (isLoading) {
     return <ClassDetailsSkeleton />
   }
-
   if (!Class) {
     return null
   }
+  const roles = UserRoles.map((role) => role.id)
 
   return (
     <div className="w-full mx-auto space-y-6">
@@ -56,13 +61,15 @@ const ClassDetails = ({ Class, isLoading = false }: ClassDetailsProps) => {
                     </Badge>
                   </div>
                 </div>
-                <ButtonV1
-                  icon={Pencil}
-                  id="edit-course"
-                  href={`/classes/${Class.id}/edit`}
-                  label="Edit Course"
-                  className="bg-[#5B58EB] text-white hover:bg-[#4845c7]"
-                />
+                {roles && (roles.includes(5) || roles.includes(11)) && (
+                  <ButtonV1
+                    icon={Pencil}
+                    id="edit-class"
+                    href={`/classes/${Class.id}/edit`}
+                    label="Edit Class"
+                    className="bg-[#5B58EB] text-white hover:bg-[#4845c7]"
+                  />
+                )}
               </div>
             </div>
           </div>

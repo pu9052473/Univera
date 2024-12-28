@@ -52,19 +52,6 @@ export async function POST(req: Request) {
     ) {
       throw new Error("All fields are required")
     }
-    //creating a clerk and prisma teacher
-    const user = await createUser({
-      name: name,
-      email: email,
-      password: password,
-      role: "authority",
-      roleIds: roleIds as Array<number>,
-      phone: "",
-      departmentId
-    })
-    if (!user) {
-      throw new Error("Error while creating authority")
-    }
 
     //checks for principal
     if (roleIds.includes(10)) {
@@ -81,8 +68,6 @@ export async function POST(req: Request) {
           { status: 409 }
         )
       }
-      //assign principal
-      await assignPrincipal(Number(departmentId), user.clerkId)
     }
 
     //checks for hod
@@ -103,7 +88,6 @@ export async function POST(req: Request) {
           { status: 409 }
         )
       }
-      await assignHeadOfDepartment(Number(courseId), user.clerkId)
     }
 
     //checks for dean
@@ -121,6 +105,36 @@ export async function POST(req: Request) {
           { status: 409 }
         )
       }
+    }
+    //creating a clerk and prisma teacher
+    const user = await createUser({
+      name: name,
+      email: email,
+      password: password,
+      role: "authority",
+      universityId,
+      roleIds: roleIds as Array<number>,
+      phone: "",
+      courseId,
+      departmentId
+    })
+    if (!user) {
+      throw new Error("Error while creating authority")
+    }
+
+    if (roleIds.includes(10)) {
+      //assign principal
+      await assignPrincipal(Number(departmentId), user.clerkId)
+    }
+
+    //checks for hod
+    if (roleIds.includes(11)) {
+      await assignHeadOfDepartment(Number(courseId), user.clerkId)
+    }
+
+    //checks for dean
+    if (roleIds.includes(12)) {
+      //creating a clerk and prisma teacher
       await assignDean(Number(departmentId), user.clerkId)
     }
 

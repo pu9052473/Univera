@@ -58,7 +58,6 @@ export async function POST(req: Request) {
       }
     })
 
-    console.log("Forum created successfully:", forum)
     return NextResponse.json(forum, { status: 201 })
   } catch (error: any) {
     console.log(

@@ -54,6 +54,60 @@ export async function PATCH(req: Request, context: any) {
       throw new Error("RoleIds not found")
     }
 
+    //checks for principal
+    if (roleIds.includes(10)) {
+      const department = await prisma.department.findUnique({
+        where: { id: Number(departmentId) },
+        include: {
+          principal: true
+        }
+      })
+      if (department?.principal) {
+        //principal already exists
+        return NextResponse.json(
+          { message: "Principal already exists" },
+          { status: 409 }
+        )
+      }
+    }
+
+    //checks for hod
+    if (roleIds.includes(11)) {
+      if (!courseId) {
+        throw new Error("CourseId not found")
+      }
+      const course = await prisma.course.findUnique({
+        where: { id: Number(courseId) },
+        include: {
+          hod: true
+        }
+      })
+      if (course?.hod) {
+        //Hod already exists
+        return NextResponse.json(
+          { message: "Hod already exists" },
+          { status: 409 }
+        )
+      }
+    }
+
+    //checks for dean
+    if (roleIds.includes(12)) {
+      const department = await prisma.department.findUnique({
+        where: { id: Number(departmentId) },
+        include: {
+          Dean: true
+        }
+      })
+      if (department?.Dean) {
+        //Dean already exists
+        return NextResponse.json(
+          { message: "Dean already exists" },
+          { status: 409 }
+        )
+      }
+    }
+
     if (roleIds.includes(10)) {
       //principal role
       if (!departmentId) {
@@ -125,9 +179,9 @@ export async function DELETE(req: Request, context: any) {
 
     const user = await prisma.user.findUnique({
       where: { id: authorityId },
-      include: { course: true }
+      include: { hodCourse: true }
     })
-    const courseId = user?.course?.id
+    const courseId = user?.hodCourse?.id
 
     const clerkU = await currentUser()
     const role = clerkU?.publicMetadata.role
@@ -154,7 +208,9 @@ export async function DELETE(req: Request, context: any) {
       await prisma.department.update({
         where: { principalId: authorityId },
         data: {
-          principalId: null
+          principal: {
+            disconnect: { id: authorityId }
+          }
         }
       })
     }
@@ -163,7 +219,9 @@ export async function DELETE(req: Request, context: any) {
       await prisma.department.update({
         where: { deanId: authorityId },
         data: {
-          deanId: null
+          Dean: {
+            disconnect: { id: authorityId }
+          }
         }
       })
     }
@@ -175,7 +233,9 @@ export async function DELETE(req: Request, context: any) {
       await prisma.course.update({
         where: { id: Number(courseId) },
         data: {
-          hodId: null
+          hod: {
+            disconnect: { id: authorityId }
+          }
         }
       })
     }

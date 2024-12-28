@@ -71,7 +71,6 @@ const TeacherListPage = () => {
       const res = await axios.delete(`/api/list/authorities/${id}`, {
         data: { roleIds: rolesIds }
       })
-      console.log(res.status)
       if (res.status == 409) {
         toast.error(res.data.message)
       } else if (res.status == 200) {

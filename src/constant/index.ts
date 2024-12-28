@@ -39,7 +39,7 @@ export const Menuitems = {
   ],
   department_admin: [
     { title: "Dashborad", url: "/department_admin", icon: MdSpaceDashboard },
-    { title: "Course", url: "/courses", icon: MdEditDocument },
+    { title: "Courses", url: "/courses", icon: MdEditDocument },
     { title: "Subjects", url: "/subject", icon: MdClass },
     { title: "Authorities", url: "/list/authorities", icon: FaUserTie },
     { title: "Faculty", url: "/list/teachers", icon: MdPeople },
@@ -49,7 +49,8 @@ export const Menuitems = {
     { title: "Dashboard", url: "/dashboard", icon: MdSpaceDashboard },
     { title: "Students", url: "/students", icon: FaUsers },
     { title: "Classes", url: "/classes", icon: FaBook },
-    { title: "Subjects", url: "/subjects", icon: MdClass },
+    { title: "Courses", url: "/courses", icon: MdEditDocument },
+    { title: "Subjects", url: "/subject", icon: MdClass },
     { title: "Events", url: "/events", icon: FaRegCalendarAlt },
     { title: "Announcement", url: "/announcements", icon: FaBullhorn },
     { title: "Forums", url: "/forum", icon: MdForum }
@@ -57,8 +58,8 @@ export const Menuitems = {
   faculty: [
     { title: "Dashboard", url: "/dashboard", icon: MdSpaceDashboard },
     { title: "Students", url: "/students", icon: FaUsers },
-    { title: "Curriculum", url: "/curriculum", icon: FaBook },
-    { title: "Subjects", url: "/subjects", icon: MdClass },
+    { title: "Classes", url: "/classes", icon: FaBook },
+    { title: "Subjects", url: "/subject", icon: MdClass },
     { title: "Events", url: "/events", icon: FaRegCalendarAlt },
     { title: "Announcement", url: "/announcements", icon: FaBullhorn },
     { title: "Forums", url: "/forum", icon: MdForum }

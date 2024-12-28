@@ -21,7 +21,6 @@ const fetchCourses = async (departmentId: string, userId: string) => {
 
 const SubjectPage = () => {
   const { user } = useContext(UserContext)
-
   const [filter, setFilter] = useState("")
 
   const {
@@ -30,12 +29,10 @@ const SubjectPage = () => {
     refetch,
     isLoading
   } = useQuery({
-    queryKey: ["courses", user?.departmentAdmin?.id, user?.id],
-    queryFn: () =>
-      fetchCourses(user?.departmentAdmin?.id || "", user?.id || ""),
-    enabled: !!user?.departmentAdmin?.id && !!user?.id
+    queryKey: ["courses", user?.Department?.id, user?.id],
+    queryFn: () => fetchCourses(user?.Department?.id || "", user?.id || ""),
+    enabled: !!user?.Department?.id && !!user?.id
   })
-
   const filteredCourses = courses.filter((course: any) =>
     course.name.toLowerCase().includes(filter.toLowerCase())
   )

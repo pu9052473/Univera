@@ -53,9 +53,15 @@ export function SubjectForm({
         if (res.status === 201) {
           toast.success(res.data.message)
           router.push(`/subject/${courseId}`)
+        } else {
+          toast.error(res.data.message)
         }
       } catch (error) {
-        toast.error("Something went wrong")
+        if (axios.isAxiosError(error) && error.response) {
+          toast.error(error.response.data.message || "Something went wrong")
+        } else {
+          toast.error("An unexpected error occurred")
+        }
       }
     } else if (buttonId == "subject-update") {
       try {
@@ -72,9 +78,15 @@ export function SubjectForm({
         if (res.status === 200) {
           toast.success(res.data.message)
           router.push(`/subject/${courseId}`)
+        } else {
+          toast.error(res.data.message)
         }
       } catch (error) {
-        toast.error("Something went wrong")
+        if (axios.isAxiosError(error) && error.response) {
+          toast.error(error.response.data.message || "Something went wrong")
+        } else {
+          toast.error("An unexpected error occurred")
+        }
       }
     }
   }
