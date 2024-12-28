@@ -10,6 +10,7 @@ interface Department {
   principalId: string | null
   adminId: string | null
   admin: { name: string }
+  universityId: number
 }
 export default function Page() {
   const { departmentId } = useParams()
