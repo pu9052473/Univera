@@ -50,6 +50,8 @@ model User {
 
   Department Department? @relation(fields: [departmentId], references: [id])
   university University? @relation("UserToUniversity", fields: [universityId], references: [id])
+
+  Policy Policy[]
 }
 
 model University {
@@ -75,6 +77,8 @@ model University {
   subjects         Subject[]
   admin            User               @relation("universityAdmin",fields: [adminId], references: [id])
   users            User[]             @relation("UserToUniversity")
+
+  Policy Policy[]
 }
 
 model NonTeachingStaff {
@@ -175,6 +179,8 @@ model Department {
   timeTable        TimeTable[]
   User             User[]
   classes          Class[]
+
+  Policy Policy[]
 }
 
 model Course {
@@ -448,10 +454,29 @@ model Event {
   budget       Int
   organiserId  String
   universityId Int
-  departmentId Int?
+  departmentId Int
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @default(now())
   department   Department? @relation(fields: [departmentId], references: [id])
   organiser    User        @relation(fields: [organiserId], references: [clerkId])
   university   University  @relation(fields: [universityId], references: [id])
+}
+
+model Policy {
+  id             Int       @id @default(autoincrement())
+  title          String
+  description    String?
+  attachments    Json[]    
+  category       String    
+  effectiveDate  String  
+  expiryDate     String?
+  departmentId   Int
+  universityId   Int
+  authorId       String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now())
+
+  sharedBy       User       @relation(fields: [authorId], references: [clerkId])
+  department     Department @relation(fields: [departmentId], references: [id])
+  university     University @relation(fields: [universityId], references: [id])
 }
