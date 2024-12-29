@@ -10,8 +10,6 @@ export async function PATCH(req: Request) {
   const user = await currentUser()
   const role = user?.publicMetadata.role
 
-  console.log("come in api policy")
-
   //check user authorization
   if (
     role !== "dean" &&
