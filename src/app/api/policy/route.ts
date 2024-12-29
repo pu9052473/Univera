@@ -13,14 +13,12 @@ export async function PATCH(req: Request) {
   //check user authorization
   if (
     role !== "authority" &&
-    role !== "university_admin" &&
-    role !== "department_admin"
+    role !== "department_admin" &&
+    role !== "university_admin"
   ) {
     return NextResponse.json(
-      { message: "You are not allowed to delete a announcement" },
-      {
-        status: 401
-      }
+      { message: "You are not allowed to create or update policy" },
+      { status: 401 }
     )
   }
 
@@ -30,10 +28,12 @@ export async function PATCH(req: Request) {
       description,
       departmentId,
       universityId,
-      announcerId,
+      authorId,
+      effectiveDate,
+      expiryDate,
       attachments,
       category,
-      announcerName
+      authorName
     } = await req.json()
 
     if (
@@ -41,13 +41,14 @@ export async function PATCH(req: Request) {
       !departmentId ||
       !universityId ||
       !departmentId ||
-      !announcerId ||
+      !authorId ||
       !category ||
-      !announcerName
+      !effectiveDate ||
+      !authorName
     ) {
       console.log("Validation failed. Missing required fields.")
       return NextResponse.json(
-        { error: "Missing required fields @api/announcements" },
+        { error: "Missing required fields @api/policy" },
         { status: 400 }
       )
     }
@@ -58,17 +59,19 @@ export async function PATCH(req: Request) {
       description,
       departmentId,
       universityId,
-      announcerId,
+      authorId,
+      effectiveDate,
+      expiryDate,
       attachments,
       category,
-      announcerName
+      authorName
     }
 
-    let announcement
+    let policy
 
     if (id) {
       try {
-        announcement = await prisma.announcement.update({
+        policy = await prisma.policy.update({
           where: { id: Number(id) },
           data: {
             ...data,
@@ -82,7 +85,7 @@ export async function PATCH(req: Request) {
           error.code === "P2025"
         ) {
           // If announcement doesn't exist, create it with the specified ID
-          announcement = await prisma.announcement.create({
+          policy = await prisma.policy.create({
             data: {
               ...data,
               id: Number(id)
@@ -93,22 +96,19 @@ export async function PATCH(req: Request) {
         }
       }
     } else {
-      announcement = await prisma.announcement.create({
+      policy = await prisma.policy.create({
         data: {
           ...data
         }
       })
     }
 
-    return NextResponse.json(announcement, { status: id ? 200 : 201 })
+    return NextResponse.json(policy, { status: id ? 200 : 201 })
   } catch (error: any) {
-    console.log(
-      "Error while creating announcement @api/announcements:",
-      error.message
-    )
+    console.log("Error while creating policy @api/policys:", error.message)
     return NextResponse.json(
       {
-        error: "Failed to create announcement @api/announcements",
+        error: "Failed to create policy @api/policys",
         details: error.message
       },
       { status: 500 }
@@ -124,11 +124,11 @@ export async function DELETE(req: Request) {
   //check user authorization
   if (
     role !== "authority" &&
-    role !== "university_admin" &&
-    role !== "department_admin"
+    role !== "department_admin" &&
+    role !== "university_admin"
   ) {
     return NextResponse.json(
-      { message: "You are not allowed to delete a announcement" },
+      { message: "You are not allowed to delete a policy" },
       {
         status: 401
       }
@@ -136,23 +136,23 @@ export async function DELETE(req: Request) {
   }
 
   if (!id) {
-    console.log("Validation failed. Missing id @api/announcements:")
+    console.log("Validation failed. Missing id @api/policies:")
     return NextResponse.json(
-      { error: "Missing id @api/announcements" },
+      { error: "Missing id @api/policys" },
       { status: 400 }
     )
   }
 
   try {
-    const announcement = await prisma.announcement.deleteMany({
+    const policy = await prisma.policy.deleteMany({
       where: { id: Number(id) }
     })
 
-    return NextResponse.json(announcement, { status: 200 })
+    return NextResponse.json(policy, { status: 200 })
   } catch (error) {
-    console.log(`Failed to delete announcement @api/announcements ${error}`)
+    console.log(`Failed to delete policy @api/policys ${error}`)
     return NextResponse.json(
-      { error: `Failed to delete announcement @api/announcements ${error}` },
+      { error: `Failed to delete policy @api/policy ${error}` },
       { status: 500 }
     )
   }
@@ -169,16 +169,16 @@ export async function GET(request: Request) {
 
     if (!departmentId || !universityId) {
       console.error(
-        "Validation failed. Missing departmentId and universityId @api/announcements:"
+        "Validation failed. Missing departmentId and universityId @api/policy:"
       )
       return NextResponse.json(
-        { error: "Missing departmentId and universityId @api/announcements" },
+        { error: "Missing departmentId and universityId @api/policy" },
         { status: 400 }
       )
     }
 
     try {
-      const announcements = await prisma.announcement.findMany({
+      const policy = await prisma.policy.findMany({
         where: {
           departmentId: Number(departmentId),
           universityId: Number(universityId)
@@ -186,58 +186,55 @@ export async function GET(request: Request) {
         orderBy: { createdAt: "desc" }
       })
 
-      return NextResponse.json(announcements, { status: 200 })
+      return NextResponse.json(policy, { status: 200 })
     } catch (error) {
-      console.log(`Failed to fetch forum @api/announcements ${error}`)
+      console.log(`Failed to fetch forum @api/policy ${error}`)
       return NextResponse.json(
-        { error: `Failed to fetch forum @api/announcements ${error}` },
+        { error: `Failed to fetch forum @api/policy ${error}` },
         { status: 500 }
       )
     }
   } else if (route === "findOne") {
-    const announcementId = url.searchParams.get("announcementId")
+    const policyId = url.searchParams.get("policyId")
 
-    if (!announcementId) {
-      console.error(
-        "Validation failed. Missing announcementId @api/announcements:"
-      )
+    if (!policyId) {
+      console.error("Validation failed. Missing policyId @api/policy:")
       return NextResponse.json(
-        { error: "Missing announcementId @api/announcements" },
+        { error: "Missing policyId @api/policy" },
         { status: 400 }
       )
     }
 
     try {
-      const announcement = await prisma.announcement.findUnique({
-        where: { id: Number(announcementId) },
+      const policy = await prisma.policy.findUnique({
+        where: { id: Number(policyId) },
         select: {
           id: true,
           title: true,
           departmentId: true,
           universityId: true,
-          announcerId: true,
+          authorId: true,
           category: true,
+          effectiveDate: true,
+          expiryDate: true,
           description: true,
           attachments: true,
-          announcerName: true
+          authorName: true
         }
       })
 
-      if (!announcement) {
+      if (!policy) {
         return NextResponse.json(
-          { error: "announcement not found @api/announcements" },
+          { error: "policy not found @api/policy" },
           { status: 404 }
         )
       }
 
-      return NextResponse.json(announcement, { status: 200 })
+      return NextResponse.json(policy, { status: 200 })
     } catch (error) {
-      console.log(
-        "Error fetching announcement details @api/announcements:",
-        error
-      )
+      console.log("Error fetching policy details @api/policy:", error)
       return NextResponse.json(
-        { error: "Internal server error  @api/announcements" },
+        { error: "Internal server error  @api/policy" },
         { status: 500 }
       )
     }

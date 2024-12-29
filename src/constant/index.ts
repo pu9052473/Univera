@@ -15,7 +15,8 @@ import {
   MdPerson,
   MdPeople,
   MdEditDocument,
-  MdForum
+  MdForum,
+  MdPolicy
 } from "react-icons/md"
 
 export const Menuitems = {
@@ -31,11 +32,13 @@ export const Menuitems = {
       title: "Teachers",
       url: "/teachers",
       icon: FaChalkboardTeacher
-    }
+    },
+    { title: "Policy", url: "/policy", icon: MdPolicy }
   ],
   university_admin_staff: [
     { title: "Doctors", url: "/admin/doctors", icon: MdOutlineHealthAndSafety },
-    { title: "Patients", url: "/admin/patients", icon: MdPerson }
+    { title: "Patients", url: "/admin/patients", icon: MdPerson },
+    { title: "Policy", url: "/policy", icon: MdPolicy }
   ],
   department_admin: [
     { title: "Dashborad", url: "/department_admin", icon: MdSpaceDashboard },
@@ -43,7 +46,8 @@ export const Menuitems = {
     { title: "Subjects", url: "/subject", icon: MdClass },
     { title: "Authorities", url: "/list/authorities", icon: FaUserTie },
     { title: "Faculty", url: "/list/teachers", icon: MdPeople },
-    { title: "Students", url: "/list/students", icon: MdPeople }
+    { title: "Students", url: "/list/students", icon: MdPeople },
+    { title: "Policy", url: "/policy", icon: MdPolicy }
   ],
   authority: [
     { title: "Dashboard", url: "/dashboard", icon: MdSpaceDashboard },
@@ -53,7 +57,8 @@ export const Menuitems = {
     { title: "Subjects", url: "/subject", icon: MdClass },
     { title: "Events", url: "/events", icon: FaRegCalendarAlt },
     { title: "Announcement", url: "/announcements", icon: FaBullhorn },
-    { title: "Forums", url: "/forum", icon: MdForum }
+    { title: "Forums", url: "/forum", icon: MdForum },
+    { title: "Policy", url: "/policy", icon: MdPolicy }
   ],
   faculty: [
     { title: "Dashboard", url: "/dashboard", icon: MdSpaceDashboard },
@@ -62,7 +67,8 @@ export const Menuitems = {
     { title: "Subjects", url: "/subject", icon: MdClass },
     { title: "Events", url: "/events", icon: FaRegCalendarAlt },
     { title: "Announcement", url: "/announcements", icon: FaBullhorn },
-    { title: "Forums", url: "/forum", icon: MdForum }
+    { title: "Forums", url: "/forum", icon: MdForum },
+    { title: "Policy", url: "/policy", icon: MdPolicy }
   ],
   student: [
     { title: "Dashboard", url: "/student", icon: MdSpaceDashboard },
@@ -70,7 +76,8 @@ export const Menuitems = {
     { title: "Subjects", url: "/subjects", icon: MdClass },
     { title: "Events", url: "/events", icon: FaRegCalendarAlt },
     { title: "Announcement", url: "/announcements", icon: FaBullhorn },
-    { title: "Forums", url: "/forum", icon: MdForum }
+    { title: "Forums", url: "/forum", icon: MdForum },
+    { title: "Policy", url: "/policy", icon: MdPolicy }
   ]
 }
 
