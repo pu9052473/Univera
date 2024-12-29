@@ -92,7 +92,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   if (fetchError)
     return (
       <div className="text-red-500">
-        <p>Failed to load courses. Please try again later.</p>
+        <p>Failed to load User. Please try again later.</p>
         <p className="text-sm text-gray-500">
           {fetchError?.message || "An unexpected error occurred."}
         </p>

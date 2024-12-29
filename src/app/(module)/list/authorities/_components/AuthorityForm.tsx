@@ -44,7 +44,6 @@ export function AuthorityForm({ data }: AuthorityFormProps) {
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
   const [roleIds, setRoleIds] = useState<number[]>([])
   const [position, setPosition] = useState<string>("")
-  console.log(data)
   const [step, setStep] = useState(1)
   const { user } = useContext(UserContext)
   useEffect(() => {
@@ -93,8 +92,10 @@ export function AuthorityForm({ data }: AuthorityFormProps) {
           universityId: user?.departmentAdmin.universityId
         })
         if (res.status == 201) {
-          toast.success("Faculty Created successfully")
+          toast.success(res.data.message)
           router.push("/list/authorities")
+        } else {
+          toast.error(res.data.message)
         }
       } else if (btnId == "update-authority") {
         const res = await axios.patch(
@@ -110,14 +111,19 @@ export function AuthorityForm({ data }: AuthorityFormProps) {
             universityId: user?.departmentAdmin.universityId
           }
         )
-        console.log("res: ", res)
         if (res.status == 200) {
           toast.success(res.data.message)
           router.push("/list/authorities")
+        } else {
+          toast.error(res.data.message)
         }
       }
     } catch (error) {
-      toast.error("Something went wrong")
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message || "Something went wrong")
+      } else {
+        toast.error("An unexpected error occurred")
+      }
     }
   }
 

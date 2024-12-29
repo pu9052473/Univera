@@ -27,18 +27,20 @@ model User {
   birthPlace   String?
   departmentId Int?
   universityId Int?
+  courseId     Int?
 
-  roles                 Role[]         @relation("UserToRole")
-  chatMessage           ChatMessage[]
-  course                Course?
-  departmentAdmin       Department?    @relation("AdminToDepartment")
-  departmentPrincipal   Department?    @relation("PrincipalToDepartment")
-  departmentDean        Department?    @relation("DeanToDepartment")
-  departmentCoordinator Department?    @relation("CoordinatorToDepartment")
-  event                 Event[]
-  faculty               Faculty?
-  announcement          Announcement[]
-  forumStudent          Forum[]        @relation("UserToForum")
+  roles               Role[]         @relation("UserToRole")
+  chatMessage         ChatMessage[]
+  hodCourse           Course?        @relation("hod_to_course")
+  course              Course?         @relation("UserToCourse", fields: [courseId], references: [id])
+  departmentAdmin     Department?    @relation("AdminToDepartment")
+  departmentPrincipal Department?    @relation("PrincipalToDepartment")
+  departmentDean      Department?    @relation("DeanToDepartment")
+  event               Event[]
+  faculty             Faculty?
+  mentorClass         Class?         @relation("mentor_to_class")
+  announcement        Announcement[]
+  forumStudent        Forum[]        @relation("UserToForum")
 
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @default(now())
@@ -75,7 +77,7 @@ model University {
   students         Student[]
   classes          Class[]
   subjects         Subject[]
-  admin            User               @relation("universityAdmin",fields: [adminId], references: [id])
+  admin            User               @relation("universityAdmin", fields: [adminId], references: [id])
   users            User[]             @relation("UserToUniversity")
 
   Policy Policy[]
@@ -109,7 +111,6 @@ model Faculty {
   Assignment     Assignment[]
   attendance     Attendance[]
   class          Class[]
-  mentorClass    Class?       @relation(name: "mentor_to_class")
   user           User         @relation(fields: [clerkId], references: [clerkId])
   course         Course       @relation(fields: [courseId], references: [id])
   department     Department   @relation(fields: [departmentId], references: [id])
@@ -154,7 +155,6 @@ model Department {
   code             String             @unique
   principalId      String?            @unique
   deanId           String?            @unique
-  coordinatorId    String?            @unique
   universityId     Int
   adminId          String?            @unique
   createdAt        DateTime           @default(now())
@@ -163,7 +163,6 @@ model Department {
   assignment       Assignment[]
   attendance       Attendance[]
   courses          Course[]
-  coordinator      User?              @relation("CoordinatorToDepartment", fields: [coordinatorId], references: [clerkId])
   admin            User?              @relation("AdminToDepartment", fields: [adminId], references: [clerkId])
   principal        User?              @relation("PrincipalToDepartment", fields: [principalId], references: [clerkId])
   Dean             User?              @relation("DeanToDepartment", fields: [deanId], references: [clerkId])
@@ -196,7 +195,7 @@ model Course {
   assignment    Assignment[]
   attendance    Attendance[]
   department    Department   @relation(fields: [departmentId], references: [id])
-  hod           User?        @relation(fields: [hodId], references: [clerkId])
+  hod           User?        @relation("hod_to_course", fields: [hodId], references: [clerkId])
   university    University   @relation(fields: [universityId], references: [id])
   exam          Exam[]
   faculties     Faculty[]
@@ -205,11 +204,13 @@ model Course {
   students      Student[]
   subjects      Subject[]
   timeTable     TimeTable[]
+  classes       Class[]
+  users         User[]       @relation("UserToCourse")
 }
 
 model Class {
   id            Int      @id @unique @default(autoincrement())
-  name          String   @unique
+  name          String
   code          String   @unique
   semister      Int
   departmentId  Int
@@ -222,11 +223,12 @@ model Class {
 
   assignment  Assignment[]
   attendance  Attendance[]
+  course      Course       @relation(fields: [courseId], references: [id])
   department  Department   @relation(fields: [departmentId], references: [id])
   university  University   @relation(fields: [universityId], references: [id])
   exam        Exam[]
   coordinator User?        @relation("coordinator_to_class", fields: [coordinatorId], references: [clerkId])
-  mentor      Faculty?     @relation(name: "mentor_to_class", fields: [mentorId], references: [id])
+  mentor      User?        @relation("mentor_to_class", fields: [mentorId], references: [id])
   faculties   Faculty[]
   forums      Forum[]
   result      Result[]

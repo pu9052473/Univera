@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
     if (!subjectId || !tag) {
       return NextResponse.json(
-        { error: "Invalid input @api/subjects/forum/tags" },
+        { message: "Invalid input @api/subjects/forum/tags" },
         { status: 400 }
       )
     }
@@ -33,10 +33,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: "Tags added successfully to subject" })
   } catch (error) {
-    console.log(error)
-    return NextResponse.json(
-      { error: "Failed to add tags @api/subjects/forum/tags" },
-      { status: 500 }
-    )
+    console.log("Error while adding tags: @api/subjects/forum/tags", error)
+    return NextResponse.json({ message: "Failed to add tags" }, { status: 500 })
   }
 }
