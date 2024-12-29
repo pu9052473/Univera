@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { useRouter } from "next/navigation"
 import {
   Calendar,
@@ -8,9 +8,11 @@ import {
   Edit,
   Loader2,
   Paperclip,
-  Trash2
+  Trash2,
+  User
 } from "lucide-react"
 import toast from "react-hot-toast"
+import { UserContext } from "@/context/user"
 
 // Format date function
 const formatDate = (dateString: string) => {
@@ -23,14 +25,13 @@ const formatDate = (dateString: string) => {
 
 export default function PolicyCard({
   policy,
-  refetch,
-  canCreatePolicy
+  refetch
 }: {
   policy: any
   refetch: () => void
-  canCreatePolicy: boolean
 }) {
   const router = useRouter()
+  const { user } = useContext(UserContext)
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const [isDeleting, setIsDeleting] = useState<boolean>(false)
   const [showConfirmDelete, setShowConfirmDelete] = useState<boolean>(false)
@@ -63,17 +64,21 @@ export default function PolicyCard({
   }
 
   return (
-    <div className="group bg-white hover:bg-lamaSkyLight/30 transition-all duration-300 rounded-xl shadow-sm hover:shadow-lg border border-transparent hover:border-ColorThree/20 overflow-hidden">
+    <div className="group bg-lamaSkyLight/30  hover:bg-white transition-all duration-300 rounded-xl shadow-sm hover:shadow-lg border border-ColorThree/20 overflow-hidden">
       {/* Header Section */}
       <div className="p-4 sm:p-6 space-y-4">
         <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
           <h2 className="text-lg sm:text-xl font-semibold text-TextTwo group-hover:text-ColorThree transition-colors">
             {policy.title}
           </h2>
+          <div className="text-base flex items-center gap-1.5 sm:text-xl font-semibold text-TextTwo group-hover:text-ColorThree transition-colors">
+            <User size={18} className="shrink-0" />
+            {policy.authorName}
+          </div>
           <div className="flex flex-wrap gap-2">
             <span className="inline-flex items-center text-xs sm:text-sm text-TextTwo/70 bg-lamaSkyLight/70 px-3 py-1 rounded-full">
               <Clock size={14} className="mr-1.5 shrink-0" />
-              {formatDate(policy.createdAt)}
+              {`${new Date(policy.updatedAt).toLocaleString()}`}
             </span>
           </div>
         </div>
@@ -121,9 +126,11 @@ export default function PolicyCard({
                   <span className="text-xs uppercase tracking-wider text-TextTwo/60 mb-1">
                     Effective From
                   </span>
-                  <span className="text-sm font-semibold text-ColorThree">
-                    {formatDate(policy.effectiveDate)}
-                  </span>
+                  <div className="flex flex-col xs:flex-row gap-1 xs:gap-2">
+                    <span className="text-sm font-semibold text-ColorThree">
+                      {formatDate(policy.effectiveDate)}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -160,6 +167,7 @@ export default function PolicyCard({
           </div>
         </div>
 
+        {/* Rest of the component remains the same */}
         {/* Attachments Section */}
         {policy.attachments?.length > 0 && (
           <div className="bg-white border border-ColorThree/10 rounded-lg p-4">
@@ -187,7 +195,7 @@ export default function PolicyCard({
       </div>
 
       {/* Actions Section */}
-      {canCreatePolicy && (
+      {policy.authorId === user?.id && (
         <div className="px-4 sm:px-6 py-4 mt-2">
           <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
             <button

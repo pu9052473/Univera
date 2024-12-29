@@ -12,17 +12,13 @@ export async function PATCH(req: Request) {
 
   //check user authorization
   if (
-    role !== "dean" &&
-    role !== "principal" &&
-    role !== "head_of_department" &&
+    role !== "authority" &&
     role !== "department_admin" &&
     role !== "university_admin"
   ) {
     return NextResponse.json(
       { message: "You are not allowed to create or update policy" },
-      {
-        status: 401
-      }
+      { status: 401 }
     )
   }
 
@@ -36,7 +32,8 @@ export async function PATCH(req: Request) {
       effectiveDate,
       expiryDate,
       attachments,
-      category
+      category,
+      authorName
     } = await req.json()
 
     if (
@@ -46,7 +43,8 @@ export async function PATCH(req: Request) {
       !departmentId ||
       !authorId ||
       !category ||
-      !effectiveDate
+      !effectiveDate ||
+      !authorName
     ) {
       console.log("Validation failed. Missing required fields.")
       return NextResponse.json(
@@ -65,7 +63,8 @@ export async function PATCH(req: Request) {
       effectiveDate,
       expiryDate,
       attachments,
-      category
+      category,
+      authorName
     }
 
     let policy
@@ -124,9 +123,7 @@ export async function DELETE(req: Request) {
 
   //check user authorization
   if (
-    role !== "dean" &&
-    role !== "principal" &&
-    role !== "head_of_department" &&
+    role !== "authority" &&
     role !== "department_admin" &&
     role !== "university_admin"
   ) {
@@ -221,7 +218,8 @@ export async function GET(request: Request) {
           effectiveDate: true,
           expiryDate: true,
           description: true,
-          attachments: true
+          attachments: true,
+          authorName: true
         }
       })
 

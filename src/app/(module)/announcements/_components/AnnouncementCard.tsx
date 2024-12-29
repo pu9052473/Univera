@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { useRouter } from "next/navigation"
 import {
   ChevronDown,
@@ -7,29 +7,21 @@ import {
   Edit,
   Loader2,
   Paperclip,
-  Trash2
+  Trash2,
+  User
 } from "lucide-react"
 import toast from "react-hot-toast"
-
-// Format date function
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric"
-  })
-}
+import { UserContext } from "@/context/user"
 
 export default function AnnouncementCard({
   announcement,
-  refetch,
-  canCreateAnnouncement
+  refetch
 }: {
   announcement: any
   refetch: () => void
-  canCreateAnnouncement: boolean
 }) {
   const router = useRouter()
+  const { user } = useContext(UserContext)
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const [isDeleting, setIsDeleting] = useState<boolean>(false)
   const [showConfirmDelete, setShowConfirmDelete] = useState<boolean>(false)
@@ -62,14 +54,18 @@ export default function AnnouncementCard({
   }
 
   return (
-    <div className="group p-3 mx-0.5 sm:p-4 md:p-6 bg-white hover:bg-lamaSkyLight/50 transition-all duration-300 rounded-lg shadow-sm hover:shadow-lg border border-transparent hover:border-ColorThree/20">
+    <div className="group p-3 mx-0.5 sm:p-4 md:p-6 bg-lamaSkyLight/50 hover:bg-white transition-all duration-300 rounded-lg shadow-sm hover:shadow-lg border border-ColorThree/20">
       <div className="flex flex-col sm:flex-row justify-between items-start gap-2 sm:gap-4 mb-2 sm:mb-3">
         <h2 className="text-lg sm:text-xl font-semibold text-TextTwo group-hover:text-ColorThree transition-colors line-clamp-2">
           {announcement.title}
         </h2>
+        <div className="text-base flex items-center gap-1.5 sm:text-xl font-semibold text-TextTwo group-hover:text-ColorThree transition-colors">
+          <User size={18} className="shrink-0" />
+          {announcement.announcerName}
+        </div>
         <div className="flex items-center text-xs sm:text-sm text-TextTwo/70 whitespace-nowrap bg-lamaSkyLight px-3 py-1 rounded-full">
           <Clock size={14} className="mr-1.5 shrink-0" />
-          {formatDate(announcement.createdAt)}
+          {`${new Date(announcement.updatedAt).toLocaleString()}`}
         </div>
       </div>
 
@@ -123,7 +119,7 @@ export default function AnnouncementCard({
         </div>
       )}
 
-      {canCreateAnnouncement && (
+      {announcement.announcerId === user?.id && (
         <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:justify-end">
           <button
             onClick={handleEdit}

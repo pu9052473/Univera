@@ -32,7 +32,8 @@ export async function PATCH(req: Request) {
       universityId,
       announcerId,
       attachments,
-      category
+      category,
+      announcerName
     } = await req.json()
 
     if (
@@ -41,7 +42,8 @@ export async function PATCH(req: Request) {
       !universityId ||
       !departmentId ||
       !announcerId ||
-      !category
+      !category ||
+      !announcerName
     ) {
       console.log("Validation failed. Missing required fields.")
       return NextResponse.json(
@@ -58,7 +60,8 @@ export async function PATCH(req: Request) {
       universityId,
       announcerId,
       attachments,
-      category
+      category,
+      announcerName
     }
 
     let announcement
@@ -215,7 +218,8 @@ export async function GET(request: Request) {
           announcerId: true,
           category: true,
           description: true,
-          attachments: true
+          attachments: true,
+          announcerName: true
         }
       })
 

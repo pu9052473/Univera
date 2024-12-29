@@ -164,6 +164,7 @@ export default function CreateOrUpdatePolicy() {
         departmentId: user?.departmentId,
         universityId: user?.universityId,
         authorId: user?.id,
+        authorName: user?.name,
         effectiveDate,
         expiryDate,
         attachments: [...existingFiles, ...uploadedFileData]

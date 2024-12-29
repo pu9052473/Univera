@@ -21,6 +21,7 @@ async function fetchPolicy(departmentId: string, universityId: string) {
 export default function PolicyPage() {
   const router = useRouter()
   const { user } = useContext(UserContext)
+  console.log("user: ", user)
   // Check if the user has any of the required role IDs
   const allowedRoleIds = [1, 3, 10, 11, 12]
 
@@ -63,7 +64,7 @@ export default function PolicyPage() {
 
   return (
     <div>
-      <div className="max-w-6xl mx-auto p-3 space-y-6">
+      <div className="max-w-6xl mx-auto p-2 space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-4">
           <h1 className="text-2xl font-semibold text-TextTwo text-center sm:text-left">
             Policies
@@ -83,9 +84,9 @@ export default function PolicyPage() {
           )}
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden py-4 px-1">
-          <Tabs defaultValue="academic" className="w-full">
-            <TabsList className="w-full flex justify-evenly bg-lamaSkyLight rounded-lg mb-6 py-3 px-0.5">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden py-4 px-0.5">
+          <Tabs defaultValue="academic" className="w-full ">
+            <TabsList className="flex justify-between bg-lamaSkyLight rounded-lg mb-6 py-3 px-0.5">
               {[
                 { value: "academic", label: "Academic" },
                 { value: "administrative", label: "Administrative" },
@@ -95,7 +96,7 @@ export default function PolicyPage() {
                   key={tab.value}
                   value={tab.value}
                   className="flex-1 data-[state=active]:bg-white data-[state=active]:text-ColorThree 
-                  data-[state=active]:shadow-sm text-TextTwo hover:text-ColorThree transition-colors sm:text-sm md:text-base"
+                  data-[state=active]:shadow-sm text-TextTwo hover:text-ColorThree transition-colors text-sm md:text-base"
                 >
                   {tab.label}
                 </TabsTrigger>
@@ -117,7 +118,6 @@ export default function PolicyPage() {
                         key={policy.id}
                         policy={policy}
                         refetch={refetch}
-                        canCreatePolicy={canCreatePolicy}
                       />
                     ))
                 ) : (

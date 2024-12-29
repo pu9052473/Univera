@@ -117,7 +117,6 @@ export default function AnnouncementsPage() {
                         key={announcement.id}
                         announcement={announcement}
                         refetch={refetch}
-                        canCreateAnnouncement={canCreateAnnouncement}
                       />
                     ))
                 ) : (

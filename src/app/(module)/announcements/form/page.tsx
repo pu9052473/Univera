@@ -160,6 +160,7 @@ export default function CreateAnnouncement() {
         universityId: user?.universityId,
         announcerId: user?.id,
         category,
+        announcerName: user?.name,
         attachments: [...existingFiles, ...uploadedFileData]
       }
 
