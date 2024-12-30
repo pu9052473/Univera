@@ -185,7 +185,9 @@ function FacultyClasses({ user, roles }: FacultyClassesProps) {
         )}
       </div>
       <div className="">
-        <h1 className="text-2xl font-bold text-Dark">My classes</h1>
+        <h1 className="text-2xl font-bold text-Dark text-center py-4">
+          My classes
+        </h1>
         <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 ml-2">
           {FacultyError && (
             <p>Failed to load your classes. Please try again later.</p>
@@ -217,22 +219,27 @@ function FacultyClasses({ user, roles }: FacultyClassesProps) {
       {/* Course Authority but not principal and dean */}
       {(roles.includes(5) || roles.includes(11) || roles.includes(13)) &&
         !(roles.includes(10) || roles.includes(12)) && (
-          <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 ml-2">
-            {isAuthorityError && (
-              <p>Failed to load course classes. Please try again later.</p>
-            )}
-            {isAuthorityClassesLoading ? (
-              <>
-                {[...Array(8)].map((_, i) => (
-                  <ClassesCardSkeleton key={i} />
-                ))}
-              </>
-            ) : (
-              AuthorityClasses &&
-              AuthorityClasses.map((c: any) => (
-                <ClassesCard key={c.id} Class={c} />
-              ))
-            )}
+          <div className="">
+            <h1 className="text-2xl font-bold text-Dark text-center py-4">
+              Course Classes
+            </h1>
+            <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 ml-2">
+              {isAuthorityError && (
+                <p>Failed to load course classes. Please try again later.</p>
+              )}
+              {isAuthorityClassesLoading ? (
+                <>
+                  {[...Array(8)].map((_, i) => (
+                    <ClassesCardSkeleton key={i} />
+                  ))}
+                </>
+              ) : (
+                AuthorityClasses &&
+                AuthorityClasses.map((c: any) => (
+                  <ClassesCard key={c.id} Class={c} />
+                ))
+              )}
+            </div>
           </div>
         )}
     </div>
