@@ -11,6 +11,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import UserCard from "../../_components/UserCard"
 import { AddCoordinator, AddMentor } from "../../_components/AddCoordinator"
 import ClassFaculties from "../../_components/ClassFaculties"
+import ClassStudents from "../../_components/ClassStudents"
+import SubjectCard from "../../_components/SubjectCard"
+import { Subject } from "@prisma/client"
 
 async function fetchClassById(classId: number) {
   const { data } = await axios.get(`/api/classes/${classId}`)
@@ -46,6 +49,9 @@ export default function ClassEditPage() {
     )
   }
 
+  const filteredSubjects = Class?.course.subjects?.filter(
+    (s: Subject) => s.semester === Class.semister
+  )
   const tabs = ["coordinator", "mentor", "subjects", "faculties", "students"]
 
   return (
@@ -85,7 +91,7 @@ export default function ClassEditPage() {
               </TabsList>
             </div>
 
-            <div className="p-4 sm:p-6">
+            <div className="p-4 sm:p-6 h-full w-full max-w-5xl mx-auto">
               {tabs.map((tab) => (
                 <TabsContent
                   key={tab}
@@ -145,6 +151,31 @@ export default function ClassEditPage() {
                           faculties={Class.course.faculties}
                         />
                       )}
+                    </div>
+                  )}
+                  {tab === "students" && (
+                    <div className="">
+                      <ClassStudents
+                        refetch={refetch}
+                        Students={Class?.course.students}
+                        classId={Number(classId)}
+                      />
+                    </div>
+                  )}
+                  {tab === "subjects" && (
+                    <div
+                      id="subject-card-container"
+                      key="subject-card-container"
+                      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4"
+                    >
+                      {filteredSubjects &&
+                        filteredSubjects.map((subject: Subject) => (
+                          <SubjectCard
+                            key={subject.id}
+                            courseId={Number(Class?.courseId)}
+                            subject={subject}
+                          />
+                        ))}
                     </div>
                   )}
                 </TabsContent>

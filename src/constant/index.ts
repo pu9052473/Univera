@@ -47,7 +47,7 @@ export const Menuitems = {
   ],
   authority: [
     { title: "Dashboard", url: "/dashboard", icon: MdSpaceDashboard },
-    { title: "Students", url: "/students", icon: FaUsers },
+    { title: "Students", url: "/list/students", icon: FaUsers },
     { title: "Classes", url: "/classes", icon: FaBook },
     { title: "Courses", url: "/courses", icon: MdEditDocument },
     { title: "Subjects", url: "/subject", icon: MdClass },
@@ -57,7 +57,7 @@ export const Menuitems = {
   ],
   faculty: [
     { title: "Dashboard", url: "/dashboard", icon: MdSpaceDashboard },
-    { title: "Students", url: "/students", icon: FaUsers },
+    { title: "Students", url: "/list/students", icon: FaUsers },
     { title: "Classes", url: "/classes", icon: FaBook },
     { title: "Subjects", url: "/subject", icon: MdClass },
     { title: "Events", url: "/events", icon: FaRegCalendarAlt },

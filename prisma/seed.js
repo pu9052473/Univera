@@ -102,8 +102,8 @@ async function main() {
   const dummyPrincipalUser = await prisma.user.create({
     // Principal
     data: {
-      id: "user_2qcpeeEw8rTPzWIKUgjppr0xWUo",
-      clerkId: "user_2qcpeeEw8rTPzWIKUgjppr0xWUo",
+      id: "user_2qrHhQZhnV8h24O5Yw52yYm3dws",
+      clerkId: "user_2qrHhQZhnV8h24O5Yw52yYm3dws",
       name: "Nilax Modi",
       email: "principal_uit@ku.edu.in",
       phone: "7894567898",
@@ -123,8 +123,8 @@ async function main() {
   const dummyDeanUser = await prisma.user.create({
     // Dean
     data: {
-      id: "user_2qVuNTsat2QYT68j069juHP3cqI",
-      clerkId: "user_2qVuNTsat2QYT68j069juHP3cqI",
+      id: "user_2qrHoqnzAhnRgTExHVB4qoCoU9Y",
+      clerkId: "user_2qrHoqnzAhnRgTExHVB4qoCoU9Y",
       name: "Mohak shah",
       email: "dean_uit@ku.edu.in",
       phone: "7894567898",
@@ -413,7 +413,7 @@ const studentUser3 = await prisma.user.create({
       clerkId: studentUser1.id,
       prn: "1234567890",
       year: 2,
-      semister: 1,
+      semester: 1,
       guardianEmail: "gardianstudent1@gmail.com",
       gaurdianPhone: "7894567898",
       rollNo: 1,
@@ -429,7 +429,7 @@ const studentUser3 = await prisma.user.create({
       clerkId: studentUser2.id,
       prn: "1234567890",
       year: 2,
-      semister: 1,
+      semester: 1,
       guardianEmail: "gardianstudent1@gmail.com",
       gaurdianPhone: "7894567898",
       rollNo: 1,
@@ -445,7 +445,7 @@ const studentUser3 = await prisma.user.create({
       clerkId: studentUser3.id,
       prn: "1234567890",
       year: 2,
-      semister: 1,
+      semester: 1,
       guardianEmail: "gardianstudent1@gmail.com",
       gaurdianPhone: "7894567898",
       rollNo: 1,

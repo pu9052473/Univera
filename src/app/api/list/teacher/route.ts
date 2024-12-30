@@ -18,19 +18,8 @@ export async function GET(req: Request) {
       throw new Error("Can't find department")
     }
 
-    const faculties = await Promise.all(
-      department.faculties.map(async (f) => {
-        const user = await prisma.user.findUnique({
-          where: {
-            id: f.clerkId
-          }
-        })
-        return user
-      })
-    )
-
     return NextResponse.json(
-      { message: "Found department", faculties },
+      { message: "Found department", faculties: department.faculties },
       {
         status: 200
       }

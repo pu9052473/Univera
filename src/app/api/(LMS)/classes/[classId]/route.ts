@@ -41,6 +41,7 @@ export async function GET(req: Request, context: any) {
         coordinator: true,
         course: {
           include: {
+            subjects: true,
             faculties: {
               include: {
                 class: true,
@@ -49,6 +50,12 @@ export async function GET(req: Request, context: any) {
                     roles: true
                   }
                 }
+              }
+            },
+            students: {
+              include: {
+                class: true,
+                user: true
               }
             }
           }
@@ -82,8 +89,16 @@ export async function PATCH(res: Request, context: any) {
     const { searchParams } = new URL(res.url)
     const assignFaculty = await searchParams.get("assignFaculty")
     const removeFaculty = await searchParams.get("removeFaculty")
+    const assignStudent = await searchParams.get("assignStudent")
+    const removeStudent = await searchParams.get("removeStudent")
     const { classId } = await context.params
-    const { updatedClass, facultyIds, removedFaultyId } = await res.json()
+    const {
+      updatedClass,
+      facultyIds,
+      removedFaultyId,
+      studentIds,
+      removedStudentId
+    } = await res.json()
     const clerkU = await currentUser()
     const role = clerkU?.publicMetadata.role
 
@@ -137,7 +152,10 @@ export async function PATCH(res: Request, context: any) {
           }
         )
       } catch (error) {
-        console.error("Error assigning faculties:", error)
+        console.error(
+          "Error assigning faculties @api/(LMS)classes/[classId]:",
+          error
+        )
         return NextResponse.json(
           {
             error: "Failed to assign faculties"
@@ -174,9 +192,98 @@ export async function PATCH(res: Request, context: any) {
           { status: 200 }
         )
       } catch (error) {
-        console.error("Error Removing faculties:", error)
+        console.error(
+          "Error Removing faculties @api/(LMS)classes/[classId]:",
+          error
+        )
         return NextResponse.json(
           { error: "Failed to remove faculties" },
+          { status: 500 }
+        )
+      }
+    }
+    // Adding faculties to class
+    if (assignStudent) {
+      if (
+        !studentIds ||
+        !Array.isArray(studentIds) ||
+        studentIds.length === 0
+      ) {
+        return NextResponse.json(
+          { error: "Valid student IDs array is required" },
+          { status: 400 }
+        )
+      }
+      try {
+        const Class = await prisma.class.update({
+          where: {
+            id: Number(classId)
+          },
+          data: {
+            students: {
+              connect: studentIds.map((id: string) => ({
+                id: id
+              }))
+            }
+          }
+        })
+
+        return NextResponse.json(
+          {
+            message: "Students assigned successfully",
+            data: Class
+          },
+          {
+            status: 200
+          }
+        )
+      } catch (error) {
+        console.error(
+          "Error assigning Students: @api/(LMS)classes/[classId]",
+          error
+        )
+        return NextResponse.json(
+          {
+            error: "Failed to assign Students"
+          },
+          {
+            status: 500
+          }
+        )
+      }
+    }
+
+    //Remove Faculty from class
+    if (removeStudent) {
+      if (!removedStudentId) {
+        return NextResponse.json(
+          { error: "Valid Removing stdudentId is required" },
+          { status: 400 }
+        )
+      }
+      try {
+        const Class = await prisma.class.update({
+          where: {
+            id: Number(classId)
+          },
+          data: {
+            students: {
+              disconnect: { id: removedStudentId }
+            }
+          }
+        })
+
+        return NextResponse.json(
+          { message: "Student removed successfully", class: Class },
+          { status: 200 }
+        )
+      } catch (error) {
+        console.error(
+          "Error Removing Student @api/(LMS)classes/[classId]:",
+          error
+        )
+        return NextResponse.json(
+          { error: "Failed to remove Student" },
           { status: 500 }
         )
       }

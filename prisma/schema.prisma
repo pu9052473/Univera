@@ -32,7 +32,7 @@ model User {
   roles               Role[]         @relation("UserToRole")
   chatMessage         ChatMessage[]
   hodCourse           Course?        @relation("hod_to_course")
-  course              Course?         @relation("UserToCourse", fields: [courseId], references: [id])
+  course              Course?        @relation("UserToCourse", fields: [courseId], references: [id])
   departmentAdmin     Department?    @relation("AdminToDepartment")
   departmentPrincipal Department?    @relation("PrincipalToDepartment")
   departmentDean      Department?    @relation("DeanToDepartment")
@@ -122,7 +122,7 @@ model Student {
   id            String       @id @unique
   prn           String?
   year          Int
-  semister      Int
+  semester      Int
   guardianEmail String?
   gaurdianPhone String?
   rollNo        Int
