@@ -266,11 +266,12 @@ model Subject {
 model Attendance {
   id           Int        @id @unique @default(autoincrement())
   rollNo       Int
-  studentId    String
+  studentId    String     
   facultyId    String
-  semister     Int
-  date         DateTime
-  status       String
+  semester     Int
+  date         String
+  status       String    
+  slotId       Int
   subjectId    Int
   courseId     Int
   departmentId Int
@@ -285,6 +286,8 @@ model Attendance {
   student      Student    @relation(fields: [studentId], references: [clerkId])
   subject      Subject    @relation(fields: [subjectId], references: [id])
   university   University @relation(fields: [universityId], references: [id])
+
+  @@unique([studentId, classId, date]) //for update attendance this should be unique
 }
 
 model Submission {
