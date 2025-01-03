@@ -7,8 +7,6 @@ export async function PATCH(req: Request) {
   const date = searchParams.get("date")
   const canUsePage = searchParams.get("canUsePage")
 
-  console.log("canUsePage in route", canUsePage)
-
   if (!canUsePage === false) {
     return NextResponse.json(
       { message: "You are not allowed to create or modify attendance" },
