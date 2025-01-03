@@ -43,3 +43,8 @@ declare global {
     }
   }
 }
+
+export type Student = {
+  id: string
+  checked: boolean
+}

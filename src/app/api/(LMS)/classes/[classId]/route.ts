@@ -5,6 +5,8 @@ import { NextResponse } from "next/server"
 export async function GET(req: Request, context: any) {
   try {
     const { classId } = await context.params
+    const url = new URL(req.url)
+    const onlyStudents = url.searchParams.get("onlyStudents")
 
     const clerkU = await currentUser()
     const role = clerkU?.publicMetadata.role
@@ -22,11 +24,22 @@ export async function GET(req: Request, context: any) {
       throw new Error("Class Id is required")
     }
 
+    const includeStudents = onlyStudents
+      ? {
+          students: {
+            include: {
+              user: true
+            }
+          }
+        }
+      : {}
+
     const Class = await prisma.class.findFirst({
       where: {
         id: Number(classId)
       },
       include: {
+        ...includeStudents,
         faculties: {
           include: {
             class: true,
