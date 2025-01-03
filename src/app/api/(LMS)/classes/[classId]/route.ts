@@ -12,9 +12,9 @@ export async function GET(req: Request, context: any) {
     const role = clerkU?.publicMetadata.role
 
     //check user authorization
-    if (role !== "authority" && role !== "super_user") {
+    if (!role) {
       return NextResponse.json(
-        { message: "You are not allowed to create a Subject" },
+        { message: "You are not allowed to get classes" },
         {
           status: 401
         }

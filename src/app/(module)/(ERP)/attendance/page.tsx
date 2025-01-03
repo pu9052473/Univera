@@ -45,7 +45,7 @@ export default function AttendancePage() {
   const canUsePage = roles.includes(4)
 
   const {
-    data: students = [], // Provide default empty array
+    data: students,
     error,
     refetch,
     isLoading
