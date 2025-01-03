@@ -100,3 +100,85 @@ export const ClassDetailsSkeleton = () => {
     </div>
   )
 }
+
+import React from "react"
+
+export const DashboardSkeleton = () => {
+  return (
+    <div className="min-h-screen bg-gray-50 animate-pulse">
+      <div className="container mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-8 space-y-6">
+            {/* Profile Banner Skeleton */}
+            <div className="w-full h-64 bg-gray-200 rounded-xl overflow-hidden">
+              <div className="h-full flex items-end p-6">
+                <div className="flex items-center space-x-4">
+                  <div className="w-32 h-32 rounded-full bg-gray-300" />
+                  <div className="space-y-2">
+                    <div className="h-8 w-48 bg-gray-300 rounded" />
+                    <div className="h-4 w-36 bg-gray-300 rounded" />
+                    <div className="h-4 w-40 bg-gray-300 rounded" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Explore Section Skeleton */}
+            <div className="bg-gray-200 rounded-xl p-6">
+              <div className="h-6 w-32 bg-gray-300 rounded mb-6" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="bg-gray-100 rounded-xl p-6">
+                    <div className="flex gap-3 items-center mb-3">
+                      <div className="w-7 h-7 bg-gray-300 rounded-xl" />
+                      <div className="h-5 w-24 bg-gray-300 rounded" />
+                    </div>
+                    <div className="h-4 w-full bg-gray-300 rounded" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-4 space-y-6">
+            {/* Profile Completion Skeleton */}
+            <div className="bg-white rounded-xl p-6">
+              <div className="flex flex-col items-center">
+                <div className="h-6 w-40 bg-gray-200 rounded mb-4" />
+                <div className="w-24 h-24 rounded-full bg-gray-200 mb-4" />
+                <div className="h-8 w-24 bg-gray-200 rounded" />
+              </div>
+            </div>
+
+            {/* Announcements Skeleton */}
+            <div className="bg-white rounded-xl p-6">
+              <div className="flex justify-between items-center mb-4">
+                <div className="h-6 w-32 bg-gray-200 rounded" />
+                <div className="h-4 w-16 bg-gray-200 rounded" />
+              </div>
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="p-4 bg-gray-100 rounded-lg mb-4">
+                  <div className="h-5 w-36 bg-gray-200 rounded mb-2" />
+                  <div className="h-4 w-full bg-gray-200 rounded" />
+                </div>
+              ))}
+            </div>
+
+            {/* Concern Person Skeleton */}
+            <div className="bg-white rounded-xl p-6">
+              <div className="h-6 w-36 bg-gray-200 rounded mb-4" />
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 rounded-full bg-gray-200" />
+                <div className="space-y-2">
+                  <div className="h-5 w-32 bg-gray-200 rounded" />
+                  <div className="h-4 w-24 bg-gray-200 rounded" />
+                  <div className="h-4 w-40 bg-gray-200 rounded" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
