@@ -12,10 +12,21 @@ import {
   Search,
   Calendar,
   AlertCircle,
-  X
+  X,
+  FileSpreadsheet,
+  Download
 } from "lucide-react"
 import { toast } from "react-hot-toast"
 import axios from "axios"
+import jsPDF from "jspdf"
+import autoTable from "jspdf-autotable"
+import * as XLSX from "xlsx"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger
+} from "@/components/ui/select"
 
 async function fetchClasses(courseId: number) {
   const { data } = await axios.get(`/api/classes`, {
@@ -102,7 +113,49 @@ const AttendanceDashboard = () => {
     return acc
   }, {})
 
-  if (!canUsePage) {
+  const exportToPDF = () => {
+    const doc = new jsPDF()
+    doc.text("Student Attendance Details", 10, 10)
+    autoTable(doc, {
+      head: [["Roll No", "Name", "Attendance", "Status"]],
+      body: filteredStudents.map((student: any) => [
+        student.rollNo,
+        student.user.name,
+        `${calculateAttendancePercentage(89, 100)}%`,
+        getAttendanceStatus(89)
+      ])
+    })
+    doc.save(`Class_${selectedClassId}_Details.pdf`)
+  }
+
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(
+      filteredStudents.map((student: any) => ({
+        RollNo: student.rollNo,
+        Name: student.user.name,
+        Attendance: `${calculateAttendancePercentage(89, 100)}%`,
+        Status: getAttendanceStatus(89)
+      }))
+    )
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Class Details")
+    XLSX.writeFile(workbook, `Class_${selectedClassId}_Details.xlsx`)
+  }
+
+  const handleExportValueChange = (value: string) => {
+    switch (value) {
+      case "pdf":
+        exportToPDF()
+        break
+      case "excel":
+        exportToExcel()
+        break
+      default:
+        break
+    }
+  }
+
+  if (!canUsePage && user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
         <X className="w-12 h-12 text-red-500" />
@@ -137,7 +190,7 @@ const AttendanceDashboard = () => {
         </div>
 
         {/* Classes Grid */}
-        <div className="grid max-[500px]:grid-cols-1 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
           {classesLoading ? (
             <div className="col-span-full flex justify-center p-12">
               <Loader2 className="w-8 h-8 animate-spin text-ColorThree" />
@@ -157,7 +210,7 @@ const AttendanceDashboard = () => {
                 <Card
                   className={`cursor-pointer transition-all duration-300 border-2 ${
                     selectedClassId === cls.id
-                      ? "bg-gradient-to-br from-lamaPurple to-ColorThree/60 border-ColorThree shadow-lg"
+                      ? "bg-gradient-to-br from-lamaPurple to-ColorThree border-ColorThree shadow-lg"
                       : "bg-white hover:bg-lamaSkyLight border-transparent hover:border-ColorThree/30"
                   }`}
                   onClick={() => setSelectedClassId(cls.id)}
@@ -176,6 +229,15 @@ const AttendanceDashboard = () => {
                       >
                         {cls.name}
                       </h3>
+                      <p
+                        className={`text-sm ${
+                          selectedClassId === cls.id
+                            ? "text-white/80"
+                            : "text-TextTwo/70"
+                        }`}
+                      >
+                        Class ID: {cls.id}
+                      </p>
                       <ChevronRight
                         className={`w-5 h-5 transition-transform duration-300 ${
                           selectedClassId === cls.id ? "rotate-90" : ""
@@ -192,45 +254,91 @@ const AttendanceDashboard = () => {
         {/* Students Section */}
         {selectedClassId && (
           <Card className="bg-white/90 backdrop-blur shadow-xl">
-            <CardContent className="p-6">
-              <div className="flex flex-col lg:flex-row justify-between gap-4 mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-lamaSkyLight">
-                    <Users className="w-6 h-6 text-ColorThree" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-Dark">
-                    Class {selectedClassId} Students
-                  </h2>
-                </div>
+            <CardContent className="p-3">
+              {students?.length > 0 && (
+                <div className="animate-fadeIn">
+                  <div className="p-2 bg-white/95 rounded-xl">
+                    <div className="flex flex-col gap-4">
+                      {/* Title and Stats Container */}
+                      <div className="flex flex-col sm:flex-row lg:items-center lg:justify-between items-center gap-3">
+                        {/* Title Section */}
+                        <div className="w-full flex flex-col sm:flex-row gap-4">
+                          <div className="w-full sm:w-auto p-2.5 sm:px-4 sm:py-2.5 flex items-center justify-center sm:justify-start gap-2 rounded-xl bg-gradient-to-br from-lamaPurple/10 to-ColorThree/10 backdrop-blur">
+                            <Users className="w-5 h-5 sm:w-6 sm:h-6 text-ColorThree shrink-0" />
+                            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-Dark whitespace-nowrap">
+                              Class {selectedClassId}
+                            </h2>
+                          </div>
 
-                {/* Stats Cards */}
-                {stats && (
-                  <div className="grid grid-cols-1 text-center sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {Object.entries(stats).map(([status, count]) => (
-                      <div
-                        key={status}
-                        className="bg-lamaSkyLight rounded-lg p-3"
-                      >
-                        <div className="text-lg font-bold text-TextTwo">
-                          {Number(count)} students
+                          {/* Stats Section */}
+                          {stats && (
+                            <div className="flex flex-row flex-wrap sm:flex-nowrap gap-2 sm:gap-3 w-full sm:w-auto">
+                              {Object.entries(stats).map(([status, count]) => (
+                                <div
+                                  key={status}
+                                  className="flex-1 sm:flex-none min-w-[120px] p-2.5 sm:px-4 sm:py-2.5 bg-gradient-to-br from-lamaSkyLight to-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
+                                >
+                                  <div className="flex items-center justify-center gap-2">
+                                    <span className="text-base text-TextTwo/70 capitalize">
+                                      {status.replace("_", " ")}
+                                    </span>
+                                    <span className="text-base lg:text-lg font-bold text-Dark">
+                                      {Number(count)}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Export Dropdown */}
+                        <div className="w-full sm:w-auto">
+                          <Select onValueChange={handleExportValueChange}>
+                            <SelectTrigger className="w-full sm:w-[180px] px-4 py-2.5 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all duration-300">
+                              <span className="text-black">Export Options</span>
+                            </SelectTrigger>
+                            <SelectContent className="bg-white">
+                              <SelectItem
+                                value="pdf"
+                                className="cursor-pointer"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Download className="w-4 h-4" />
+                                  <span>Export as PDF</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem
+                                value="excel"
+                                className="cursor-pointer"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <FileSpreadsheet className="w-4 h-4" />
+                                  <span>Export as Excel</span>
+                                </div>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
-                    ))}
+                    </div>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Search Bar */}
-              <div className="relative mb-6">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-TextTwo/50 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search by name or roll number..."
-                  className="w-full pl-10 pr-4 py-2 rounded-lg border border-lamaPurple/30 focus:border-ColorThree focus:ring-1 focus:ring-ColorThree outline-none transition-colors"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
+              {students?.length > 0 && (
+                <div className="relative mb-6">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-TextTwo/50 w-5 h-5" />
+                  <input
+                    type="text"
+                    placeholder="Search by name or roll number..."
+                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-lamaPurple/30 focus:border-ColorThree focus:ring-1 focus:ring-ColorThree outline-none transition-colors"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+              )}
 
               {studentsLoading ? (
                 <div className="flex justify-center p-12">
