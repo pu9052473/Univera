@@ -15,36 +15,40 @@ interface FileWithPreview extends File {
   url?: string
 }
 
-export default function CreateAnnouncement() {
+export default function CreateOrUpdatePolicy() {
   const searchParams = useSearchParams()
-  const announcementId = searchParams.get("announcementId")
+  const policyId = searchParams.get("policyId")
   const { user } = useContext(UserContext)
   const [title, setTitle] = useState<string>("")
   const [description, setDescription] = useState<string>("")
   const [files, setFiles] = useState<FileWithPreview[]>([])
-  const [category, setCategory] = useState<string>("general")
+  const [category, setCategory] = useState<string>("academic")
+  const [effectiveDate, setEffectiveDate] = useState<string>("")
+  const [expiryDate, setExpiryDate] = useState<string>("")
   const [uploading, setUploading] = useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const router = useRouter()
 
   useEffect(() => {
-    const fetchAnnouncementDetails = async () => {
-      if (!announcementId) return
+    const fetchPolicyDetails = async () => {
+      if (!policyId) return
 
       setIsLoading(true)
       try {
         const response = await fetch(
-          `/api/announcements?route=findOne&&announcementId=${announcementId}`
+          `/api/policy?route=findOne&&policyId=${policyId}`
         )
         if (!response.ok) {
-          throw new Error("Failed to fetch the announcements")
+          throw new Error("Failed to fetch the policy details")
         }
 
         const data = await response.json()
         setTitle(data.title)
         setDescription(data.description)
         setCategory(data.category)
+        setEffectiveDate(data.effectiveDate)
+        setExpiryDate(data.expiryDate)
 
         // Handle existing attachments
         if (data.attachments?.length > 0) {
@@ -57,14 +61,14 @@ export default function CreateAnnouncement() {
           setFiles(existingFiles)
         }
       } catch (error) {
-        if (error) toast.error("Failed to fetch the announcements")
+        if (error) toast.error("Failed to fetch the policy details")
       } finally {
         setIsLoading(false)
       }
     }
 
-    fetchAnnouncementDetails()
-  }, [announcementId])
+    fetchPolicyDetails()
+  }, [policyId])
 
   const { startUpload, routeConfig } = useUploadThing("attachmentsUploader", {
     onClientUploadComplete: () => {
@@ -94,10 +98,10 @@ export default function CreateAnnouncement() {
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
-      const UniqueFiles = acceptedFiles.filter((file) => {
+      const uniqueFiles = acceptedFiles.filter((file) => {
         return !files.some((existingFile) => existingFile.name === file.name)
       })
-      const filesWithPreviews = UniqueFiles.map(generatePreview)
+      const filesWithPreviews = uniqueFiles.map(generatePreview)
       setFiles((prevFiles) => [...prevFiles, ...filesWithPreviews])
     },
     [files]
@@ -156,16 +160,18 @@ export default function CreateAnnouncement() {
       const formData = {
         title,
         description,
+        category,
         departmentId: user?.departmentId,
         universityId: user?.universityId,
-        announcerId: user?.id,
-        category,
-        announcerName: user?.name,
+        authorId: user?.id,
+        authorName: user?.name,
+        effectiveDate,
+        expiryDate,
         attachments: [...existingFiles, ...uploadedFileData]
       }
 
       const response = await fetch(
-        `/api/announcements${announcementId ? `?id=${announcementId}` : ""}`,
+        `/api/policy${policyId ? `?id=${policyId}` : ""}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -174,16 +180,20 @@ export default function CreateAnnouncement() {
       )
 
       if (response.ok) {
+        toast.success(`Policy ${policyId ? "Edit" : "Save"} successfully`)
         setTitle("")
         setDescription("")
         setFiles([])
-        setCategory("")
-        router.push("/announcements")
+        setCategory("academic")
+        setEffectiveDate("")
+        setExpiryDate("")
+        router.push("/policy")
       } else {
-        console.log("Failed to create the announcement.")
+        toast.error("Failed to save the policy")
+        console.log("Failed to save the policy", response)
       }
     } catch (error) {
-      console.log("Error creating announcement:", error)
+      if (error) toast.error("An error occurred while saving the policy")
     } finally {
       setIsSubmitting(false)
     }
@@ -201,7 +211,7 @@ export default function CreateAnnouncement() {
     <div className="min-h-screen p-4">
       <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-6">
         <h1 className="sm:text-2xl md:text-3xl text-center font-bold mb-6 text-TextTwo">
-          {announcementId ? "Edit" : "Create"} Announcement
+          {policyId ? "Edit" : "Create"} Policy
         </h1>
         <form onSubmit={handleFormSubmit} className="space-y-6">
           <div>
@@ -235,26 +245,10 @@ export default function CreateAnnouncement() {
               className="w-full px-4 py-2 rounded-lg border border-Secondary focus:outline-none focus:ring-2 focus:ring-ColorThree transition-all duration-200 bg-white appearance-none cursor-pointer"
               required
             >
-              <option
-                value="general"
-                className="px-4 py-2 hover:bg-lamaSkyLight text-TextTwo"
-              >
-                General
-              </option>
-              <option
-                value="event"
-                className="px-4 py-2 hover:bg-lamaSkyLight text-TextTwo"
-              >
-                Event
-              </option>
-              <option
-                value="private"
-                className="px-4 py-2 hover:bg-lamaSkyLight text-TextTwo"
-              >
-                Private
-              </option>
+              <option value="academic">Academic</option>
+              <option value="administrative">Administrative</option>
+              <option value="financial">Financial</option>
             </select>
-            {/* Custom arrow icon */}
             <div className="relative">
               <div className="absolute inset-y-0 right-0 -mt-9 mr-3 flex items-center pointer-events-none">
                 <svg
@@ -290,6 +284,55 @@ export default function CreateAnnouncement() {
             />
           </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+            <div className="w-full">
+              <label
+                htmlFor="effectiveDate"
+                className="block text-sm font-semibold text-TextTwo mb-1"
+              >
+                Effective Date
+              </label>
+              <div className="relative">
+                <input
+                  type="date"
+                  id="effectiveDate"
+                  value={effectiveDate}
+                  onChange={(e) => setEffectiveDate(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg border border-Secondary 
+              focus:outline-none focus:ring-2 focus:ring-ColorThree 
+              transition-all duration-200
+              appearance-none bg-white
+              cursor-pointer
+              hover:border-ColorThree"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="w-full">
+              <label
+                htmlFor="expiryDate"
+                className="block text-sm font-semibold text-TextTwo mb-1"
+              >
+                Expiry Date
+              </label>
+              <div className="relative">
+                <input
+                  type="date"
+                  id="expiryDate"
+                  value={expiryDate}
+                  onChange={(e) => setExpiryDate(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg border border-Secondary 
+              focus:outline-none focus:ring-2 focus:ring-ColorThree 
+              transition-all duration-200
+              appearance-none bg-white
+              cursor-pointer
+              hover:border-ColorThree"
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="bg-lamaSkyLight rounded-lg p-4">
             <UploadthingUploader
               files={files}
@@ -317,7 +360,7 @@ export default function CreateAnnouncement() {
                 Submitting...
               </span>
             ) : (
-              "Submit Announcement"
+              "Submit Policy"
             )}
           </button>
         </form>

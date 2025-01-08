@@ -33,7 +33,7 @@ model User {
   chatMessage         ChatMessage[]
   balances            Balances[]
   hodCourse           Course?        @relation("hod_to_course")
-  course              Course?         @relation("UserToCourse", fields: [courseId], references: [id])
+  course              Course?        @relation("UserToCourse", fields: [courseId], references: [id])
   departmentAdmin     Department?    @relation("AdminToDepartment")
   departmentPrincipal Department?    @relation("PrincipalToDepartment")
   departmentDean      Department?    @relation("DeanToDepartment")
@@ -54,6 +54,8 @@ model User {
 
   Department Department? @relation(fields: [departmentId], references: [id])
   university University? @relation("UserToUniversity", fields: [universityId], references: [id])
+
+  Policy Policy[]
 }
 
 model University {
@@ -79,6 +81,8 @@ model University {
   subjects         Subject[]
   admin            User               @relation("universityAdmin", fields: [adminId], references: [id])
   users            User[]             @relation("UserToUniversity")
+
+  Policy Policy[]
 }
 
 model NonTeachingStaff {
@@ -124,7 +128,7 @@ model Student {
   id            String       @id @unique
   prn           String?
   year          Int
-  semister      Int
+  semester      Int
   guardianEmail String?
   gaurdianPhone String?
   rollNo        Int
@@ -176,6 +180,8 @@ model Department {
   timeTable        TimeTable[]
   User             User[]
   classes          Class[]
+
+  Policy Policy[]
 }
 
 model Course {
@@ -262,11 +268,12 @@ model Subject {
 model Attendance {
   id           Int        @id @unique @default(autoincrement())
   rollNo       Int
-  studentId    String
+  studentId    String     
   facultyId    String
-  semister     Int
-  date         DateTime
-  status       String
+  semester     Int
+  date         String
+  status       String    
+  slotId       Int
   subjectId    Int
   courseId     Int
   departmentId Int
@@ -281,6 +288,8 @@ model Attendance {
   student      Student    @relation(fields: [studentId], references: [clerkId])
   subject      Subject    @relation(fields: [subjectId], references: [id])
   university   University @relation(fields: [universityId], references: [id])
+
+  @@unique([studentId, classId, date]) //for update attendance this should be unique
 }
 
 model Submission {
@@ -415,6 +424,7 @@ model Announcement {
   category     String
   departmentId Int
   universityId Int
+  announcerName String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now())
 
@@ -452,12 +462,32 @@ model Event {
   budget       Int
   organiserId  String
   universityId Int
-  departmentId Int?
+  departmentId Int
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @default(now())
   department   Department? @relation(fields: [departmentId], references: [id])
   organiser    User        @relation(fields: [organiserId], references: [clerkId])
   university   University  @relation(fields: [universityId], references: [id])
+}
+
+model Policy {
+  id             Int       @id @default(autoincrement())
+  title          String
+  description    String?
+  attachments    Json[]    
+  category       String    
+  effectiveDate  String  
+  expiryDate     String?
+  departmentId   Int
+  universityId   Int
+  authorId       String
+  authorName     String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now())
+
+  sharedBy       User       @relation(fields: [authorId], references: [clerkId])
+  department     Department @relation(fields: [departmentId], references: [id])
+  university     University @relation(fields: [universityId], references: [id])
 }
 
 // This is your Prisma schema file,

@@ -1,165 +1,186 @@
 "use client"
+import React from "react"
+import axios from "axios"
+import toast from "react-hot-toast"
+import { useRouter } from "next/navigation"
+import "react-loading-skeleton/dist/skeleton.css"
+import { useState } from "react"
+import { Prisma } from "@prisma/client"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import InputField from "../InputField"
-import Image from "next/image"
+type StudentWithRelations = Prisma.StudentGetPayload<{
+  include: {
+    user: true
+  }
+}>
 
-const schema = z.object({
-  username: z
-    .string()
-    .min(3, { message: "Username must be at least 3 characters long!" })
-    .max(20, { message: "Username must be at most 20 characters long!" }),
-  email: z.string().email({ message: "Invalid email address!" }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters long!" }),
-  firstName: z.string().min(1, { message: "First name is required!" }),
-  lastName: z.string().min(1, { message: "Last name is required!" }),
-  phone: z.string().min(1, { message: "Phone is required!" }),
-  address: z.string().min(1, { message: "Address is required!" }),
-  bloodType: z.string().min(1, { message: "Blood Type is required!" }),
-  birthday: z.date({ message: "Birthday is required!" }),
-  sex: z.enum(["male", "female"], { message: "Sex is required!" }),
-  img: z.instanceof(File, { message: "Image is required" })
-})
+interface StudentFormProps {
+  student?: StudentWithRelations
+  submitBtnId?: string
+  submitBtnLabel?: string
+  isEditable?: boolean
+  courseId: number
+  departmentId: number
+  universityId: number
+  refetch?: () => void
+}
 
-type Inputs = z.infer<typeof schema>
+export default function StudentForm({
+  student,
+  submitBtnId,
+  submitBtnLabel,
+  isEditable,
+  courseId,
+  departmentId,
+  universityId,
+  refetch
+}: StudentFormProps) {
+  const [name, setName] = useState<string>(student?.user.name ?? "")
+  const [email, setEmail] = useState<string>(student?.user.email ?? "")
+  const [password, setPassword] = useState<string>("")
+  const [rollno, setRollNo] = useState<number>(student?.rollNo ?? 0)
+  const [prn, setPRN] = useState<string>(student?.prn ?? "")
+  const [semester, setSemester] = useState<number>(student?.semester ?? 0)
+  const router = useRouter()
 
-const StudentForm = ({
-  type,
-  data
-}: {
-  type: "create" | "update"
-  data?: any
-}) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors }
-  } = useForm<Inputs>({
-    resolver: zodResolver(schema)
-  })
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const buttonId = (e.nativeEvent as SubmitEvent).submitter?.id
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(data)
-  })
-
+    if (buttonId == "student-submit") {
+      try {
+        const createFormData = {
+          name: name,
+          email: email,
+          password: password,
+          rollNo: Number(rollno),
+          prn: prn,
+          semester: Number(semester),
+          year: Math.ceil(Number(semester) / 2),
+          courseId,
+          departmentId,
+          universityId
+        }
+        const res = await axios.post(`/api/list/student/create`, createFormData)
+        if (res.status === 201) {
+          toast.success(res.data.message)
+          router.push(`/list/students`)
+        } else {
+          toast.error(res.data.message)
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+          toast.error(error.response.data.message || "Something went wrong")
+        } else {
+          toast.error("An unexpected error occurred")
+        }
+      }
+    } else if (buttonId == "student-update") {
+      try {
+        const updatedStudent = {
+          rollNo: Number(rollno),
+          prn: prn,
+          semester: Number(semester)
+        }
+        const res = await axios.patch(
+          `/api/list/student/${student?.id}`,
+          updatedStudent
+        )
+        if (res.status === 200) {
+          toast.success(res.data.message)
+          if (refetch) refetch()
+          router.push(`/list/students`)
+        } else {
+          toast.error(res.data.message)
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+          toast.error(error.response.data.message || "Something went wrong")
+        } else {
+          toast.error("An unexpected error occurred")
+        }
+      }
+    }
+  }
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">Create a new student</h1>
-      <span className="text-xs text-gray-400 font-medium">
-        Authentication Information
-      </span>
-      <div className="flex justify-between flex-wrap gap-4">
-        <InputField
-          label="Username"
-          name="username"
-          defaultValue={data?.username}
-          register={register}
-          error={errors?.username}
+    <form className="mt-8 max-w-2xl" onSubmit={handleSubmit}>
+      <div
+        className="grid items-start gap-2"
+        // style={{ gridTemplateColumns: '.3fr .7fr' }}
+      >
+        <label className="text-sm">Full Name</label>
+        <input
+          value={name}
+          disabled={!!isEditable}
+          className="placeholder-transparent h-10 w-full bg-gray-200 rounded-lg border-gray-300 text-gray-900 p-1 mb-4"
+          type="text"
+          onChange={(e) => {
+            setName(e.target.value)
+          }}
         />
-        <InputField
-          label="Email"
-          name="email"
-          defaultValue={data?.email}
-          register={register}
-          error={errors?.email}
+
+        <label className="text-sm">College Email</label>
+        <input
+          disabled={!!isEditable}
+          value={email}
+          className="placeholder-transparent h-10 w-full bg-gray-200 rounded-lg border-gray-300 text-gray-900 p-1 mb-4"
+          type="text"
+          onChange={(e) => {
+            setEmail(e.target.value)
+          }}
         />
-        <InputField
-          label="Password"
-          name="password"
-          type="password"
-          defaultValue={data?.password}
-          register={register}
-          error={errors?.password}
+
+        {!isEditable && (
+          <div className="">
+            <label className="text-sm">Password</label>
+            <input
+              value={password}
+              className="placeholder-transparent h-10 w-full bg-gray-200 rounded-lg border-gray-300 text-gray-900 p-1 mb-4"
+              type="text"
+              onChange={(e) => {
+                setPassword(e.target.value)
+              }}
+            />
+          </div>
+        )}
+
+        <label className="text-sm">Roll No</label>
+        <input
+          value={rollno}
+          className="placeholder-transparent h-10 w-full bg-gray-200 rounded-lg border-gray-300 text-gray-900 p-1 mb-4"
+          type="number"
+          onChange={(e) => {
+            setRollNo(Number(e.target.value))
+          }}
         />
+
+        <label className="text-sm">PRN</label>
+        <input
+          value={prn}
+          className="placeholder-transparent h-10 w-full bg-gray-200 rounded-lg border-gray-300 text-gray-900 p-1 mb-4"
+          type="text"
+          onChange={(e) => {
+            setPRN(e.target.value)
+          }}
+        />
+
+        <label className="text-sm">Semester</label>
+        <input
+          value={semester}
+          className="placeholder-transparent h-10 w-full bg-gray-200 rounded-lg border-gray-300 text-gray-900 p-1 mb-4"
+          type="number"
+          onChange={(e) => {
+            setSemester(Number(e.target.value))
+          }}
+        />
+
+        <button
+          id={submitBtnId ?? "submit"}
+          type="submit"
+          className="bg-Primary text-white w-full mt-4 hover:bg-blue-500 rounded-lg px-4 py-2"
+        >
+          {submitBtnLabel}
+        </button>
       </div>
-      <span className="text-xs text-gray-400 font-medium">
-        Personal Information
-      </span>
-      <div className="flex justify-between flex-wrap gap-4">
-        <InputField
-          label="First Name"
-          name="firstName"
-          defaultValue={data?.firstName}
-          register={register}
-          error={errors.firstName}
-        />
-        <InputField
-          label="Last Name"
-          name="lastName"
-          defaultValue={data?.lastName}
-          register={register}
-          error={errors.lastName}
-        />
-        <InputField
-          label="Phone"
-          name="phone"
-          defaultValue={data?.phone}
-          register={register}
-          error={errors.phone}
-        />
-        <InputField
-          label="Address"
-          name="address"
-          defaultValue={data?.address}
-          register={register}
-          error={errors.address}
-        />
-        <InputField
-          label="Blood Type"
-          name="bloodType"
-          defaultValue={data?.bloodType}
-          register={register}
-          error={errors.bloodType}
-        />
-        <InputField
-          label="Birthday"
-          name="birthday"
-          defaultValue={data?.birthday}
-          register={register}
-          error={errors.birthday}
-          type="date"
-        />
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Sex</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("sex")}
-            defaultValue={data?.sex}
-          >
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
-          {errors.sex?.message && (
-            <p className="text-xs text-red-400">
-              {errors.sex.message.toString()}
-            </p>
-          )}
-        </div>
-        <div className="flex flex-col gap-2 w-full md:w-1/4 justify-center">
-          <label
-            className="text-xs text-gray-500 flex items-center gap-2 cursor-pointer"
-            htmlFor="img"
-          >
-            <Image src="/upload.png" alt="" width={28} height={28} />
-            <span>Upload a photo</span>
-          </label>
-          <input type="file" id="img" {...register("img")} className="hidden" />
-          {errors.img?.message && (
-            <p className="text-xs text-red-400">
-              {errors.img.message.toString()}
-            </p>
-          )}
-        </div>
-      </div>
-      <button className="bg-blue-400 text-white p-2 rounded-md">
-        {type === "create" ? "Create" : "Update"}
-      </button>
     </form>
   )
 }
-
-export default StudentForm
