@@ -15,7 +15,8 @@ import {
   MdPerson,
   MdPeople,
   MdEditDocument,
-  MdForum
+  MdForum,
+  MdOutlineHolidayVillage
 } from "react-icons/md"
 
 export const Menuitems = {
@@ -43,6 +44,7 @@ export const Menuitems = {
     { title: "Subjects", url: "/subject", icon: MdClass },
     { title: "Authorities", url: "/list/authorities", icon: FaUserTie },
     { title: "Faculty", url: "/list/teachers", icon: MdPeople },
+    { title: "Leave", url: "/leave", icon: MdOutlineHolidayVillage },
     { title: "Students", url: "/list/students", icon: MdPeople }
   ],
   authority: [
@@ -51,6 +53,7 @@ export const Menuitems = {
     { title: "Classes", url: "/classes", icon: FaBook },
     { title: "Courses", url: "/courses", icon: MdEditDocument },
     { title: "Subjects", url: "/subject", icon: MdClass },
+    { title: "Leave", url: "/leave", icon: MdOutlineHolidayVillage },
     { title: "Events", url: "/events", icon: FaRegCalendarAlt },
     { title: "Announcement", url: "/announcements", icon: FaBullhorn },
     { title: "Forums", url: "/forum", icon: MdForum }
@@ -60,6 +63,7 @@ export const Menuitems = {
     { title: "Students", url: "/students", icon: FaUsers },
     { title: "Classes", url: "/classes", icon: FaBook },
     { title: "Subjects", url: "/subject", icon: MdClass },
+    { title: "Leave", url: "/leave", icon: MdOutlineHolidayVillage },
     { title: "Events", url: "/events", icon: FaRegCalendarAlt },
     { title: "Announcement", url: "/announcements", icon: FaBullhorn },
     { title: "Forums", url: "/forum", icon: MdForum }

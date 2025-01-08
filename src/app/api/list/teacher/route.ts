@@ -17,12 +17,15 @@ export async function GET(req: Request) {
     if (!department) {
       throw new Error("Can't find department")
     }
-
     const faculties = await Promise.all(
       department.faculties.map(async (f) => {
         const user = await prisma.user.findUnique({
           where: {
             id: f.clerkId
+          },
+          include: {
+            Department: true,
+            roles: true
           }
         })
         return user
@@ -30,15 +33,15 @@ export async function GET(req: Request) {
     )
 
     return NextResponse.json(
-      { message: "Found department", faculties },
+      { message: "Found faculties", faculties },
       {
         status: 200
       }
     )
   } catch (error) {
-    console.log("error while finding department @list/teacher", error)
+    console.log("error while finding faculties @list/teacher", error)
     return NextResponse.json(
-      { message: "error while finding department" },
+      { message: "error while finding faculties" },
       {
         status: 500
       }
