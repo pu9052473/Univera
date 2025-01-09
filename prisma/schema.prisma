@@ -31,6 +31,7 @@ model User {
 
   roles               Role[]         @relation("UserToRole")
   chatMessage         ChatMessage[]
+  balances            Balances[]
   hodCourse           Course?        @relation("hod_to_course")
   course              Course?        @relation("UserToCourse", fields: [courseId], references: [id])
   departmentAdmin     Department?    @relation("AdminToDepartment")
@@ -49,6 +50,7 @@ model User {
   student          Student?
   universityAdmin  University?        @relation("universityAdmin")
   coordinatorClass Class[]            @relation("coordinator_to_class")
+  leaveModerator   Leave[]            @relation("moderator_to_leave")
 
   Department Department? @relation(fields: [departmentId], references: [id])
   university University? @relation("UserToUniversity", fields: [universityId], references: [id])
@@ -488,4 +490,82 @@ model Policy {
   sharedBy       User       @relation(fields: [authorId], references: [clerkId])
   department     Department @relation(fields: [departmentId], references: [id])
   university     University @relation(fields: [universityId], references: [id])
+}
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+
+model LeaveType {
+  id          String   @id @default(cuid())
+  title       String
+  values      String[] @default(["Credit", "Used", "Available"])
+  category    String // Should be a lower case of the title 
+  description String?
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  INMODERATION
+  REJECTED
+}
+
+model Leave {
+  id            String      @id @default(cuid())
+  type          String
+  year          String @default("")
+  startDate     String
+  endDate       String
+  days          Int
+  userName      String
+  userNote      String?
+  tasksLink     String?
+  userEmail     String
+  status        LeaveStatus @default(PENDING)
+  moderatorNote String?
+  updatedBy String?
+  moderator     User[] @relation("moderator_to_leave")
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @default(now())
+}
+
+model Balances {
+  id                 String @id @default(cuid())
+  year               String
+  annualCredit       Int?   @default(0)
+  annualUsed         Int?   @default(0)
+  annualAvailable    Int?   @default(0)
+  healthCredit       Int?   @default(0)
+  healthUsed         Int?   @default(0)
+  healthAvailable    Int?   @default(0)
+  casualCredit        Int?   @default(0)
+  casualUsed          Int?   @default(0)
+  casualAvailable     Int?   @default(0)
+  maternityCredit    Int?   @default(0)
+  maternityUsed      Int?   @default(0)
+  maternityAvailable Int?   @default(0)
+  specialCredit       Int?   @default(0)
+  specialUsed         Int?   @default(0)
+  specialAvailable    Int?   @default(0)
+  paternityCredit    Int?   @default(0)
+  paternityUsed      Int?   @default(0)
+  paternityAvailable Int?   @default(0)
+  unpaidCredit       Int?   @default(0)
+  unpaidUsed         Int?   @default(0)
+  unpaidAvailable        Int?   @default(0)
+  name               String
+  email              String @unique
+  user               User   @relation(fields: [email], references: [email], onDelete: Cascade)
+}
+
+model Events {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  startDate   DateTime
+  endDate     DateTime?
 }

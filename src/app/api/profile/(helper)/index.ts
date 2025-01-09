@@ -32,7 +32,8 @@ const findUserData = async (userId: string) => {
         university: true,
         departmentAdmin: true,
         departmentPrincipal: true,
-        Department: true
+        Department: true,
+        balances: true
       }
     })
     return User
