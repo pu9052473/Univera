@@ -1,13 +1,13 @@
 "use client"
 
-import React, { useState, useEffect, useRef } from "react"
-import { useUser } from "@clerk/nextjs"
+import React, { useState, useEffect, useRef, useContext } from "react"
 import io, { Socket } from "socket.io-client"
 import { ForumSidebar } from "@/app/(module)/(forum)/_components/ForumSidebar"
 import { ChatSection } from "@/app/(module)/(forum)/_components/ChatSection"
 import { useParams } from "next/navigation"
 import { chatMessage, Forum, UploadedFile } from "@/types/globals"
 import toast from "react-hot-toast"
+import { UserContext } from "@/context/user"
 
 export default function Home() {
   const [forums, setForums] = useState<Forum[]>([])
@@ -25,9 +25,10 @@ export default function Home() {
   const [isPrivate, setIsPrivate] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
 
-  const userData = useUser()
-  const userId = userData.user?.id
-  const userRole = userData.user?.publicMetadata.role as string
+  const { user } = useContext(UserContext)
+  const userId = user?.id
+  const userRoles = user?.roles?.map((role: any) => role.id) || []
+
   const socketRef = useRef<Socket | null>(null) // Store socket in a ref
   const { subjectId } = useParams()
   // console.log("userId", userId)
@@ -474,7 +475,7 @@ export default function Home() {
               tag={tag}
               setTag={setTag}
               addTag={addTag}
-              userRole={userRole}
+              userRole={userRoles}
               isTagDialogOpen={isTagDialogOpen}
               setIsTagDialogOpen={setIsTagDialogOpen}
               isForumDialogOpen={isForumDialogOpen}
@@ -518,7 +519,7 @@ export default function Home() {
               tag={tag}
               setTag={setTag}
               addTag={addTag}
-              userRole={userRole}
+              userRole={userRoles}
               isTagDialogOpen={isTagDialogOpen}
               setIsTagDialogOpen={setIsTagDialogOpen}
               isForumDialogOpen={isForumDialogOpen}
