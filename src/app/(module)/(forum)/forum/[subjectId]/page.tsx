@@ -44,11 +44,11 @@ export default function Home() {
     socketRef.current.on("connect", () => {})
 
     socketRef.current.on("connect_error", () => {
-      toast.error("WebSocket connection error")
+      console.log("WebSocket connection error")
     })
 
     socketRef.current.on("connect_timeout", () => {
-      toast.error("WebSocket connection timed out")
+      console.log("WebSocket connection timed out")
     })
 
     socketRef.current.on("disconnect", (reason) => {
@@ -65,7 +65,7 @@ export default function Home() {
         const res = await fetch(
           `/api/subjects/forum/messages?forumId=${selectedForumId}`
         )
-        if (!res.ok) toast.error("Failed to fetch messages from DB")
+        if (!res.ok) console.log("Failed to fetch messages from DB")
 
         const dbMessages = await res.json()
 
@@ -81,7 +81,7 @@ export default function Home() {
 
         setMessages(mergeMessages(filteredDbMessages, localMessages))
       } catch (error) {
-        if (error) toast.error("Error fetching messages from DB")
+        if (error) console.log("Error fetching messages from DB")
         setMessages(localMessages) // Fallback to local messages if DB fetch fails
       }
     }
@@ -156,7 +156,7 @@ export default function Home() {
         const response = await fetch(
           `/api/subjects/forum?subjectId=${subjectId}`
         )
-        if (!response.ok) toast.error("Failed to fetch the forums")
+        if (!response.ok) console.log("Failed to fetch the forums")
 
         const data = await response.json()
         // console.log("forums from DB", data)
@@ -222,7 +222,7 @@ export default function Home() {
       if (socketRef.current) {
         socketRef.current.emit("send_message", newMessage)
       } else {
-        toast.error("Socket is not connected.")
+        console.log("Socket is not connected.")
       }
 
       setUploadedFiles([])
@@ -382,14 +382,14 @@ export default function Home() {
         const res = await fetch(
           `/api/subjects/forum/helper?route=subjectDetails&subjectId=${subjectId}`
         )
-        if (!res.ok) toast.error("Failed to fetch subject details")
+        if (!res.ok) console.log("Failed to fetch subject details")
 
         const data = await res.json()
         setForumTags(data.forumTags || [])
         setDepartmentId(data.departmentId)
         setCourseId(data.courseId)
       } catch (error) {
-        if (error) toast.error("Error fetching subject details")
+        if (error) console.log("Error fetching subject details")
       }
     }
 
@@ -404,7 +404,7 @@ export default function Home() {
         `/api/subjects/forum/helper?route=facultyDetails&courseId=${courseId}`
       )
       if (!facultyRes.ok) {
-        toast.error("Failed to fetch faculty data")
+        console.log("Failed to fetch faculty data")
       }
 
       const facultyList = await facultyRes.json()

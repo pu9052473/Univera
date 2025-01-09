@@ -213,9 +213,9 @@ export default function CreateAnnouncement() {
         setCategory("")
         setSelectedSubjects([])
         if (classId) {
-          router.push(`/my-class/${classId}/classAnnouncement`)
+          router.push(`/my-class/${classId}/classAnnouncement?tab=${category}`)
         } else {
-          router.push("/announcements")
+          router.push(`/announcements?tab=${category}`)
         }
       } else {
         console.log("Failed to create the announcement.")

@@ -39,6 +39,8 @@ export async function PATCH(req: Request) {
       announcerName
     } = await req.json()
 
+    console.log("classId api", classId)
+
     if (
       !title ||
       !departmentId ||
@@ -66,7 +68,7 @@ export async function PATCH(req: Request) {
       announcerId,
       attachments,
       category,
-      classId,
+      classId: classId ? Number(classId) : null,
       subjectName: subjectName && Array.isArray(subjectName) ? subjectName : [],
       announcerName
     }
@@ -174,6 +176,7 @@ export async function GET(request: Request) {
   if (route === "findMany") {
     const departmentId = url.searchParams.get("departmentId")
     const universityId = url.searchParams.get("universityId")
+    const classId = url.searchParams.get("classId")
 
     if (!departmentId || !universityId) {
       console.error(
@@ -189,7 +192,8 @@ export async function GET(request: Request) {
       const announcements = await prisma.announcement.findMany({
         where: {
           departmentId: Number(departmentId),
-          universityId: Number(universityId)
+          universityId: Number(universityId),
+          classId: classId ? Number(classId) : null
         },
         orderBy: { createdAt: "desc" }
       })

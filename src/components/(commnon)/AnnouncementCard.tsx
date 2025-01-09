@@ -19,7 +19,7 @@ export default function AnnouncementCard({
   facultyClassId
 }: {
   announcement: any
-  facultyClassId?: string
+  facultyClassId?: any
   refetch: () => void
 }) {
   const router = useRouter()
