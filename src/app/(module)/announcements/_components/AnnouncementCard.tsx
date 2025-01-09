@@ -15,9 +15,11 @@ import { UserContext } from "@/context/user"
 
 export default function AnnouncementCard({
   announcement,
-  refetch
+  refetch,
+  facultyClassId
 }: {
   announcement: any
+  facultyClassId?: string
   refetch: () => void
 }) {
   const router = useRouter()
@@ -28,7 +30,13 @@ export default function AnnouncementCard({
   const isLongText = announcement.description.length > 150
 
   const handleEdit = () => {
-    router.push(`/announcements/form?announcementId=${announcement.id}`)
+    if (facultyClassId) {
+      router.push(
+        `/announcements/form?announcementId=${announcement.id}&classId=${facultyClassId}`
+      )
+    } else {
+      router.push(`/announcements/form?announcementId=${announcement.id}`)
+    }
   }
 
   const handleDelete = async () => {
@@ -94,6 +102,19 @@ export default function AnnouncementCard({
           </button>
         )}
       </div>
+
+      {!!facultyClassId && Array.isArray(announcement.subjectName) && (
+        <div className="flex flex-wrap gap-2 mt-2">
+          {announcement.subjectName.map((subject: string, index: number) => (
+            <span
+              key={index}
+              className="px-3 py-1 text-xs sm:text-sm bg-ColorThree/10 text-ColorThree rounded-full whitespace-nowrap"
+            >
+              {subject}
+            </span>
+          ))}
+        </div>
+      )}
 
       {announcement.attachments?.length > 0 && (
         <div className="mt-4 sm:mt-5 space-y-2 bg-lamaSkyLight/50 p-3 rounded-lg">

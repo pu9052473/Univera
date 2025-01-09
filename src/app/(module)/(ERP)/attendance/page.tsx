@@ -283,7 +283,7 @@ export default function AttendancePage() {
     )
   }
 
-  if (!canUsePage) {
+  if (!canUsePage && user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
         <X className="w-12 h-12 text-red-500" />

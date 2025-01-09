@@ -13,6 +13,7 @@ import React from "react"
 import { type LucideIcon } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
 import Image from "next/image"
+import Link from "next/link"
 
 export function ProfileBanner({ user }: { user: any }) {
   const { user: ClerkUser } = useUser()
@@ -61,81 +62,192 @@ export function ProfileBanner({ user }: { user: any }) {
 function ExploreItem({
   icon: Icon,
   title,
-  desc
+  desc,
+  link = ""
 }: {
   icon: LucideIcon
   title: string
-  desc: string
+  desc?: string
+  link?: string
 }) {
   return (
-    <div className="w-full">
-      <button className="w-full flex flex-col items-center p-4 sm:p-6 rounded-xl border bg-white hover:bg-gray-50 transition-colors group">
-        <div className="flex gap-3 items-center">
-          <div className="w-7 h-7 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-3 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-            <Icon className="w-4 h-4" />
+    <Link href={link}>
+      <div className="w-full p-2 sm:p-3">
+        <div className="w-full relative group">
+          {/* Main Container */}
+          <div
+            className="relative z-10 flex flex-col items-center pt-3 pb-1 px-2
+                      rounded-2xl sm:rounded-3xl border-2 
+                      border-lamaPurple/30 bg-white/90 backdrop-blur-sm 
+                      hover:bg-gradient-to-br hover:from-white hover:to-lamaPurpleLight 
+                      transition-all duration-500 ease-in-out
+                      group-hover:border-lamaPurple group-hover:shadow-lg
+                      group-hover:scale-[1.02]"
+          >
+            {/* Top Section with Icon and Title */}
+            <div className="flex items-center justify-evenly w-full gap-1.5">
+              {/* Icon Container with Glow Effect */}
+              <div
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl 
+                            bg-lamaPurple text-ColorThree 
+                            flex items-center justify-center
+                            group-hover:bg-gradient-to-br group-hover:from-ColorThree group-hover:to-ColorTwo
+                            group-hover:text-white transition-all duration-500 ease-in-out
+                            shadow-md group-hover:shadow-xl"
+              >
+                {Icon && (
+                  <Icon
+                    className="w-5 h-5 xs:w-6 xs:h-6 sm:w-8 sm:h-8 
+                                  transform group-hover:scale-110 transition-transform duration-500"
+                  />
+                )}
+              </div>
+              {/* Title Container */}
+              <div className="flex-1">
+                <h4
+                  className="text-lg xs:text-xl md:text-2xl font-bold text-TextTwo 
+                            group-hover:text-ColorThree 
+                            text-center xs:text-left transition-colors duration-500
+                            tracking-tight line-clamp-2"
+                >
+                  {title}
+                </h4>
+              </div>
+            </div>
+
+            {/* Description */}
+            <p
+              className="mt-3 sm:mt-5 text-sm sm:text-base md:text-lg text-gray-600 
+                        text-center xs:text-left leading-relaxed
+                        group-hover:text-gray-700 transition-colors duration-500
+                        line-clamp-3 md:line-clamp-none"
+            >
+              {desc}
+            </p>
+
+            {/* Animated Border Gradient */}
+            <div className="absolute bottom-0 left-2 w-[95%] h-[2px] sm:h-[3px] overflow-hidden rounded-b-2xl sm:rounded-b-3xl">
+              <div
+                className="w-[200%] h-full bg-gradient-to-r from-ColorTwo via-ColorThree to-ColorTwo 
+                            transform -translate-x-full group-hover:translate-x-0 
+                            transition-transform duration-1000 ease-in-out"
+              />
+            </div>
           </div>
-          <h4 className="font-medium text-gray-900 group-hover:text-blue-600">
-            {title}
-          </h4>
+
+          {/* Enhanced Background Decoration */}
+          <div
+            className="absolute inset-0 bg-gradient-to-br from-lamaSkyLight via-white to-lamaPurpleLight 
+                        rounded-2xl sm:rounded-3xl transform translate-y-1 -z-10 opacity-75
+                        group-hover:translate-y-2 transition-all duration-500 
+                        shadow-lg"
+          />
         </div>
-        <p className="text-xs text-gray-500 text-center mt-2">{desc}</p>
-      </button>
-    </div>
+      </div>
+    </Link>
   )
 }
 
-const exploreItems = [
+const dashboardItems = [
   {
     icon: Home,
     title: "Home",
-    desc: "description of that link will come here"
+    desc: "description"
   },
   {
     icon: FileText,
-    title: "Leave Section",
-    desc: "description of that link will come here"
+    title: "Leave",
+    desc: "description"
   },
   {
     icon: Bell,
     title: "Announcement",
-    desc: "description of that link will come here"
+    desc: "description"
   },
   {
     icon: Users,
     title: "My Team",
-    desc: "description of that link will come here"
+    desc: "description"
   },
   {
     icon: BookOpen,
     title: "Courses",
-    desc: "description of that link will come here"
+    desc: "description"
   },
   {
     icon: ClipboardList,
-    title: "Exam Section",
-    desc: "description of that link will come here"
+    title: "Exam",
+    desc: "description"
   },
   {
     icon: Calendar,
     title: "Time-Table",
-    desc: "description of that link will come here"
+    desc: "description"
   },
   {
     icon: ScrollText,
     title: "Policies",
-    desc: "description of that link will come here"
+    desc: "description"
   }
 ]
 
-export function ExploreGrid() {
+const classPageItems = (classId?: string) => [
+  {
+    icon: Calendar, // Replace with an appropriate icon for Timetable if available
+    title: "Timetable",
+    link: `/my-class/${classId}/time-table`
+  },
+  {
+    icon: Users, // Replace with an appropriate icon for Students if available
+    title: "Students",
+    link: `/my-class/${classId}/students`
+  },
+  {
+    icon: Bell, // Replace with an appropriate icon for Announcements if available
+    title: "Announcements",
+    link: `/my-class/${classId}/classAnnouncement`
+  },
+  {
+    icon: ClipboardList, // Replace with an appropriate icon for Quizzes if available
+    title: "Quizzes",
+    link: `/my-class/${classId}/quizzes`
+  },
+  {
+    icon: BookOpen, // Replace with an appropriate icon for Syllabus if available
+    title: "Syllabus",
+    link: `/my-class/${classId}/syllabus`
+  },
+  {
+    icon: FileText, // Replace with an appropriate icon for Class Notes if available
+    title: "Class Notes",
+    link: `/my-class/${classId}/class-notes`
+  },
+  {
+    icon: FileText, // Replace with an appropriate icon for Assignments if available
+    title: "Assignments",
+    link: `/my-class/${classId}/assignments`
+  }
+]
+
+export function ExploreGrid({
+  isClassPage,
+  classId
+}: {
+  isClassPage?: boolean
+  classId?: string
+}) {
+  const exploreItems =
+    isClassPage && classId ? classPageItems(classId) : dashboardItems
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 p-2">
       {exploreItems.map((item, index) => (
         <ExploreItem
           key={index}
           icon={item.icon}
           title={item.title}
-          desc={item.desc}
+          desc={"desc" in item ? item.desc : undefined}
+          link={"link" in item ? item.link : undefined}
         />
       ))}
     </div>
