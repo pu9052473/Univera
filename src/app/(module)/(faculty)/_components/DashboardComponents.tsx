@@ -193,37 +193,37 @@ const dashboardItems = [
 
 const classPageItems = (classId?: string) => [
   {
-    icon: Calendar, // Replace with an appropriate icon for Timetable if available
+    icon: Calendar,
     title: "Timetable",
     link: `/my-class/${classId}/time-table`
   },
   {
-    icon: Users, // Replace with an appropriate icon for Students if available
+    icon: Users,
     title: "Students",
     link: `/my-class/${classId}/students`
   },
   {
-    icon: Bell, // Replace with an appropriate icon for Announcements if available
+    icon: Bell,
     title: "Announcements",
     link: `/my-class/${classId}/classAnnouncement`
   },
   {
-    icon: ClipboardList, // Replace with an appropriate icon for Quizzes if available
+    icon: ClipboardList,
     title: "Quizzes",
     link: `/my-class/${classId}/quizzes`
   },
   {
-    icon: BookOpen, // Replace with an appropriate icon for Syllabus if available
+    icon: BookOpen,
     title: "Syllabus",
     link: `/my-class/${classId}/syllabus`
   },
   {
-    icon: FileText, // Replace with an appropriate icon for Class Notes if available
+    icon: FileText,
     title: "Class Notes",
     link: `/my-class/${classId}/class-notes`
   },
   {
-    icon: FileText, // Replace with an appropriate icon for Assignments if available
+    icon: FileText,
     title: "Assignments",
     link: `/my-class/${classId}/assignments`
   }

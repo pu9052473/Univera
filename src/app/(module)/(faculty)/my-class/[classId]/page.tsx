@@ -20,10 +20,6 @@ export default function Page() {
                   <h3 className="text-2xl font-semibold text-TextTwo">
                     Explore
                   </h3>
-                  {/* Optional: Add navigation or filter controls here */}
-                  <div className="flex gap-4">
-                    {/* Add any additional controls if needed */}
-                  </div>
                 </div>
 
                 {/* ExploreGrid Component */}
@@ -41,11 +37,6 @@ export default function Page() {
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Optional: Right Sidebar */}
-          <div className="lg:col-span-4 space-y-6">
-            {/* You can add sidebar content here if needed */}
           </div>
         </div>
       </div>
