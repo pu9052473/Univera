@@ -1,8 +1,8 @@
 "use client"
 
 import React from "react"
-import { ExploreGrid } from "../../_components/DashboardComponents"
 import { useParams } from "next/navigation"
+import { ExploreGrid } from "@/app/(module)/(faculty)/_components/DashboardComponents"
 
 export default function Page() {
   const { classId } = useParams()

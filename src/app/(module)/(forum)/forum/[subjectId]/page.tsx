@@ -31,9 +31,6 @@ export default function Home() {
 
   const socketRef = useRef<Socket | null>(null) // Store socket in a ref
   const { subjectId } = useParams()
-  // console.log("userId", userId)
-  // console.log("subjectId", subjectId)
-  // console.log("userRole", userRole)
 
   useEffect(() => {
     // Initialize socket connection with the path to the WebSocket API

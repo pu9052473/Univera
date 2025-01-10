@@ -28,6 +28,7 @@ model User {
   departmentId Int?
   universityId Int?
   courseId     Int?
+  imageUrl     String?
 
   roles               Role[]         @relation("UserToRole")
   chatMessage         ChatMessage[]

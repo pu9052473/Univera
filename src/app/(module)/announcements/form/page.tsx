@@ -2,15 +2,15 @@
 
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import { Loader2 } from "lucide-react"
-import { UploadthingUploader } from "@/components/(commnon)/UploadthingUploader"
 import { UserContext } from "@/context/user"
-import { useUploadThing } from "@/utils/uploadthing"
 import { UploadedFile } from "@/types/globals"
 import { useRouter, useSearchParams } from "next/navigation"
 import toast from "react-hot-toast"
 import axios from "axios"
 import { useQuery } from "@tanstack/react-query"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useUploadThing } from "@/utils/uploadthing"
+import { UploadthingUploader } from "@/components/(commnon)/UploadthingUploader"
 
 interface FileWithPreview extends File {
   preview?: string
@@ -213,7 +213,9 @@ export default function CreateAnnouncement() {
         setCategory("")
         setSelectedSubjects([])
         if (classId) {
-          router.push(`/my-class/${classId}/classAnnouncement?tab=${category}`)
+          router.push(
+            `/classes/my-class/${classId}/classAnnouncement?tab=${category}`
+          )
         } else {
           router.push(`/announcements?tab=${category}`)
         }
@@ -234,6 +236,8 @@ export default function CreateAnnouncement() {
       </div>
     )
   }
+
+  console.log("files: ", files)
 
   return (
     <div className="min-h-screen p-4">

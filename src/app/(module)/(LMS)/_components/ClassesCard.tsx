@@ -49,7 +49,9 @@ const ClassesCard = ({ Class, isFaculty }: ClassesCardProps) => {
         </Link>
 
         <Link
-          href={isFaculty ? `/my-class/${Class.id}` : `/classes/${Class.id}`}
+          href={
+            isFaculty ? `/classes/my-class/${Class.id}` : `/classes/${Class.id}`
+          }
         >
           <Button size="sm" className="flex items-center gap-x-2">
             View Details

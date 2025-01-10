@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input"
-import { Submit } from "@/components/(commnon)/ButtonV1"
+import { ButtonV1, Submit } from "@/components/(commnon)/ButtonV1"
 import { MultiSelect } from "@/components/ui/MultiSelect"
-import { PlusCircle, MessageCircle, TagIcon, LockIcon } from "lucide-react"
+import { PlusCircle, MessageCircle, TagIcon, LockIcon, X } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -118,20 +118,20 @@ export const ForumSidebar = ({
                 </label>
               </div>
 
-              <DialogFooter className="space-y-2">
-                <button
+              <DialogFooter>
+                <ButtonV1
                   onClick={createForum}
+                  icon={PlusCircle}
+                  label="Create Forum"
                   className="w-full bg-[#0A2353] text-white rounded-lg hover:bg-[#5B58EB] transition-colors shadow-md flex items-center justify-center gap-2"
-                >
-                  <PlusCircle className="w-4 h-4" />
-                  Create Forum
-                </button>
-                <button
+                />
+                <ButtonV1
                   onClick={() => setIsForumDialogOpen(false)}
-                  className="w-full py-2 bg-[#0A2353] text-white rounded-lg hover:bg-[#5B58EB] transition-colors shadow-md flex items-center justify-center gap-2"
-                >
-                  Cancel
-                </button>
+                  icon={X}
+                  label="Cancel"
+                  varient="outline"
+                  className="w-full py-2 flex items-center justify-center gap-2"
+                />
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -166,22 +166,23 @@ export const ForumSidebar = ({
                 />
               </div>
 
-              <DialogFooter className="space-y-2">
+              <DialogFooter>
                 <Submit
                   label="Create Tag"
-                  className="w-full py-3 bg-[#BB63FF] text-white rounded-lg hover:bg-[#5B58EB] transition-colors flex items-center justify-center gap-2.5 shadow-md"
+                  className="w-full py-3 bg-[#0A2353] text-white rounded-lg hover:bg-[#5B58EB] transition-colors flex items-center justify-center gap-2.5 shadow-md"
                   onClick={addTag}
                   disabled={!tag.trim()}
                 >
                   <TagIcon className="w-5 h-5" />
                   Create Tag
                 </Submit>
-                <button
+                <ButtonV1
                   onClick={() => setIsTagDialogOpen(false)}
-                  className="w-full py-3 bg-[#FAE27C] text-[#0A2353] rounded-lg hover:bg-[#CFCEFF] transition-colors flex items-center justify-center gap-2 shadow-md"
-                >
-                  Cancel
-                </button>
+                  label="Cancel"
+                  icon={X}
+                  varient="outline"
+                  className="w-full py-3 flex items-center justify-center gap-2 shadow-md"
+                />
               </DialogFooter>
             </DialogContent>
           </Dialog>

@@ -113,7 +113,7 @@ function Authority({ roles, user }: AuthorityProps) {
             ) : (
               FacultyClasses &&
               FacultyClasses.map((c: any) => (
-                <ClassesCard key={c.id} Class={c} isFaculty={true} /> //here
+                <ClassesCard key={c.id} Class={c} isFaculty={true} />
               ))
             )}
           </div>
@@ -202,7 +202,7 @@ function FacultyClasses({ user, roles }: FacultyClassesProps) {
             classes &&
             classes.map((c: any) => (
               <ClassesCard key={c.id} Class={c} isFaculty={true} />
-            )) //here
+            ))
           )}
         </div>
       </div>

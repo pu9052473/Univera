@@ -195,37 +195,37 @@ const classPageItems = (classId?: string) => [
   {
     icon: Calendar,
     title: "Timetable",
-    link: `/my-class/${classId}/time-table`
+    link: `/classes/my-class/${classId}/time-table`
   },
   {
     icon: Users,
     title: "Students",
-    link: `/my-class/${classId}/students`
+    link: `/classes/my-class/${classId}/students`
   },
   {
     icon: Bell,
     title: "Announcements",
-    link: `/my-class/${classId}/classAnnouncement`
+    link: `/classes/my-class/${classId}/classAnnouncement`
   },
   {
     icon: ClipboardList,
     title: "Quizzes",
-    link: `/my-class/${classId}/quizzes`
+    link: `/classes/my-class/${classId}/quizzes`
   },
   {
     icon: BookOpen,
     title: "Syllabus",
-    link: `/my-class/${classId}/syllabus`
+    link: `/classes/my-class/${classId}/syllabus`
   },
   {
     icon: FileText,
     title: "Class Notes",
-    link: `/my-class/${classId}/class-notes`
+    link: `/classes/my-class/${classId}/class-notes`
   },
   {
     icon: FileText,
     title: "Assignments",
-    link: `/my-class/${classId}/assignments`
+    link: `/classes/my-class/${classId}/assignments`
   }
 ]
 

@@ -29,6 +29,7 @@ async function main() {
       id: "user_2qqzgMCkR992I5nTTHPywz73Q8N",
       email: "ku578@ku.edu.in",
       name: "University Admin",
+      imageUrl:"https://img.clerk.com/eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yb21XZWFLSWtueG5RZFFSSWlsaDBZa2JlUEMiLCJyaWQiOiJ1c2VyXzJxdHpNR25LQTJPcTNQS0hQdzM3YXdiMHB5dSIsImluaXRpYWxzIjoiViJ9",
       clerkId: "user_2qqzgMCkR992I5nTTHPywz73Q8N",
       roles: {
         connect: {
@@ -58,6 +59,7 @@ async function main() {
       clerkId: "user_2pt3xWxXnLZhNLryELX1JgcK2IS",
       email: "kp648027@gmail.com",
       name: "kishan patel",
+      imageUrl:"https://img.clerk.com/eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yb21XZWFLSWtueG5RZFFSSWlsaDBZa2JlUEMiLCJyaWQiOiJ1c2VyXzJxdHpNR25LQTJPcTNQS0hQdzM3YXdiMHB5dSIsImluaXRpYWxzIjoiViJ9",
       phone: "8888888888",
       universityId:1,
       roles: {
@@ -85,6 +87,7 @@ async function main() {
       id: "user_2qXaLB1laV2FKevYXvv5PrOvYaU",
       email: "uit_admin@ku.edu.in",
       name: "UIT Admin",
+      imageUrl:"https://img.clerk.com/eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yb21XZWFLSWtueG5RZFFSSWlsaDBZa2JlUEMiLCJyaWQiOiJ1c2VyXzJxdHpNR25LQTJPcTNQS0hQdzM3YXdiMHB5dSIsImluaXRpYWxzIjoiViJ9",
       departmentId: 1,
       universityId: 1,
       departmentAdmin:{
@@ -107,6 +110,7 @@ async function main() {
       name: "Nilax Modi",
       email: "principal_uit@ku.edu.in",
       phone: "7894567898",
+      imageUrl:"https://img.clerk.com/eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yb21XZWFLSWtueG5RZFFSSWlsaDBZa2JlUEMiLCJyaWQiOiJ1c2VyXzJxdHpNR25LQTJPcTNQS0hQdzM3YXdiMHB5dSIsImluaXRpYWxzIjoiViJ9",
       departmentId: 1,
       universityId:1,
       roles: {
@@ -128,6 +132,7 @@ async function main() {
       name: "Mohak shah",
       email: "dean_uit@ku.edu.in",
       phone: "7894567898",
+      imageUrl:"https://img.clerk.com/eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yb21XZWFLSWtueG5RZFFSSWlsaDBZa2JlUEMiLCJyaWQiOiJ1c2VyXzJxdHpNR25LQTJPcTNQS0hQdzM3YXdiMHB5dSIsImluaXRpYWxzIjoiViJ9",
       departmentId: 1,
       universityId: 1,
       roles: {
@@ -172,6 +177,7 @@ async function main() {
       name: "Raj Patel",
       email: "coordinator_uit@ku.edu.in",
       phone: "7894567898",
+      imageUrl:"https://img.clerk.com/eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yb21XZWFLSWtueG5RZFFSSWlsaDBZa2JlUEMiLCJyaWQiOiJ1c2VyXzJxdHpNR25LQTJPcTNQS0hQdzM3YXdiMHB5dSIsImluaXRpYWxzIjoiViJ9",
       departmentId: 1,
       courseId: 1,
       universityId: 1,
@@ -189,6 +195,7 @@ async function main() {
       name: "Kishan Patel",
       email: "kishanpatel@ku.edu.in",
       phone: "7894567898",
+      imageUrl:"https://img.clerk.com/eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yb21XZWFLSWtueG5RZFFSSWlsaDBZa2JlUEMiLCJyaWQiOiJ1c2VyXzJxdHpNR25LQTJPcTNQS0hQdzM3YXdiMHB5dSIsImluaXRpYWxzIjoiViJ9",
       departmentId: 1,
       courseId: 1,
       universityId: 1,
@@ -203,6 +210,7 @@ async function main() {
       clerkId: "user_2qcqJyj0xvsPWSWdqt7csG7Ysdb",
       name: "Uday Panchal",
       email: "udaypanchal@ku.edu.in",
+      imageUrl:"https://img.clerk.com/eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yb21XZWFLSWtueG5RZFFSSWlsaDBZa2JlUEMiLCJyaWQiOiJ1c2VyXzJxdHpNR25LQTJPcTNQS0hQdzM3YXdiMHB5dSIsImluaXRpYWxzIjoiViJ9",
       departmentId: 1,
       courseId: 1,
       universityId: 1,
@@ -221,6 +229,7 @@ async function main() {
       name: "Swetang Pandit",
       email: "swetang_ce@ku.edu.in",
       phone: "7894567898",
+      imageUrl: "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvdXBsb2FkZWQvaW1nXzJyNUNMSThCTVoydVRwQVBKWE52eFdGWmc0eSJ9",
       departmentId: 1,
       courseId: 1,
       hodCourse:{
@@ -240,6 +249,7 @@ const studentUser1 = await prisma.user.create({
     id: "user_2qcpGWy1HfRZAtNQrQqI2Ypj1fS",
     email: "dev-student1@ku.edu.in",
     name: "student 1",
+    imageUrl:"https://img.clerk.com/eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yb21XZWFLSWtueG5RZFFSSWlsaDBZa2JlUEMiLCJyaWQiOiJ1c2VyXzJxdHpNR25LQTJPcTNQS0hQdzM3YXdiMHB5dSIsImluaXRpYWxzIjoiViJ9",
     departmentId: department.id,
     courseId: course1.id,
     universityId: university.id,
@@ -257,6 +267,7 @@ const studentUser2 = await prisma.user.create({
     id: "user_2qcpKoQwKdThSkf4UJNGVuNJGO2",
     email: "dev-student2@ku.edu.in",
     name: "student 2",
+    imageUrl:"https://img.clerk.com/eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yb21XZWFLSWtueG5RZFFSSWlsaDBZa2JlUEMiLCJyaWQiOiJ1c2VyXzJxdHpNR25LQTJPcTNQS0hQdzM3YXdiMHB5dSIsImluaXRpYWxzIjoiViJ9",
     clerkId: "user_2qcpKoQwKdThSkf4UJNGVuNJGO2",
     departmentId: department.id,
     courseId: course1.id,
@@ -274,6 +285,7 @@ const studentUser3 = await prisma.user.create({
     id: "user_2qcpQH8urvrc576oy83BL99BVqI",
     email: "dev-student3@ku.edu.in",
     name: "student 3",
+    imageUrl:"https://img.clerk.com/eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yb21XZWFLSWtueG5RZFFSSWlsaDBZa2JlUEMiLCJyaWQiOiJ1c2VyXzJxdHpNR25LQTJPcTNQS0hQdzM3YXdiMHB5dSIsImluaXRpYWxzIjoiViJ9",
     clerkId: "user_2qcpQH8urvrc576oy83BL99BVqI",
     departmentId: department.id,
     courseId: course1.id,

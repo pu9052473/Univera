@@ -35,10 +35,14 @@ export default function CommonAnnouncementsPage({
   const allowedRoleIds = [1, 3, 5, 10, 11, 12, 13]
   const isFaculty = roles.includes(4)
 
+  console.log("roles", roles)
+
   const canCreateAnnouncement =
     classId === null
       ? user?.roles.some((role: any) => allowedRoleIds.includes(role.id)) // null means it's common announcements
       : isFaculty // not null means it's class announcements
+
+  console.log("canCreateAnnouncement", canCreateAnnouncement)
 
   const {
     data: announcements,
@@ -112,7 +116,7 @@ export default function CommonAnnouncementsPage({
             </button>
           )}
 
-          {canCreateAnnouncement && classId === null && !isFaculty && (
+          {canCreateAnnouncement && classId === null && (
             <button
               onClick={() => router.push(`/announcements/form`)}
               className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-ColorThree border border-ColorThree 
