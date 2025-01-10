@@ -3,12 +3,13 @@
 import { UserContext } from "@/context/user"
 import React, { useContext } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { FilePlus, Loader2, RotateCcw, X } from "lucide-react"
+import { FilePlus, RotateCcw, X } from "lucide-react"
 import axios from "axios"
 import { useRouter } from "next/navigation"
 import { ButtonV1 } from "./ButtonV1"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import AnnouncementCard from "./AnnouncementCard"
+import { AnnouncementCardSkeleton } from "./Skeleton"
 
 async function fetchAnnouncements(
   departmentId: string,
@@ -60,29 +61,7 @@ export default function CommonAnnouncementsPage({
     enabled: !!user?.departmentId && !!user?.universityId
   })
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full w-full">
-        <>
-          <Loader2 size={16} className="animate-spin" />
-        </>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="text-red-500">
-        <p>Failed to load announcement. Please try again later.</p>
-        <p className="text-sm text-gray-500">
-          {error?.message || "An unexpected error occurred."}
-        </p>
-        <ButtonV1 icon={RotateCcw} label="Retry" onClick={() => refetch()} />
-      </div>
-    )
-  }
-
-  if (classId !== null ? !isFaculty : !canCreateAnnouncement && !user) {
+  if (user && classId !== null ? !isFaculty : !canCreateAnnouncement) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
         <X className="w-12 h-12 text-red-500" />
@@ -156,8 +135,30 @@ export default function CommonAnnouncementsPage({
                 value={tabValue}
                 className="space-y-4 max-h-[65vh] overflow-y-auto custom-scrollbar"
               >
-                {announcements?.filter((a: any) => a.category === tabValue)
-                  .length > 0 ? (
+                {error && (
+                  <div className="text-red-500">
+                    <p>Failed to load announcement. Please try again later.</p>
+                    <p className="text-sm text-gray-500">
+                      {error?.message || "An unexpected error occurred."}
+                    </p>
+                    <ButtonV1
+                      icon={RotateCcw}
+                      label="Retry"
+                      onClick={() => refetch()}
+                    />
+                  </div>
+                )}
+                {isLoading ? (
+                  Array(2)
+                    .fill(0)
+                    .map((_, index) => (
+                      <AnnouncementCardSkeleton
+                        key={index}
+                        withSubjects={!!classId}
+                      />
+                    ))
+                ) : announcements?.filter((a: any) => a.category === tabValue)
+                    .length > 0 ? (
                   announcements
                     .filter((a: any) => a.category === tabValue)
                     .map((announcement: any) => (
