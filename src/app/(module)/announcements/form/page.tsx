@@ -2,12 +2,15 @@
 
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import { Loader2 } from "lucide-react"
-import { UploadthingUploader } from "@/components/(commnon)/UploadthingUploader"
 import { UserContext } from "@/context/user"
-import { useUploadThing } from "@/utils/uploadthing"
 import { UploadedFile } from "@/types/globals"
 import { useRouter, useSearchParams } from "next/navigation"
 import toast from "react-hot-toast"
+import axios from "axios"
+import { useQuery } from "@tanstack/react-query"
+import { Checkbox } from "@/components/ui/checkbox"
+import { useUploadThing } from "@/utils/uploadthing"
+import { UploadthingUploader } from "@/components/(commnon)/UploadthingUploader"
 
 interface FileWithPreview extends File {
   preview?: string
@@ -15,9 +18,15 @@ interface FileWithPreview extends File {
   url?: string
 }
 
+async function fetchSubjects(courseId: string) {
+  const response = await axios.get(`/api/subjects?courseId=${courseId}`)
+  return response.data.subjects
+}
+
 export default function CreateAnnouncement() {
   const searchParams = useSearchParams()
   const announcementId = searchParams.get("announcementId")
+  const classId = searchParams.get("classId")
   const { user } = useContext(UserContext)
   const [title, setTitle] = useState<string>("")
   const [description, setDescription] = useState<string>("")
@@ -27,6 +36,20 @@ export default function CreateAnnouncement() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const router = useRouter()
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([])
+  const roles = user?.roles?.map((role: any) => role.id) || []
+
+  const { data: subjects, isLoading: subjectsLoading } = useQuery({
+    queryKey: ["subjects", user?.courseId, classId, roles],
+    queryFn: () => fetchSubjects(user?.courseId as string),
+    enabled:
+      (!!user?.courseId && !!classId && roles.includes(4)) || !!announcementId
+  })
+
+  console.log("subjects: ", subjects)
+  console.log("classId: ", classId)
+  console.log("roles.includes(4)", roles.includes(4))
+  console.log("selectedSubjects: ", selectedSubjects)
 
   useEffect(() => {
     const fetchAnnouncementDetails = async () => {
@@ -45,6 +68,14 @@ export default function CreateAnnouncement() {
         setTitle(data.title)
         setDescription(data.description)
         setCategory(data.category)
+
+        const subjects = Array.isArray(data.subjectName)
+          ? data.subjectName
+          : typeof data.subjectName === "string"
+            ? [data.subjectName] // Handle single string as array
+            : []
+
+        setSelectedSubjects(subjects)
 
         // Handle existing attachments
         if (data.attachments?.length > 0) {
@@ -160,6 +191,8 @@ export default function CreateAnnouncement() {
         universityId: user?.universityId,
         announcerId: user?.id,
         category,
+        classId: classId || announcementId ? Number(classId) : null,
+        subjectName: classId || announcementId ? selectedSubjects : [],
         announcerName: user?.name,
         attachments: [...existingFiles, ...uploadedFileData]
       }
@@ -178,7 +211,14 @@ export default function CreateAnnouncement() {
         setDescription("")
         setFiles([])
         setCategory("")
-        router.push("/announcements")
+        setSelectedSubjects([])
+        if (classId) {
+          router.push(
+            `/classes/my-class/${classId}/classAnnouncement?tab=${category}`
+          )
+        } else {
+          router.push(`/announcements?tab=${category}`)
+        }
       } else {
         console.log("Failed to create the announcement.")
       }
@@ -189,13 +229,15 @@ export default function CreateAnnouncement() {
     }
   }
 
-  if (isLoading) {
+  if (isLoading || subjectsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="animate-spin" size={32} />
       </div>
     )
   }
+
+  console.log("files: ", files)
 
   return (
     <div className="min-h-screen p-4">
@@ -289,6 +331,37 @@ export default function CreateAnnouncement() {
               rows={4}
             />
           </div>
+
+          {roles.includes(4) && !subjectsLoading && subjects && (
+            <div>
+              <label className="block text-sm font-semibold text-TextTwo mb-3">
+                Select Subjects
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {subjects.map((subject: any) => (
+                  <div key={subject.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`subject-${subject.id}`}
+                      checked={selectedSubjects.includes(subject.name)}
+                      onCheckedChange={(checked) => {
+                        setSelectedSubjects((prev) =>
+                          checked
+                            ? [...prev, subject.name]
+                            : prev?.filter((name) => name !== subject.name)
+                        )
+                      }}
+                    />
+                    <label
+                      htmlFor={`subject-${subject.id}`}
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      {subject.name}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="bg-lamaSkyLight rounded-lg p-4">
             <UploadthingUploader

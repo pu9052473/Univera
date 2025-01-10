@@ -14,7 +14,8 @@ export async function PATCH(req: Request) {
   if (
     role !== "authority" &&
     role !== "university_admin" &&
-    role !== "department_admin"
+    role !== "department_admin" &&
+    role !== "faculty"
   ) {
     return NextResponse.json(
       { message: "You are not allowed to delete a announcement" },
@@ -33,8 +34,12 @@ export async function PATCH(req: Request) {
       announcerId,
       attachments,
       category,
+      classId,
+      subjectName,
       announcerName
     } = await req.json()
+
+    console.log("classId api", classId)
 
     if (
       !title ||
@@ -43,7 +48,9 @@ export async function PATCH(req: Request) {
       !departmentId ||
       !announcerId ||
       !category ||
-      !announcerName
+      !announcerName ||
+      !Array.isArray(subjectName) ||
+      subjectName.some((item) => typeof item !== "string")
     ) {
       console.log("Validation failed. Missing required fields.")
       return NextResponse.json(
@@ -61,6 +68,8 @@ export async function PATCH(req: Request) {
       announcerId,
       attachments,
       category,
+      classId: classId ? Number(classId) : null,
+      subjectName: subjectName && Array.isArray(subjectName) ? subjectName : [],
       announcerName
     }
 
@@ -125,7 +134,8 @@ export async function DELETE(req: Request) {
   if (
     role !== "authority" &&
     role !== "university_admin" &&
-    role !== "department_admin"
+    role !== "department_admin" &&
+    role !== "faculty"
   ) {
     return NextResponse.json(
       { message: "You are not allowed to delete a announcement" },
@@ -166,6 +176,7 @@ export async function GET(request: Request) {
   if (route === "findMany") {
     const departmentId = url.searchParams.get("departmentId")
     const universityId = url.searchParams.get("universityId")
+    const classId = url.searchParams.get("classId")
 
     if (!departmentId || !universityId) {
       console.error(
@@ -181,7 +192,8 @@ export async function GET(request: Request) {
       const announcements = await prisma.announcement.findMany({
         where: {
           departmentId: Number(departmentId),
-          universityId: Number(universityId)
+          universityId: Number(universityId),
+          classId: classId ? Number(classId) : null
         },
         orderBy: { createdAt: "desc" }
       })
@@ -219,6 +231,8 @@ export async function GET(request: Request) {
           category: true,
           description: true,
           attachments: true,
+          classId: true,
+          subjectName: true,
           announcerName: true
         }
       })

@@ -17,7 +17,7 @@ const App = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-8 space-y-6">
             <ProfileBanner user={user} />
-            <div className="bg-[#ADF9FE] rounded-xl shadow-sm p-4 sm:p-6">
+            <div className="bg-[#ADF9FE] rounded-xl shadow-sm p-2">
               <h3 className="text-lg font-semibold mb-6">Explore</h3>
               <ExploreGrid />
             </div>

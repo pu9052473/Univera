@@ -28,6 +28,7 @@ model User {
   departmentId Int?
   universityId Int?
   courseId     Int?
+  imageUrl     String?
 
   roles               Role[]         @relation("UserToRole")
   chatMessage         ChatMessage[]
@@ -425,6 +426,8 @@ model Announcement {
   departmentId Int
   universityId Int
   announcerName String
+  classId      Int?
+  subjectName  String[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now())
 

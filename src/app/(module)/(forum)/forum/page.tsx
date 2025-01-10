@@ -1,10 +1,12 @@
 "use client"
 
+import { ButtonV1 } from "@/components/(commnon)/ButtonV1"
+import { ClassesCardSkeleton } from "@/components/(commnon)/Skeleton"
 import { UserContext } from "@/context/user"
-import { useUser } from "@clerk/nextjs"
+import { useQuery } from "@tanstack/react-query"
+import { RotateCcw } from "lucide-react"
 import { useRouter } from "next/navigation"
-import React, { useContext, useEffect, useState } from "react"
-import toast from "react-hot-toast"
+import React, { useContext } from "react"
 import { IoChevronForward } from "react-icons/io5"
 
 const colorPalette = {
@@ -16,44 +18,57 @@ const colorPalette = {
   ColorThree: "#5B58EB"
 }
 
+const fetchSubjects = async (courseId: string) => {
+  if (!courseId) {
+    console.log("No valid courseId found for userRole")
+  }
+
+  const response = await fetch(`/api/subjects?courseId=${courseId}`)
+  if (!response.ok) {
+    console.log("Failed to fetch the subjects")
+  }
+
+  const data = await response.json()
+  return data.subjects
+}
+
 const CoursesPage: React.FC = () => {
   const router = useRouter()
-  const userData = useUser()
   const { user } = useContext(UserContext)
-  const userRole = userData.user?.publicMetadata.role
-  const [subjects, setSubjects] = useState([])
+  // const [subjects, setSubjects] = useState([])
 
-  useEffect(() => {
-    if (user) {
-      const fetchSubjects = async () => {
-        try {
-          const courseId =
-            userRole === "student"
-              ? user.student.courseId
-              : userRole === "faculty"
-                ? user.faculty.courseId
-                : null
+  const {
+    data: subjects,
+    error,
+    refetch,
+    isLoading
+  } = useQuery({
+    queryKey: ["subjects", user?.courseId],
+    queryFn: () => fetchSubjects(user?.courseId),
+    enabled: !!user?.courseId && !!user
+  })
 
-          if (!courseId) {
-            toast.error("No valid courseId found for userRole")
-            return
-          }
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex items-center justify-center h-full w-full">
+  //       <>
+  //         <Loader2 size={16} className="animate-spin" />
+  //       </>
+  //     </div>
+  //   )
+  // }
 
-          const response = await fetch(`/api/subjects?courseId=${courseId}`)
-          if (!response.ok) {
-            toast.error("Failed to fetch the subjects")
-          }
-
-          const data = await response.json()
-          setSubjects(data.subjects)
-        } catch (error: any) {
-          toast.error("An error occurred while fetching subjects:", error)
-        }
-      }
-
-      fetchSubjects()
-    }
-  }, [user])
+  if (error) {
+    return (
+      <div className="text-red-500">
+        <p>Failed to load announcement. Please try again later.</p>
+        <p className="text-sm text-gray-500">
+          {error?.message || "An unexpected error occurred."}
+        </p>
+        <ButtonV1 icon={RotateCcw} label="Retry" onClick={() => refetch()} />
+      </div>
+    )
+  }
 
   return (
     <div
@@ -71,9 +86,15 @@ const CoursesPage: React.FC = () => {
           gap: "30px"
         }}
       >
-        {subjects.length > 0 ? (
+        {isLoading ? (
+          <>
+            {[...Array(2)].map((_, i) => (
+              <ClassesCardSkeleton key={i} />
+            ))}
+          </>
+        ) : subjects?.length > 0 ? (
           subjects.map((subject: any, index: number) => (
-            <CourseCard
+            <SubjectCard
               key={subject.id}
               title={subject.name}
               description={subject.description || "No description available"}
@@ -102,7 +123,7 @@ interface CourseCardProps {
   onClick?: () => void
 }
 
-const CourseCard: React.FC<CourseCardProps> = ({
+const SubjectCard: React.FC<CourseCardProps> = ({
   title,
   description,
   color,

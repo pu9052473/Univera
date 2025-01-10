@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input"
-import { Submit } from "@/components/(commnon)/ButtonV1"
+import { ButtonV1, Submit } from "@/components/(commnon)/ButtonV1"
 import { MultiSelect } from "@/components/ui/MultiSelect"
-import { PlusCircle, MessageCircle, TagIcon, LockIcon } from "lucide-react"
+import { PlusCircle, MessageCircle, TagIcon, LockIcon, X } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import {
 
 interface ForumSidebarProps {
   forums: any[]
-  userRole: string
+  userRole: any
   selectedForumId: number | null
   onForumSelect: (id: number) => void
   setTag: (value: string) => void
@@ -55,7 +55,7 @@ export const ForumSidebar = ({
   addTag
 }: ForumSidebarProps) => {
   const filteredForums = forums.filter(
-    (forum) => !forum.isPrivate || (forum.isPrivate && userRole === "faculty") // in this the forums filtered if isPrivate is true and userRole is faculty, if not then filtered if isPrivate is false
+    (forum) => !forum.isPrivate || (forum.isPrivate && userRole.includes(4)) // in this the forums filtered if isPrivate is true and userRole is faculty, if not then filtered if isPrivate is false
   )
 
   return (
@@ -71,72 +71,74 @@ export const ForumSidebar = ({
           <h2 className="text-lg md:text-xl font-bold text-Dark">Forums</h2>
         </div>
 
-        <Dialog open={isForumDialogOpen} onOpenChange={setIsForumDialogOpen}>
-          <DialogTrigger asChild>
-            <button
-              className={`bg-Dark text-white p-1.5 flex justify-evenly items-center rounded-full hover:bg-[#5B58EB] transition-colors shadow-md`}
-            >
-              <PlusCircle className="w-5 h-5" />
-            </button>
-          </DialogTrigger>
+        {userRole.includes(4) && (
+          <Dialog open={isForumDialogOpen} onOpenChange={setIsForumDialogOpen}>
+            <DialogTrigger asChild>
+              <button
+                className={`bg-Dark text-white p-1.5 flex justify-evenly items-center rounded-full hover:bg-[#5B58EB] transition-colors shadow-md`}
+              >
+                <PlusCircle className="w-5 h-5" />
+              </button>
+            </DialogTrigger>
 
-          <DialogContent className="bg-[#EDF9FD] text-[#0A2353] rounded-2xl shadow-2xl border-2 border-[#56E1E9]/30 w-[400px]">
-            <DialogHeader>
-              <DialogTitle className="text-[#112C71] text-xl font-bold flex items-center gap-3">
-                <PlusCircle className="text-[#BB63FF] w-6 h-6" />
-                Create New Forum
-              </DialogTitle>
-            </DialogHeader>
+            <DialogContent className="bg-[#EDF9FD] text-[#0A2353] rounded-2xl shadow-2xl border-2 border-[#56E1E9]/30 w-[400px]">
+              <DialogHeader>
+                <DialogTitle className="text-[#112C71] text-xl font-bold flex items-center gap-3">
+                  <PlusCircle className="text-[#BB63FF] w-6 h-6" />
+                  Create New Forum
+                </DialogTitle>
+              </DialogHeader>
 
-            <div className="space-y-4">
-              <Input
-                type="text"
-                value={forumName}
-                onChange={(e) => setForumName(e.target.value)}
-                placeholder="Forum Name"
-                className="border-2 border-[#56E1E9] rounded-lg p-3 focus:ring-2 focus:ring-[#BB63FF] transition-all"
-              />
-
-              <MultiSelect
-                options={forumTags.map((tag) => ({ label: tag, value: tag }))}
-                selected={selectedTags}
-                onChange={setSelectedTags}
-                placeholder="Select Tags"
-                className="border-2 border-[#56E1E9] rounded-lg"
-              />
-
-              <label className="flex items-center gap-3 text-[#0A2353] hover:bg-[#CFCEFF]/20 p-2 rounded-lg transition-colors cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isPrivate}
-                  onChange={(e) => setIsPrivate(e.target.checked)}
-                  className="form-checkbox text-[#BB63FF] rounded-md border-[#56E1E9] focus:ring-[#BB63FF]"
+              <div className="space-y-4">
+                <Input
+                  type="text"
+                  value={forumName}
+                  onChange={(e) => setForumName(e.target.value)}
+                  placeholder="Forum Name"
+                  className="border-2 border-[#56E1E9] rounded-lg p-3 focus:ring-2 focus:ring-[#BB63FF] transition-all"
                 />
-                <LockIcon className="w-5 h-5 text-[#5B58EB]" />
-                <span>Make Forum Private</span>
-              </label>
-            </div>
 
-            <DialogFooter className="space-y-2">
-              <button
-                onClick={createForum}
-                className="w-full bg-[#0A2353] text-white rounded-lg hover:bg-[#5B58EB] transition-colors shadow-md flex items-center justify-center gap-2"
-              >
-                <PlusCircle className="w-4 h-4" />
-                Create Forum
-              </button>
-              <button
-                onClick={() => setIsForumDialogOpen(false)}
-                className="w-full py-2 bg-[#0A2353] text-white rounded-lg hover:bg-[#5B58EB] transition-colors shadow-md flex items-center justify-center gap-2"
-              >
-                Cancel
-              </button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+                <MultiSelect
+                  options={forumTags.map((tag) => ({ label: tag, value: tag }))}
+                  selected={selectedTags}
+                  onChange={setSelectedTags}
+                  placeholder="Select Tags"
+                  className="border-2 border-[#56E1E9] rounded-lg"
+                />
+
+                <label className="flex items-center gap-3 text-[#0A2353] hover:bg-[#CFCEFF]/20 p-2 rounded-lg transition-colors cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isPrivate}
+                    onChange={(e) => setIsPrivate(e.target.checked)}
+                    className="form-checkbox text-[#BB63FF] rounded-md border-[#56E1E9] focus:ring-[#BB63FF]"
+                  />
+                  <LockIcon className="w-5 h-5 text-[#5B58EB]" />
+                  <span>Make Forum Private</span>
+                </label>
+              </div>
+
+              <DialogFooter>
+                <ButtonV1
+                  onClick={createForum}
+                  icon={PlusCircle}
+                  label="Create Forum"
+                  className="w-full bg-[#0A2353] text-white rounded-lg hover:bg-[#5B58EB] transition-colors shadow-md flex items-center justify-center gap-2"
+                />
+                <ButtonV1
+                  onClick={() => setIsForumDialogOpen(false)}
+                  icon={X}
+                  label="Cancel"
+                  varient="outline"
+                  className="w-full py-2 flex items-center justify-center gap-2"
+                />
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
-      {userRole === "faculty" && (
+      {userRole.includes(4) && (
         <div className="p-4 border-b border-[#56E1E9]/20">
           <Dialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen}>
             <DialogTrigger asChild>
@@ -164,22 +166,23 @@ export const ForumSidebar = ({
                 />
               </div>
 
-              <DialogFooter className="space-y-2">
+              <DialogFooter>
                 <Submit
                   label="Create Tag"
-                  className="w-full py-3 bg-[#BB63FF] text-white rounded-lg hover:bg-[#5B58EB] transition-colors flex items-center justify-center gap-2.5 shadow-md"
+                  className="w-full py-3 bg-[#0A2353] text-white rounded-lg hover:bg-[#5B58EB] transition-colors flex items-center justify-center gap-2.5 shadow-md"
                   onClick={addTag}
                   disabled={!tag.trim()}
                 >
                   <TagIcon className="w-5 h-5" />
                   Create Tag
                 </Submit>
-                <button
+                <ButtonV1
                   onClick={() => setIsTagDialogOpen(false)}
-                  className="w-full py-3 bg-[#FAE27C] text-[#0A2353] rounded-lg hover:bg-[#CFCEFF] transition-colors flex items-center justify-center gap-2 shadow-md"
-                >
-                  Cancel
-                </button>
+                  label="Cancel"
+                  icon={X}
+                  varient="outline"
+                  className="w-full py-3 flex items-center justify-center gap-2 shadow-md"
+                />
               </DialogFooter>
             </DialogContent>
           </Dialog>

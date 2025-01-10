@@ -10,9 +10,10 @@ import { Class } from "@prisma/client"
 
 interface ClassesCardProps {
   Class: Class
+  isFaculty?: boolean
 }
 
-const ClassesCard = ({ Class }: ClassesCardProps) => {
+const ClassesCard = ({ Class, isFaculty }: ClassesCardProps) => {
   return (
     <Card className="cursor-pointer group h-full transition-all duration-300 hover:shadow-lg hover:scale-[1.02]">
       <div className="relative w-full aspect-video">
@@ -33,7 +34,6 @@ const ClassesCard = ({ Class }: ClassesCardProps) => {
         <h3 className="text-lg font-semibold mb-2 group-hover:text-Primary text-Dark transition-colors">
           {Class.name}
         </h3>
-
         <div className="flex items-center gap-x-2 text-sm text-slate-600">
           <IconBadge size="sm" icon={BookOpen} />
           <span>Semester {Class.semister}</span>
@@ -48,7 +48,11 @@ const ClassesCard = ({ Class }: ClassesCardProps) => {
           View all classes
         </Link>
 
-        <Link href={`/classes/${Class.id}`}>
+        <Link
+          href={
+            isFaculty ? `/classes/my-class/${Class.id}` : `/classes/${Class.id}`
+          }
+        >
           <Button size="sm" className="flex items-center gap-x-2">
             View Details
             <ArrowRight className="h-4 w-4" />

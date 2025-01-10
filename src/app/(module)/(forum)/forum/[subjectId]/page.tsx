@@ -1,13 +1,13 @@
 "use client"
 
-import React, { useState, useEffect, useRef } from "react"
-import { useUser } from "@clerk/nextjs"
+import React, { useState, useEffect, useRef, useContext } from "react"
 import io, { Socket } from "socket.io-client"
 import { ForumSidebar } from "@/app/(module)/(forum)/_components/ForumSidebar"
 import { ChatSection } from "@/app/(module)/(forum)/_components/ChatSection"
 import { useParams } from "next/navigation"
 import { chatMessage, Forum, UploadedFile } from "@/types/globals"
 import toast from "react-hot-toast"
+import { UserContext } from "@/context/user"
 
 export default function Home() {
   const [forums, setForums] = useState<Forum[]>([])
@@ -25,14 +25,12 @@ export default function Home() {
   const [isPrivate, setIsPrivate] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
 
-  const userData = useUser()
-  const userId = userData.user?.id
-  const userRole = userData.user?.publicMetadata.role as string
+  const { user } = useContext(UserContext)
+  const userId = user?.id
+  const userRoles = user?.roles?.map((role: any) => role.id) || []
+
   const socketRef = useRef<Socket | null>(null) // Store socket in a ref
   const { subjectId } = useParams()
-  // console.log("userId", userId)
-  // console.log("subjectId", subjectId)
-  // console.log("userRole", userRole)
 
   useEffect(() => {
     // Initialize socket connection with the path to the WebSocket API
@@ -44,11 +42,11 @@ export default function Home() {
     socketRef.current.on("connect", () => {})
 
     socketRef.current.on("connect_error", () => {
-      toast.error("WebSocket connection error")
+      console.log("WebSocket connection error")
     })
 
     socketRef.current.on("connect_timeout", () => {
-      toast.error("WebSocket connection timed out")
+      console.log("WebSocket connection timed out")
     })
 
     socketRef.current.on("disconnect", (reason) => {
@@ -65,7 +63,7 @@ export default function Home() {
         const res = await fetch(
           `/api/subjects/forum/messages?forumId=${selectedForumId}`
         )
-        if (!res.ok) toast.error("Failed to fetch messages from DB")
+        if (!res.ok) console.log("Failed to fetch messages from DB")
 
         const dbMessages = await res.json()
 
@@ -81,7 +79,7 @@ export default function Home() {
 
         setMessages(mergeMessages(filteredDbMessages, localMessages))
       } catch (error) {
-        if (error) toast.error("Error fetching messages from DB")
+        if (error) console.log("Error fetching messages from DB")
         setMessages(localMessages) // Fallback to local messages if DB fetch fails
       }
     }
@@ -156,7 +154,7 @@ export default function Home() {
         const response = await fetch(
           `/api/subjects/forum?subjectId=${subjectId}`
         )
-        if (!response.ok) toast.error("Failed to fetch the forums")
+        if (!response.ok) console.log("Failed to fetch the forums")
 
         const data = await response.json()
         // console.log("forums from DB", data)
@@ -222,7 +220,7 @@ export default function Home() {
       if (socketRef.current) {
         socketRef.current.emit("send_message", newMessage)
       } else {
-        toast.error("Socket is not connected.")
+        console.log("Socket is not connected.")
       }
 
       setUploadedFiles([])
@@ -382,14 +380,14 @@ export default function Home() {
         const res = await fetch(
           `/api/subjects/forum/helper?route=subjectDetails&subjectId=${subjectId}`
         )
-        if (!res.ok) toast.error("Failed to fetch subject details")
+        if (!res.ok) console.log("Failed to fetch subject details")
 
         const data = await res.json()
         setForumTags(data.forumTags || [])
         setDepartmentId(data.departmentId)
         setCourseId(data.courseId)
       } catch (error) {
-        if (error) toast.error("Error fetching subject details")
+        if (error) console.log("Error fetching subject details")
       }
     }
 
@@ -404,7 +402,7 @@ export default function Home() {
         `/api/subjects/forum/helper?route=facultyDetails&courseId=${courseId}`
       )
       if (!facultyRes.ok) {
-        toast.error("Failed to fetch faculty data")
+        console.log("Failed to fetch faculty data")
       }
 
       const facultyList = await facultyRes.json()
@@ -474,7 +472,7 @@ export default function Home() {
               tag={tag}
               setTag={setTag}
               addTag={addTag}
-              userRole={userRole}
+              userRole={userRoles}
               isTagDialogOpen={isTagDialogOpen}
               setIsTagDialogOpen={setIsTagDialogOpen}
               isForumDialogOpen={isForumDialogOpen}
@@ -518,7 +516,7 @@ export default function Home() {
               tag={tag}
               setTag={setTag}
               addTag={addTag}
-              userRole={userRole}
+              userRole={userRoles}
               isTagDialogOpen={isTagDialogOpen}
               setIsTagDialogOpen={setIsTagDialogOpen}
               isForumDialogOpen={isForumDialogOpen}
