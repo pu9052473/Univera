@@ -99,7 +99,7 @@ export default function CommonAnnouncementsPage({
             <button
               onClick={() => router.push(`/announcements/form`)}
               className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-ColorThree border border-ColorThree 
-          hover:bg-ColorThree hover:text-white transition-all duration-200 gap-2 group/create w-full sm:w-auto"
+          hover:bg-ColorThree hover:text-white transition-all duration-200 gap-2 group/create w-full sm:w-auto p-1"
             >
               <FilePlus
                 size={18}
@@ -112,7 +112,7 @@ export default function CommonAnnouncementsPage({
 
         <div className="bg-white rounded-xl shadow-lg overflow-hidden p-4">
           <Tabs defaultValue={tab ? `${tab}` : `general`} className="w-full">
-            <TabsList className="w-full flex justify-evenly bg-lamaSkyLight mb-6 p-3">
+            <TabsList className="w-full flex justify-evenly bg-lamaSkyLight mb-6 px-3 py-5">
               {[
                 { value: "general", label: "General" },
                 { value: "event", label: "Event" },
@@ -121,8 +121,8 @@ export default function CommonAnnouncementsPage({
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="flex-1 data-[state=active]:bg-white data-[state=active]:text-ColorThree 
-                data-[state=active]:shadow-sm text-TextTwo hover:text-ColorThree transition-colors sm:text-base md:text-lg"
+                  className="flex-1 data-[state=active]:bg-white data-[state=active]:text-ColorThree
+                    data-[state=active]:shadow-sm text-TextTwo hover:text-ColorThree transition-colors text-sm md:text-base py-1"
                 >
                   {tab.label}
                 </TabsTrigger>

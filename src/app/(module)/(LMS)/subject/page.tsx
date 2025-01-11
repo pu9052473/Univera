@@ -5,7 +5,7 @@ import { UserContext } from "@/context/user"
 import axios from "axios"
 
 import { CourseCard } from "../_components/CourseCard"
-import { CoursesSkeleton } from "@/components/(commnon)/Skeleton"
+import { ClassesCardSkeleton } from "@/components/(commnon)/Skeleton"
 import { Input } from "@/components/ui/input"
 
 import { useQuery } from "@tanstack/react-query"
@@ -38,7 +38,13 @@ const SubjectPage = () => {
   )
 
   if (isLoading) {
-    return <CoursesSkeleton />
+    return (
+      <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 ml-2">
+        {[...Array(5)].map((_, i) => (
+          <ClassesCardSkeleton key={i} />
+        ))}
+      </div>
+    )
   }
 
   if (error) {
