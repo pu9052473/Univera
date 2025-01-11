@@ -59,7 +59,7 @@ export async function POST(req: Request) {
         { status: 400 }
       )
     }
-    //creating a clerk teacher
+    //creating a clerk student
     const user = await createUser({
       name: name,
       email: email,

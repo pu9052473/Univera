@@ -8,10 +8,10 @@ import { Prisma } from "@prisma/client"
 import { useParams } from "next/navigation"
 import { ClassStudentTable } from "../_components/ClassStudentTable"
 import { AddStudentsDialog } from "../_components/AddStudent"
-import { Loader2 } from "lucide-react"
 import { ButtonV1 } from "@/components/(commnon)/ButtonV1"
 import Left from "@/components/Icons/Left"
 import Link from "next/link"
+import { CoursesSkeleton } from "@/components/(commnon)/Skeleton"
 
 export type StudentsWithRelation = Prisma.StudentGetPayload<{
   include: {
@@ -65,12 +65,7 @@ export default function ClassStudentsPage() {
           </div>
         </div>
 
-        {isLoading && (
-          <div className="flex items-center justify-center p-12 bg-white rounded-lg shadow-sm">
-            <Loader2 className="w-8 h-8 animate-spin text-ColorThree" />
-            <span className="ml-3 text-TextTwo">Loading students...</span>
-          </div>
-        )}
+        {isLoading && <CoursesSkeleton />}
 
         {isError && (
           <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
