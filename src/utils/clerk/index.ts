@@ -64,6 +64,7 @@ export async function createUser({
             name,
             email,
             phone,
+            imageUrl: user.imageUrl,
             departmentId: Number(departmentId) ?? null,
             universityId: Number(universityId),
             courseId: Number(courseId),
@@ -86,6 +87,7 @@ export async function createUser({
           name,
           email,
           phone,
+          imageUrl: user.imageUrl,
           departmentId: departmentId ?? null,
           universityId: universityId,
           roles: {

@@ -6,6 +6,7 @@ import ClassForm from "../../_components/ClassForm"
 import { UserContext } from "@/context/user"
 import { useQuery } from "@tanstack/react-query"
 import { fetchCourses } from "../../_helper"
+import { CourseFormSkeleton } from "@/components/(commnon)/Skeleton"
 
 export default function CreateClassPage() {
   const { user } = useContext(UserContext)
@@ -28,7 +29,7 @@ export default function CreateClassPage() {
           Back
         </Link>
       </div>
-      {isLoading && <p>Loading...</p>}
+      {isLoading && <CourseFormSkeleton />}
       {courses && (
         <ClassForm
           courseId={courseId}
