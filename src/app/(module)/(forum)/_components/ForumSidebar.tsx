@@ -39,7 +39,6 @@ interface ForumSidebarProps {
   createForum: () => void
   isPrivate: boolean
   setIsPrivate: (value: boolean) => void
-  refetchSubjectDetails: () => void
   isSubmittingForumForm: boolean
   isSubmittingForumTagForm: boolean
 }
@@ -64,7 +63,6 @@ export const ForumSidebar = ({
   selectedTags,
   isForumDialogOpen,
   addTag,
-  refetchSubjectDetails,
   isSubmittingForumForm,
   isSubmittingForumTagForm
 }: ForumSidebarProps) => {
@@ -94,7 +92,6 @@ w-full`}
             open={isForumDialogOpen}
             onOpenChange={(isOpen) => {
               setIsForumDialogOpen(isOpen)
-              if (isOpen) refetchSubjectDetails() // Refetch data when dialog opens
             }}
           >
             <DialogTrigger asChild>

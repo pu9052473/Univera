@@ -84,9 +84,7 @@ function ExploreItem({
   group-hover:border-lamaPurple group-hover:shadow-lg
   group-hover:scale-[1.02]"
           >
-            {/* Top Section with Icon and Title */}
             <div className="flex flex-col justify-evenly items-center w-[95%] gap-1">
-              {/* Icon Container with Glow Effect */}
               <div
                 className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl
   bg-lamaPurple text-ColorThree

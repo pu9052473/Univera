@@ -387,6 +387,7 @@ export default function Home() {
 
       setTag("") // Clear the input
       setIsTagDialogOpen(false) // Close dialog
+      refetchSubjectDetails()
     } catch (error) {
       if (error) toast.error("error while creating tag")
     } finally {
@@ -501,7 +502,6 @@ export default function Home() {
               isPrivate={isPrivate}
               setForumName={setForumName}
               setIsPrivate={setIsPrivate}
-              refetchSubjectDetails={refetchSubjectDetails}
               isSubmittingForumForm={isSubmittingForumForm}
               isSubmittingForumTagForm={isSubmittingForumTagForm}
             />
@@ -546,7 +546,6 @@ export default function Home() {
               isPrivate={isPrivate}
               setForumName={setForumName}
               setIsPrivate={setIsPrivate}
-              refetchSubjectDetails={refetchSubjectDetails}
               isSubmittingForumForm={isSubmittingForumForm}
               isSubmittingForumTagForm={isSubmittingForumTagForm}
             />
