@@ -64,7 +64,7 @@ const App = () => {
               <h3 className="text-lg font-semibold mb-4">Concern Person</h3>
               <div className="flex items-center space-x-4">
                 <img
-                  src="/api/placeholder/150/150"
+                  src="/ladaki.jpg"
                   alt="Concern Person"
                   className="w-16 h-16 rounded-full object-cover"
                 />
