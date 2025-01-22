@@ -42,7 +42,7 @@ export default function CreateAnnouncement() {
 
   const { data: subjects, isLoading: subjectsLoading } = useQuery({
     queryKey: ["subjects", user?.courseId, classId, roles],
-    queryFn: () => fetchSubjects(user?.courseId as string),
+    queryFn: () => fetchSubjects(String(user?.courseId)),
     enabled:
       (!!user?.courseId && !!classId && roles.includes(4)) || !!announcementId
   })

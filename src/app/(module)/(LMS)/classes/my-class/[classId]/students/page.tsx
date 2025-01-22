@@ -38,7 +38,7 @@ export default function ClassStudentsPage() {
     StudentsWithRelation[]
   >({
     queryKey: ["Students"],
-    queryFn: () => fetchStudents(user?.courseId),
+    queryFn: () => fetchStudents(String(user?.courseId)),
     enabled: !!user
   })
 

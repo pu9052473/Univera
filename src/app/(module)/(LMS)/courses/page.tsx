@@ -22,12 +22,12 @@ const CoursesGrid = () => {
     refetch,
     isLoading
   } = useQuery({
-    queryKey: ["courses", user?.Department.id, user?.id],
-    queryFn: () => fetchCourses(user?.Department.id, user?.id as string),
+    queryKey: ["courses", user?.departmentId, user?.id],
+    queryFn: () => fetchCourses(String(user?.departmentId), user?.id as string),
     enabled: !!user?.Department?.id && !!user?.id
   })
   useEffect(() => {
-    setRoles(user?.roles.map((role: any) => role.id))
+    setRoles(user?.roles.map((role: any) => role.id) ?? [])
   }, [user?.roles])
 
   if (isLoading) {
