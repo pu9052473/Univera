@@ -170,11 +170,7 @@ export default function ClassEditPage() {
                     >
                       {filteredSubjects &&
                         filteredSubjects.map((subject: Subject) => (
-                          <SubjectCard
-                            key={subject.id}
-                            courseId={Number(Class?.courseId)}
-                            subject={subject}
-                          />
+                          <SubjectCard key={subject.id} subject={subject} />
                         ))}
                     </div>
                   )}

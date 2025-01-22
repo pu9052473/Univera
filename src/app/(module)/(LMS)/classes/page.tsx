@@ -47,7 +47,7 @@ export default function ClassesPage() {
     return (
       <div>
         <DepartmentClasses
-          departmentId={user?.Department?.id}
+          departmentId={String(user?.departmentId)}
           user={user}
           roles={roles}
         />

@@ -47,11 +47,6 @@ export default function CreateAnnouncement() {
       (!!user?.courseId && !!classId && roles.includes(4)) || !!announcementId
   })
 
-  console.log("subjects: ", subjects)
-  console.log("classId: ", classId)
-  console.log("roles.includes(4)", roles.includes(4))
-  console.log("selectedSubjects: ", selectedSubjects)
-
   useEffect(() => {
     const fetchAnnouncementDetails = async () => {
       if (!announcementId) return
