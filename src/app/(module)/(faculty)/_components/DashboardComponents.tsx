@@ -1,7 +1,6 @@
 import {
   Home,
   FileText,
-  Bell,
   Users,
   Calendar,
   BookOpen,
@@ -14,6 +13,8 @@ import { type LucideIcon } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
 import Image from "next/image"
 import Link from "next/link"
+import { FaBullhorn } from "react-icons/fa"
+import { IconType } from "react-icons"
 
 export function ProfileBanner({ user }: { user: any }) {
   const { user: ClerkUser } = useUser()
@@ -65,7 +66,7 @@ function ExploreItem({
   desc,
   link = ""
 }: {
-  icon: LucideIcon
+  icon: LucideIcon | IconType
   title: string
   desc?: string
   link?: string
@@ -76,37 +77,34 @@ function ExploreItem({
         <div className="w-full relative group">
           {/* Main Container */}
           <div
-            className="relative z-10 flex flex-col items-center pt-2 pb-1 px-1
-  rounded-2xl sm:rounded-3xl border-2
-  border-lamaPurple/30 bg-white/90 backdrop-blur-sm
-  hover:bg-gradient-to-br hover:from-white hover:to-lamaPurpleLight
-  transition-all duration-500 ease-in-out
-  group-hover:border-lamaPurple group-hover:shadow-lg
-  group-hover:scale-[1.02]"
+            className="relative z-10 flex flex-col items-center py-2 small:py-4 sm:py-5 px-1
+              rounded-2xl sm:rounded-3xl border-2
+              border-lamaPurple/30 bg-white/90 
+              hover:bg-gradient-to-br 
+              group-hover:scale-[1.02]"
           >
             <div className="flex flex-col justify-evenly items-center w-[95%] gap-1">
               <div
                 className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl
-  bg-lamaPurple text-ColorThree
-  flex items-center justify-center
-  group-hover:bg-gradient-to-br group-hover:from-ColorThree group-hover:to-ColorTwo
-  group-hover:text-white transition-all duration-500 ease-in-out
-  shadow-md group-hover:shadow-xl"
+                text-ColorThree
+                flex items-center justify-center
+                group transition-all duration-500 ease-in-out
+                shadow-md group-hover:shadow-xl"
               >
                 {Icon && (
                   <Icon
                     className="w-5 h-5 xs:w-6 xs:h-6 sm:w-8 sm:h-8
-  transform group-hover:scale-110 transition-transform duration-500"
+                     transform group-hover:scale-110 transition-transform duration-500"
                   />
                 )}
               </div>
               {/* Title Container */}
               <div className="flex-1">
                 <h4
-                  className="text-xs sm:text-lg md:text-xl font-bold text-TextTwo
-  group-hover:text-ColorThree
-  text-center xs:text-left transition-colors duration-500
-  tracking-tight line-clamp-2"
+                  className="text-xs sm:text-base md:text-lg font-bold text-TextTwo
+                    group-hover:text-ColorThree
+                    text-center xs:text-left transition-colors duration-500
+                    tracking-tight line-clamp-2"
                 >
                   {title}
                 </h4>
@@ -116,9 +114,9 @@ function ExploreItem({
             {/* Description */}
             <p
               className="mt-2 text-sm sm:text-base md:text-lg text-gray-600
-  text-center xs:text-left leading-relaxed
-  group-hover:text-gray-700 transition-colors duration-500
-  line-clamp-3 md:line-clamp-none hidden sm:block"
+                text-center xs:text-left leading-relaxed
+                group-hover:text-gray-700 transition-colors duration-500
+                line-clamp-3 md:line-clamp-none hidden sm:block"
             >
               {desc}
             </p>
@@ -127,19 +125,11 @@ function ExploreItem({
             <div className="absolute bottom-0 left-2 w-[95%] h-[2px] sm:h-[3px] overflow-hidden rounded-b-2xl sm:rounded-b-3xl">
               <div
                 className="w-[200%] h-full bg-gradient-to-r from-ColorTwo via-ColorThree to-ColorTwo
-  transform -translate-x-full group-hover:translate-x-0
-  transition-transform duration-1000 ease-in-out"
+                  transform -translate-x-full group-hover:translate-x-0
+                  transition-transform duration-700 ease-in-out"
               />
             </div>
           </div>
-
-          {/* Enhanced Background Decoration */}
-          <div
-            className="absolute inset-0 bg-gradient-to-br from-lamaSkyLight via-white to-lamaPurpleLight
-  rounded-2xl sm:rounded-3xl transform translate-y-1 -z-10 opacity-75
-  group-hover:translate-y-2 transition-all duration-500
-  shadow-lg"
-          />
         </div>
       </div>
     </Link>
@@ -158,7 +148,7 @@ const dashboardItems = [
     desc: "description"
   },
   {
-    icon: Bell,
+    icon: FaBullhorn,
     title: "Announcement",
     desc: "description"
   },
@@ -201,7 +191,7 @@ const classPageItems = (classId?: string) => [
     link: `/classes/my-class/${classId}/students`
   },
   {
-    icon: Bell,
+    icon: FaBullhorn,
     title: "Announcements",
     link: `/classes/my-class/${classId}/classAnnouncement`
   },
@@ -238,7 +228,7 @@ export function ExploreGrid({
     isClassPage && classId ? classPageItems(classId) : dashboardItems
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2">
+    <div className="grid grid-cols-2 small:grid-cols-3 gap-2 sm:gap-4">
       {exploreItems.map((item, index) => (
         <ExploreItem
           key={index}

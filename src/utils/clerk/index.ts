@@ -101,14 +101,14 @@ export async function createUser({
 
       return prismaUser
     } else {
-      console.log(roleIds)
       // Update existing Prisma user
       const updatedPrismaUser = await prisma.user.update({
         where: { id: user.id },
         data: {
           roles: {
             connect: roleIds.map((id) => ({ id }))
-          }
+          },
+          courseId: Number(courseId)
         }
       })
 
