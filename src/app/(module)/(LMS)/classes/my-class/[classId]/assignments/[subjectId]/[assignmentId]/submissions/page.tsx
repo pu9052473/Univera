@@ -14,7 +14,6 @@ async function getAssignment(
   const res = await axios.get(
     `/api/classes/my-class/${classId}/assignments/${subjectId}/${assignmentId}`
   )
-  console.log(res)
   return res.data.assignment
 }
 

@@ -9,7 +9,7 @@ const Table = ({
   data: any[]
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div className="bg-white rounded-lg shadow-sm overflow-x-auto">
       <table className="w-full overflow-x-auto">
         <thead className="bg-lamaSkyLight border-b border-ColorThree/20">
           <tr>

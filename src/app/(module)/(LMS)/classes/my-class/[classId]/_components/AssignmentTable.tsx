@@ -1,9 +1,10 @@
 import React, { useState } from "react"
-import { MoreVertical, NotepadText, Plus, Search, Trash2 } from "lucide-react"
+import { MoreVertical, NotepadText, Search, Trash2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Prisma } from "@prisma/client"
 import { CoursesSkeleton } from "@/components/(commnon)/Skeleton"
 import { ButtonV1 } from "@/components/(commnon)/ButtonV1"
+import { FilePlus } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import Table from "@/app/(module)/list/_components/Table"
 import {
@@ -14,14 +15,18 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 type AssignmentTableProps = {
-  data: Prisma.AssignmentGetPayload<{
-    include: { faculty: true; subject: true }
-  }>[]
+  data: {
+    faculties: any
+    assignments: Prisma.AssignmentGetPayload<{
+      include: { faculty: true; subject: true }
+    }>[]
+  }
   roles: number[]
   classId: string
   subjectId: string
   isLoading: boolean
   isError: boolean
+  userId: string
   refetch: () => void
   deleteAssignment: (id: string) => Promise<void>
 }
@@ -129,7 +134,8 @@ export const AssignmentTableComponent = ({
   subjectId,
   deleteAssignment,
   isError,
-  isLoading
+  isLoading,
+  userId
 }: AssignmentTableProps) => {
   const [searchTerm, setSearchTerm] = useState("")
   if (isError) return <>Error while fetching data</>
@@ -141,6 +147,9 @@ export const AssignmentTableComponent = ({
   ) => {
     const deadlineInfo = getDeadlineStatus(item.deadline)
     const formattedDate = formatDeadline(item.deadline)
+    const canCreateAssignment = data.faculties
+      ?.map((f: any) => f.id)
+      .includes(userId)
 
     return (
       <tr
@@ -192,32 +201,36 @@ export const AssignmentTableComponent = ({
           {new Date(item.deadline).getMonth() + 1}/
           {new Date(item.deadline).getFullYear()}
         </td>
-        <td className="px-4 py-3">
-          <DropdownMenu>
-            <DropdownMenuTrigger className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-150">
-              <MoreVertical size={16} />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white">
-              <DropdownMenuItem
-                className="cursor-pointer border-b border-gray-100 focus:bg-gray-100 rounded-sm shadow-sm"
-                onClick={() => {
-                  window.location.href = `/classes/my-class/${classId}/assignments/${subjectId}/${item.id}/submissions`
-                }}
-              >
-                <NotepadText />
-                View Submissions
-              </DropdownMenuItem>
-              {roles.includes(4) && (
+        {canCreateAssignment ? (
+          <td className="px-4 py-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-150">
+                <MoreVertical size={16} />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-white">
                 <DropdownMenuItem
-                  className="cursor-pointer shadow-sm text-red-500 focus:text-red-500 focus:bg-red-50border-b border-gray-100 focus:bg-gray-100 rounded-sm"
-                  onClick={() => deleteAssignment(String(item.id))}
+                  className="cursor-pointer border-b border-gray-100 focus:bg-gray-100 rounded-sm shadow-sm"
+                  onClick={() => {
+                    window.location.href = `/classes/my-class/${classId}/assignments/${subjectId}/${item.id}/submissions`
+                  }}
                 >
-                  <Trash2 /> Delete Assignment
+                  <NotepadText />
+                  View Submissions
                 </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </td>
+                {roles.includes(4) && (
+                  <DropdownMenuItem
+                    className="cursor-pointer shadow-sm text-red-500 focus:text-red-500 focus:bg-red-50border-b border-gray-100 focus:bg-gray-100 rounded-sm"
+                    onClick={() => deleteAssignment(String(item.id))}
+                  >
+                    <Trash2 /> Delete Assignment
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </td>
+        ) : (
+          <td className="px-4 py-3">-</td>
+        )}
       </tr>
     )
   }
@@ -226,7 +239,7 @@ export const AssignmentTableComponent = ({
     return <CoursesSkeleton />
   }
 
-  const filteredData = data?.filter((item: any) => {
+  const filteredData = data.assignments?.filter((item: any) => {
     const searchString = searchTerm.toLowerCase()
     return (
       item.title?.toLowerCase().includes(searchString) ||
@@ -236,21 +249,22 @@ export const AssignmentTableComponent = ({
     )
   })
 
+  const canCreateAssignment = data.faculties
+    ?.map((f: any) => f.id)
+    .includes(userId)
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <h1 className="text-2xl font-bold text-TextTwo">Assignments</h1>
-
-        {roles.includes(4) && (
+        {canCreateAssignment && (
           <ButtonV1
             className="flex items-center gap-2 bg-ColorThree hover:bg-ColorTwo text-white font-medium rounded-lg px-4 py-2 transition-colors duration-200"
             href={`/classes/my-class/${classId}/assignments/${subjectId}/create`}
-            icon={Plus}
+            icon={FilePlus}
             label="Create new assignment"
           />
         )}
       </div>
-
       <div className="relative w-full max-w-sm">
         <Search
           className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -265,7 +279,7 @@ export const AssignmentTableComponent = ({
         />
       </div>
 
-      <div className="rounded-lg border border-gray-100">
+      <div className="rounded-lg border border-gray-100 overflow-hidden">
         <Table
           columns={columns}
           renderRow={(item, index) => renderRow(item, Number(index))}

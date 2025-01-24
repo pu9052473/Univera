@@ -87,7 +87,7 @@ export default function ClassAssignmentsPage() {
           ))}
       </div>
 
-      <h1 className="text-center font-bold text-2xl">All Subjects</h1>
+      <h1 className="text-center font-bold text-2xl">Other Subjects</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
         {filteredSubjects &&
           filteredSubjects.map((subject: Subject) => (

@@ -92,7 +92,7 @@ export function AssignmentSubmissions({
                   className="flex items-center gap-2"
                 />
               </DialogTrigger>
-              <DialogContent className="max-w-2xl bg-lamaSkyLight">
+              <DialogContent className="max-w-[80vw] max-h-[80vh] overflow-auto absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] bg-lamaSkyLight">
                 <AssignmentForm
                   courseId={Number(user?.courseId)}
                   userId={String(user?.id)}

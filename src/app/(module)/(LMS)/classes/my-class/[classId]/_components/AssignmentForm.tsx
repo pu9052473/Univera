@@ -22,8 +22,6 @@ import axios from "axios"
 import { useCallback, useState } from "react"
 import { useUploadThing } from "@/utils/uploadthing"
 import { UploadthingUploader } from "@/components/(commnon)/UploadthingUploader"
-import Link from "next/link"
-import Left from "@/components/Icons/Left"
 import { useRouter } from "next/navigation"
 import { Submit } from "@/components/(commnon)/ButtonV1"
 import { Prisma } from "@prisma/client"
@@ -272,29 +270,19 @@ export default function AssignmentForm({
   }
 
   return (
-    <div className="min-h-screen bg-lamaSkyLight p-3 sm:p-4 md:p-6">
-      <div className="max-w-7xl mx-auto">
-        <div
-          className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6 md:mb-8 ${assignment ? "hidden" : ""}`}
-        >
-          <Link
-            className="inline-flex items-center justify-center gap-2 bg-white border-2 text-TextTwo font-semibold rounded-lg px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base transition-all hover:bg-lamaPurpleLight hover:border-ColorTwo w-full sm:w-auto"
-            href={`/classes/my-class/${classId}/assignments/${subjectId}`}
-          >
-            <Left className="w-4 h-4 sm:w-5 sm:h-5" /> Back
-          </Link>
-        </div>
-
+    <div className="w-full h-full flex items-center justify-center">
+      <div className="w-full max-w-7xl px-4 py-4">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 sm:space-y-6 bg-white rounded-lg sm:rounded-xl shadow-md sm:shadow-lg p-4 sm:p-6 md:p-8 w-full max-w-2xl mx-auto"
+            className="space-y-4 sm:space-y-6 bg-white rounded-lg sm:rounded-xl shadow-md sm:shadow-lg p-4 sm:p-6 md:p-8 w-full"
           >
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-ColorThree tracking-tight">
               {assignment ? "Edit" : "Create"} Assignment
             </h2>
 
             <div className="space-y-4">
+              {/* Title Input */}
               <FormField
                 control={form.control}
                 name="title"
@@ -316,6 +304,7 @@ export default function AssignmentForm({
                 )}
               />
 
+              {/* Dates Input */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <FormField
                   control={form.control}
@@ -358,6 +347,7 @@ export default function AssignmentForm({
                 />
               </div>
 
+              {/* Attachment */}
               {!assignment && (
                 <div className="bg-lamaSkyLight rounded-lg p-3 sm:p-4">
                   <FormLabel className="text-TextTwo mb-2 block text-sm sm:text-base">
@@ -374,6 +364,7 @@ export default function AssignmentForm({
                 </div>
               )}
 
+              {/* Tags and Type */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <FormField
                   control={form.control}
@@ -438,11 +429,24 @@ export default function AssignmentForm({
               </div>
             </div>
 
+            {/* Submit Button */}
             <Submit
               id="assignment-submit"
               type="submit"
               disabled={form.formState.isSubmitting || !form.formState.isDirty}
-              label={`${assignment ? `${form.formState.isSubmitting ? "Updating..." : "Update Assignment"}` : `${form.formState.isSubmitting ? "Creating..." : "Create Assignment"}`}`}
+              label={`${
+                assignment
+                  ? `${
+                      form.formState.isSubmitting
+                        ? "Updating..."
+                        : "Update Assignment"
+                    }`
+                  : `${
+                      form.formState.isSubmitting
+                        ? "Creating..."
+                        : "Create Assignment"
+                    }`
+              }`}
               className="w-full sm:w-auto bg-ColorThree hover:bg-ColorTwo text-white transition-colors duration-300 text-sm sm:text-base px-4 py-2 sm:px-6 sm:py-3"
             />
           </form>

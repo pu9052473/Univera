@@ -6,12 +6,14 @@ import { useQuery } from "@tanstack/react-query"
 import { UserContext } from "@/context/user"
 import toast from "react-hot-toast"
 import { AssignmentTableComponent } from "../../_components/AssignmentTable"
+import Link from "next/link"
+import Left from "@/components/Icons/Left"
 
 async function fetchAssignments(classId: string, subjectId: string) {
   const res = await axios.get(
     `/api/classes/my-class/${classId}/assignments/${subjectId}`
   )
-  return res.data.assignments
+  return res.data
 }
 
 export default function AssignmentListPage() {
@@ -45,11 +47,22 @@ export default function AssignmentListPage() {
   }
   return (
     <div>
+      <div
+        className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6 md:mb-8 `}
+      >
+        <Link
+          className="inline-flex items-center justify-center gap-2 bg-white border-2 text-TextTwo font-semibold rounded-lg px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base transition-all hover:bg-lamaPurpleLight hover:border-ColorTwo w-full sm:w-auto"
+          href={`/classes/my-class/${classId}/assignments`}
+        >
+          <Left className="w-4 h-4 sm:w-5 sm:h-5" /> Back
+        </Link>
+      </div>
       <AssignmentTableComponent
         data={data}
         isLoading={isLoading}
         isError={isError}
         refetch={refetch}
+        userId={String(user?.id)}
         roles={roles as number[]}
         classId={classId as string}
         subjectId={subjectId as string}

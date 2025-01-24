@@ -5,16 +5,20 @@ export async function GET(req: Request, context: any) {
   try {
     const { subjectId } = await context.params
 
-    const Assignments = await prisma.assignment.findMany({
-      where: { subjectId: Number(subjectId) },
-      orderBy: { startDate: "asc" },
+    const subjects = await prisma.subject.findUnique({
+      where: { id: Number(subjectId) },
       include: {
-        subject: true
+        faculties: true,
+        assignment: true
       }
     })
 
     return NextResponse.json(
-      { message: "Success", assignments: Assignments },
+      {
+        message: "Success",
+        assignments: subjects?.assignment,
+        faculties: subjects?.faculties
+      }, //we want all faculties of the subject
       { status: 200 }
     )
   } catch (error) {
