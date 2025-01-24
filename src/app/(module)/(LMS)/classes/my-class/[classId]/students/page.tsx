@@ -33,12 +33,12 @@ export default function ClassStudentsPage() {
   const params = useParams()
   const classId = params.classId
   const { user } = useContext(UserContext)
-
+  console.log("user: ", user)
   const { data, isLoading, isError, error, refetch } = useQuery<
     StudentsWithRelation[]
   >({
     queryKey: ["Students"],
-    queryFn: () => fetchStudents(user?.courseId),
+    queryFn: () => fetchStudents(String(user?.courseId)),
     enabled: !!user
   })
 

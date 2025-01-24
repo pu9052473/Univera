@@ -30,7 +30,8 @@ const SubjectPage = () => {
     isLoading
   } = useQuery({
     queryKey: ["courses", user?.Department?.id, user?.id],
-    queryFn: () => fetchCourses(user?.Department?.id || "", user?.id || ""),
+    queryFn: () =>
+      fetchCourses(String(user?.departmentId) || "", user?.id || ""),
     enabled: !!user?.Department?.id && !!user?.id
   })
   const filteredCourses = courses.filter((course: any) =>

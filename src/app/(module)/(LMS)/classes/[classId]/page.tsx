@@ -59,7 +59,7 @@ export default function ClassEditPage() {
       <div className="max-w-7xl mx-auto sm:px-2 p-2">
         <ClassDetails
           Class={Class}
-          UserRoles={user?.roles}
+          UserRoles={user?.roles ?? []}
           isLoading={isLoading}
         />
         <div className="mt-8 bg-white rounded-xl shadow-sm">
@@ -170,11 +170,7 @@ export default function ClassEditPage() {
                     >
                       {filteredSubjects &&
                         filteredSubjects.map((subject: Subject) => (
-                          <SubjectCard
-                            key={subject.id}
-                            courseId={Number(Class?.courseId)}
-                            subject={subject}
-                          />
+                          <SubjectCard key={subject.id} subject={subject} />
                         ))}
                     </div>
                   )}

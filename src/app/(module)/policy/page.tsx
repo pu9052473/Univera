@@ -37,7 +37,8 @@ export default function PolicyPage() {
     isLoading
   } = useQuery({
     queryKey: ["fetchPolicies", user?.departmentId, user?.universityId],
-    queryFn: () => fetchPolicy(user?.departmentId, user?.universityId),
+    queryFn: () =>
+      fetchPolicy(String(user?.departmentId), String(user?.universityId)),
     enabled: !!user?.departmentId && !!user?.universityId
   })
 
