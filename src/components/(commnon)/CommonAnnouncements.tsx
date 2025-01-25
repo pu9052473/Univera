@@ -54,8 +54,8 @@ export default function CommonAnnouncementsPage({
     queryKey: ["announcements", user?.departmentId, user?.universityId],
     queryFn: () =>
       fetchAnnouncements(
-        user?.departmentId,
-        user?.universityId,
+        String(user?.departmentId),
+        String(user?.universityId),
         classId === null ? null : (classId as string)
       ),
     enabled: !!user?.departmentId && !!user?.universityId

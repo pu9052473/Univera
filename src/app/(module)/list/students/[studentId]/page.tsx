@@ -50,9 +50,9 @@ export default function EditStudentPage() {
               student={data}
               submitBtnId="student-update"
               submitBtnLabel="Update Student"
-              departmentId={user?.departmentId}
-              courseId={user?.courseId}
-              universityId={user?.universityId}
+              departmentId={Number(user?.departmentId)}
+              courseId={Number(user?.courseId)}
+              universityId={Number(user?.universityId)}
               isEditable={true}
             />
           )}

@@ -42,15 +42,10 @@ export default function CreateAnnouncement() {
 
   const { data: subjects, isLoading: subjectsLoading } = useQuery({
     queryKey: ["subjects", user?.courseId, classId, roles],
-    queryFn: () => fetchSubjects(user?.courseId as string),
+    queryFn: () => fetchSubjects(String(user?.courseId)),
     enabled:
       (!!user?.courseId && !!classId && roles.includes(4)) || !!announcementId
   })
-
-  console.log("subjects: ", subjects)
-  console.log("classId: ", classId)
-  console.log("roles.includes(4)", roles.includes(4))
-  console.log("selectedSubjects: ", selectedSubjects)
 
   useEffect(() => {
     const fetchAnnouncementDetails = async () => {

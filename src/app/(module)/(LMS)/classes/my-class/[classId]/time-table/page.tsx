@@ -86,11 +86,9 @@ export default function ClassTimeTablePage() {
   const userRoles = user?.roles?.map((role: any) => role.id) || []
   const isCoordinator = userRoles.includes(5)
 
-  console.log("userRoles", userRoles)
-
   const { data: subjects } = useQuery({
     queryKey: ["subjects", user?.courseId],
-    queryFn: () => fetchSubjects(user?.courseId as string),
+    queryFn: () => fetchSubjects(String(user?.courseId)),
     enabled: !!user?.courseId
   })
 
