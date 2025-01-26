@@ -35,6 +35,8 @@ import { useParams } from "next/navigation"
 import { ButtonV1 } from "@/components/(commnon)/ButtonV1"
 import toast from "react-hot-toast"
 import { SelectedSlot, TimeTableSlot } from "@/types/globals"
+import Left from "@/components/Icons/Left"
+import Link from "next/link"
 
 async function fetchSubjects(courseId: string) {
   const response = await axios.get(`/api/subjects?courseId=${courseId}`)
@@ -65,7 +67,11 @@ const fetchTimeTableSlots = async (classId: string) => {
   return response?.data || []
 }
 
-export default function ClassTimeTablePage() {
+export default function ClassTimeTablePage({
+  isMyClass = true
+}: {
+  isMyClass?: boolean
+}) {
   const { classId } = useParams()
   const [timeSlots, setTimeSlots] = useState<{
     [IntClassId: number]: string[]
@@ -78,6 +84,7 @@ export default function ClassTimeTablePage() {
   const [currentSubject, setCurrentSubject] = useState("Non Academic")
   const [isEditing, setIsEditing] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [isSubmittingTimeTable, setIsSubmittingTimeTable] = useState(false)
   const { user } = useContext(UserContext)
 
   const courseId = user?.courseId
@@ -318,6 +325,7 @@ export default function ClassTimeTablePage() {
   }
 
   const handleTimeTableSubmit = async () => {
+    setIsSubmittingTimeTable(true)
     try {
       const timeTableData = {
         courseId,
@@ -356,16 +364,6 @@ export default function ClassTimeTablePage() {
             )
             facultyId = facultyData?.id
           }
-
-          console.log("Raw key:", key)
-          console.log("day:", day)
-          console.log("fromTime:", fromTime)
-          console.log("toTime:", toTime)
-          console.log("subjectId:", subjectId)
-          console.log("facultyId:", facultyId)
-          console.log("courseId:", courseId)
-          console.log("classId:", classId)
-          console.log("departmentId:", departmentId)
 
           return {
             day,
@@ -410,11 +408,21 @@ export default function ClassTimeTablePage() {
     } catch (error: any) {
       console.log("Error submitting timetable:", error.message)
       toast.error("An error occurred while submitting the timetable.")
+    } finally {
+      setIsSubmittingTimeTable(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-lamaSkyLight to-lamaPurpleLight">
+    <div className="min-h-screen ">
+      {isMyClass && (
+        <Link
+          className="flex items-center justify-center ml-4 gap-2 border-2 border-black text-black w-32 font-semibold rounded-lg py-2 transition-transform transform hover:scale-105 hover:bg-gray-100"
+          href={`/classes/my-class/${classId}`}
+        >
+          <Left /> Back
+        </Link>
+      )}
       <div className={`mx-auto p-4 ${!isMobile ? "max-w-7xl" : "max-w-lg"}`}>
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-TextTwo">Class Time Table</h1>
@@ -484,12 +492,12 @@ export default function ClassTimeTablePage() {
               {isEditing ? (
                 <>
                   <Edit2 className="h-4 w-4 mr-2" />
-                  Cancel Editing
+                  Cancel Assigning
                 </>
               ) : (
                 <>
                   <Edit2 className="h-4 w-4 mr-2" />
-                  Assign Classes
+                  Begin Assigning
                 </>
               )}
             </Button>
@@ -664,7 +672,12 @@ export default function ClassTimeTablePage() {
           <div className="">
             <ButtonV1
               icon={Plus}
-              label="submit"
+              label={isSubmittingTimeTable ? "Submitting..." : "submit"}
+              disabled={
+                !selectedSlots[IntClassId] ||
+                Object.keys(selectedSlots[IntClassId]).length === 0 ||
+                isSubmittingTimeTable
+              }
               onClick={() => handleTimeTableSubmit()}
             />
           </div>

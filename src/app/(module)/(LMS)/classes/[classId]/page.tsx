@@ -180,7 +180,7 @@ export default function ClassEditPage() {
                   )}
                   {tab === "timetable" && (
                     <div className="">
-                      <ClassTimeTablePage />
+                      <ClassTimeTablePage isMyClass={false} />
                     </div>
                   )}
                 </TabsContent>
