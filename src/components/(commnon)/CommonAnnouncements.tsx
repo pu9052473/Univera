@@ -3,7 +3,7 @@
 import { UserContext } from "@/context/user"
 import React, { useContext } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { FilePlus, RotateCcw, X } from "lucide-react"
+import { FilePlus, RotateCcw } from "lucide-react"
 import axios from "axios"
 import { useRouter } from "next/navigation"
 import { ButtonV1 } from "./ButtonV1"
@@ -61,23 +61,14 @@ export default function CommonAnnouncementsPage({
     enabled: !!user?.departmentId && !!user?.universityId
   })
 
-  if (user && classId !== null ? !isFaculty : !canCreateAnnouncement) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-        <X className="w-12 h-12 text-red-500" />
-        <p className="text-lg font-medium text-gray-900">
-          You do not have access to this page.
-        </p>
-      </div>
-    )
-  }
+  if (!user) return null
 
   return (
     <div>
       <div className="max-w-6xl mx-auto p-3 space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-4">
           <h1 className="text-2xl font-semibold text-TextTwo text-center sm:text-left">
-            Announcements
+            Bulletin
           </h1>
           {canCreateAnnouncement && classId !== null && (
             <button

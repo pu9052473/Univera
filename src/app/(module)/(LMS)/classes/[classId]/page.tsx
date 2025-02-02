@@ -14,6 +14,7 @@ import ClassFaculties from "../../_components/ClassFaculties"
 import ClassStudents from "../../_components/ClassStudents"
 import SubjectCard from "../../_components/SubjectCard"
 import { Subject } from "@prisma/client"
+import ClassTimeTable from "../my-class/[classId]/time-table/_components/ClassTimeTable"
 
 async function fetchClassById(classId: number) {
   const { data } = await axios.get(`/api/classes/${classId}`)
@@ -22,6 +23,7 @@ async function fetchClassById(classId: number) {
 
 export default function ClassEditPage() {
   const { user } = useContext(UserContext)
+  const userRoles = user?.roles?.map((role: any) => role.id) || []
   const { classId } = useParams()
   const [activeTab, setActiveTab] = useState("coordinator")
   const {
@@ -53,6 +55,8 @@ export default function ClassEditPage() {
     (s: Subject) => s.semester === Class.semister
   )
   const tabs = ["coordinator", "mentor", "subjects", "faculties", "students"]
+
+  if (userRoles.includes(5)) tabs.push("timetable") // add timetable tab only when user role is coordinator
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -91,7 +95,7 @@ export default function ClassEditPage() {
               </TabsList>
             </div>
 
-            <div className="p-4 sm:p-6 h-full w-full max-w-5xl mx-auto">
+            <div className="p-3 sm:p-5 h-full w-full mx-auto">
               {tabs.map((tab) => (
                 <TabsContent
                   key={tab}
@@ -172,6 +176,11 @@ export default function ClassEditPage() {
                         filteredSubjects.map((subject: Subject) => (
                           <SubjectCard key={subject.id} subject={subject} />
                         ))}
+                    </div>
+                  )}
+                  {tab === "timetable" && (
+                    <div className="">
+                      <ClassTimeTable isMyClass={false} />
                     </div>
                   )}
                 </TabsContent>

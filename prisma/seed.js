@@ -127,8 +127,8 @@ async function main() {
   const dummyDeanUser = await prisma.user.create({
     // Dean
     data: {
-      id: "user_2qrHoqnzAhnRgTExHVB4qoCoU9Y",
-      clerkId: "user_2qrHoqnzAhnRgTExHVB4qoCoU9Y",
+      id: "user_2s5G78wQLYfecd1bGzzscisyCQv",
+      clerkId: "user_2s5G78wQLYfecd1bGzzscisyCQv",
       name: "Mohak shah",
       email: "dean_uit@ku.edu.in",
       phone: "7894567898",
