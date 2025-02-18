@@ -111,6 +111,14 @@ export default function ClassTimeTable({
     enabled: !!classId
   })
 
+  console.log("timeTableSlots", timeTableSlots)
+
+  const timeTableId = timeTableSlots?.find(
+    (slot: any) => slot.classId === IntClassId
+  )?.timeTableId
+
+  console.log("timeTableId", timeTableId)
+
   const handleSubjectSelectChange = (value: string) => {
     setCurrentSubject(value)
     setSelectedFaculty(null)
@@ -388,13 +396,17 @@ export default function ClassTimeTable({
         return
       }
 
+      console.log("slotsData", slotsData)
+
       // API call to save timetable and slots
       const response = await fetch(`/api/classes/timeTable`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           timeTableData,
-          slotsData
+          slotsData,
+          timeTableId: timeTableId || null,
+          timeTableSlots
         })
       })
 

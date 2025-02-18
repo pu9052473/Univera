@@ -4,7 +4,8 @@ import { NextResponse } from "next/server"
 export async function PATCH(req: Request) {
   try {
     // Parse the request body
-    const { timeTableData, slotsData } = await req.json()
+    const { timeTableData, slotsData, timeTableId, timeTableSlots } =
+      await req.json()
 
     // Validate timetable data
     if (
@@ -42,51 +43,144 @@ export async function PATCH(req: Request) {
       )
     }
 
-    // Use Prisma transaction for atomicity
-    const [createdTimeTable, createdSlots] = await prisma.$transaction(
-      async (tx) => {
-        // Create the TimeTable record
-        const createdTimeTable = await tx.timeTable.create({
-          data: {
-            courseId: timeTableData.courseId,
-            classId: timeTableData.classId,
-            departmentId: timeTableData.departmentId
+    // Case 1: Fresh Timetable Creation (No `timeTableId` in request)
+    if (!timeTableId) {
+      // Use Prisma transaction for atomicity
+      const [createdTimeTable, createdSlots] = await prisma.$transaction(
+        async (tx) => {
+          // Create the TimeTable record
+          const createdTimeTable = await tx.timeTable.create({
+            data: {
+              courseId: timeTableData.courseId,
+              classId: timeTableData.classId,
+              departmentId: timeTableData.departmentId
+            }
+          })
+
+          // Prepare Slot records with optional `facultyId` and `lecturerId`
+          const newSlots = validSlotsData.map((slot) => ({
+            day: slot.day,
+            fromTime: slot.fromTime,
+            toTime: slot.toTime,
+            title: slot.title,
+            timeTableId: createdTimeTable.id,
+            courseId: createdTimeTable.courseId,
+            classId: createdTimeTable.classId,
+            departmentId: createdTimeTable.departmentId,
+            subjectId: slot.subjectId || null,
+            facultyId: slot.facultyId || null, // Set optional fields to null if not provided
+            lecturerId: slot.lecturerId || null
+          }))
+
+          // Bulk create Slot records
+          const createdSlots = await tx.slot.createMany({
+            data: newSlots,
+            skipDuplicates: true // Avoid duplicate entries
+          })
+
+          return [createdTimeTable, createdSlots]
+        }
+      )
+
+      return NextResponse.json(
+        {
+          message: "TimeTable and Slots created successfully",
+          timeTable: createdTimeTable,
+          slots: createdSlots
+        },
+        { status: 201 }
+      )
+    } else {
+      // Case 2: Update Existing Timetable (timeTableId is provided)
+      // Prepare categorized data
+      const existingSlotsMap = new Map(
+        timeTableSlots.map((slot) => [
+          `${slot.day}-${slot.fromTime}-${slot.toTime}`,
+          slot
+        ])
+      )
+
+      const newSlotsMap = new Map(
+        slotsData.map((slot) => [
+          `${slot.day}-${slot.fromTime}-${slot.toTime}`,
+          slot
+        ])
+      )
+
+      // Find slots to delete (exists in DB but not in incoming slotsData)
+      const slotsToDelete = Array.from(existingSlotsMap.keys())
+        .filter((key) => !newSlotsMap.has(key))
+        .map((key) => existingSlotsMap.get(key)?.id)
+        .filter(Boolean)
+
+      // Find slots to update (exists in both but with changes)
+      const slotsToUpdate = Array.from(newSlotsMap.keys())
+        .filter((key) => existingSlotsMap.has(key))
+        .map((key) => {
+          const existing = existingSlotsMap.get(key)
+          const incoming = newSlotsMap.get(key)
+          if (
+            existing.title !== incoming.title ||
+            existing.subjectId !== incoming.subjectId ||
+            existing.facultyId !== incoming.facultyId
+          ) {
+            return { ...incoming, id: existing.id }
           }
+          return null
         })
+        .filter(Boolean)
 
-        // Prepare Slot records with optional `facultyId` and `lecturerId`
-        const newSlots = validSlotsData.map((slot) => ({
-          day: slot.day,
-          fromTime: slot.fromTime,
-          toTime: slot.toTime,
-          title: slot.title,
-          timeTableId: createdTimeTable.id,
-          courseId: createdTimeTable.courseId,
-          classId: createdTimeTable.classId,
-          departmentId: createdTimeTable.departmentId,
-          subjectId: slot.subjectId || null,
-          facultyId: slot.facultyId || null, // Set optional fields to null if not provided
-          lecturerId: slot.lecturerId || null
-        }))
+      // Find slots to create (exists in slotsData but not in DB)
+      const slotsToCreate = Array.from(newSlotsMap.keys())
+        .filter((key) => !existingSlotsMap.has(key))
+        .map((key) => newSlotsMap.get(key))
 
-        // Bulk create Slot records
-        const createdSlots = await tx.slot.createMany({
-          data: newSlots,
-          skipDuplicates: true // Avoid duplicate entries
-        })
+      // Perform database operations using transaction
+      await prisma.$transaction(async (tx) => {
+        // Delete removed slots
+        if (slotsToDelete.length > 0) {
+          await tx.slot.deleteMany({ where: { id: { in: slotsToDelete } } })
+        }
 
-        return [createdTimeTable, createdSlots]
-      }
-    )
+        // Update existing slots
+        for (const slot of slotsToUpdate) {
+          await tx.slot.update({
+            where: { id: slot.id },
+            data: {
+              title: slot.title,
+              subjectId: slot.subjectId || null,
+              facultyId: slot.facultyId || null,
+              lecturerId: slot.lecturerId || null
+            }
+          })
+        }
 
-    return NextResponse.json(
-      {
-        message: "TimeTable and Slots created successfully",
-        timeTable: createdTimeTable,
-        slots: createdSlots
-      },
-      { status: 201 }
-    )
+        // Create new slots
+        if (slotsToCreate.length > 0) {
+          await tx.slot.createMany({
+            data: slotsToCreate.map((slot) => ({
+              day: slot.day,
+              fromTime: slot.fromTime,
+              toTime: slot.toTime,
+              title: slot.title,
+              timeTableId,
+              courseId: timeTableData.courseId,
+              classId: timeTableData.classId,
+              departmentId: timeTableData.departmentId,
+              subjectId: slot.subjectId || null,
+              facultyId: slot.facultyId || null,
+              lecturerId: slot.lecturerId || null
+            })),
+            skipDuplicates: true
+          })
+        }
+      })
+
+      return NextResponse.json(
+        { message: "TimeTable updated successfully" },
+        { status: 200 }
+      )
+    }
   } catch (error: any) {
     console.error("Error creating TimeTable and Slots:", error.message)
     return NextResponse.json(
