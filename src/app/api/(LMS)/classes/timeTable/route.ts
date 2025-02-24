@@ -7,6 +7,11 @@ export async function PATCH(req: Request) {
     const { timeTableData, slotsData, timeTableId, timeTableSlots } =
       await req.json()
 
+    console.log("timeTableData", timeTableData)
+    console.log("slotsData", slotsData)
+    console.log("timeTableId", timeTableId)
+    console.log("timeTableSlots", timeTableSlots)
+
     // Validate timetable data
     if (
       !timeTableData ||
@@ -14,6 +19,7 @@ export async function PATCH(req: Request) {
       !timeTableData.classId ||
       !timeTableData.departmentId
     ) {
+      console.log("first")
       return NextResponse.json(
         {
           error:
@@ -25,6 +31,7 @@ export async function PATCH(req: Request) {
 
     // Validate slots data
     if (!Array.isArray(slotsData) || slotsData.length === 0) {
+      console.log("second")
       return NextResponse.json(
         { error: "Invalid slots data. Provide an array of slot objects." },
         { status: 400 }
@@ -32,11 +39,14 @@ export async function PATCH(req: Request) {
     }
 
     const validSlotsData = slotsData.filter((slot) => {
-      const { day, fromTime, toTime, title } = slot
-      return day && fromTime && toTime && title
+      const { day, startTime, endTime, subject } = slot
+      return day && startTime && endTime && subject
     })
 
+    console.log("validSlotsData", validSlotsData)
+
     if (validSlotsData.length === 0) {
+      console.log("third")
       return NextResponse.json(
         { error: "No valid slot data to process." },
         { status: 400 }
@@ -60,9 +70,12 @@ export async function PATCH(req: Request) {
           // Prepare Slot records with optional `facultyId` and `lecturerId`
           const newSlots = validSlotsData.map((slot) => ({
             day: slot.day,
-            fromTime: slot.fromTime,
-            toTime: slot.toTime,
-            title: slot.title,
+            startTime: slot.startTime,
+            endTime: slot.endTime,
+            title: slot.subject,
+            tag: slot.tag,
+            location: slot.location,
+            remarks: slot.remarks,
             timeTableId: createdTimeTable.id,
             courseId: createdTimeTable.courseId,
             classId: createdTimeTable.classId,
@@ -95,14 +108,14 @@ export async function PATCH(req: Request) {
       // Prepare categorized data
       const existingSlotsMap = new Map(
         timeTableSlots.map((slot) => [
-          `${slot.day}-${slot.fromTime}-${slot.toTime}`,
+          `${slot.day}-${slot.startTime}-${slot.endTime}`,
           slot
         ])
       )
 
       const newSlotsMap = new Map(
         slotsData.map((slot) => [
-          `${slot.day}-${slot.fromTime}-${slot.toTime}`,
+          `${slot.day}-${slot.startTime}-${slot.endTime}`,
           slot
         ])
       )
@@ -120,9 +133,12 @@ export async function PATCH(req: Request) {
           const existing = existingSlotsMap.get(key)
           const incoming = newSlotsMap.get(key)
           if (
-            existing.title !== incoming.title ||
+            existing.title !== incoming.subject ||
             existing.subjectId !== incoming.subjectId ||
-            existing.facultyId !== incoming.facultyId
+            existing.facultyId !== incoming.facultyId ||
+            existing.tag !== incoming.tag ||
+            existing.location !== incoming.location ||
+            existing.remarks !== incoming.remarks
           ) {
             return { ...incoming, id: existing.id }
           }
@@ -147,10 +163,13 @@ export async function PATCH(req: Request) {
           await tx.slot.update({
             where: { id: slot.id },
             data: {
-              title: slot.title,
+              title: slot.subject,
               subjectId: slot.subjectId || null,
               facultyId: slot.facultyId || null,
-              lecturerId: slot.lecturerId || null
+              lecturerId: slot.lecturerId || null,
+              tag: slot.tag || null,
+              location: slot.location || null,
+              remarks: slot.remarks || null
             }
           })
         }
@@ -160,9 +179,12 @@ export async function PATCH(req: Request) {
           await tx.slot.createMany({
             data: slotsToCreate.map((slot) => ({
               day: slot.day,
-              fromTime: slot.fromTime,
-              toTime: slot.toTime,
-              title: slot.title,
+              startTime: slot.startTime,
+              endTime: slot.endTime,
+              title: slot.subject,
+              tag: slot.tag,
+              location: slot.location,
+              remarks: slot.remarks,
               timeTableId,
               courseId: timeTableData.courseId,
               classId: timeTableData.classId,
