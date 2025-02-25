@@ -129,3 +129,9 @@ export type TimeTableSlot = {
   classId: number
   departmentId: number
 }
+
+export interface FileWithPreview extends File {
+  preview?: string
+  existing?: boolean
+  url?: string
+}
