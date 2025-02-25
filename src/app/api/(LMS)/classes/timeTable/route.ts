@@ -7,11 +7,6 @@ export async function PATCH(req: Request) {
     const { timeTableData, slotsData, timeTableId, timeTableSlots } =
       await req.json()
 
-    console.log("timeTableData", timeTableData)
-    console.log("slotsData", slotsData)
-    console.log("timeTableId", timeTableId)
-    console.log("timeTableSlots", timeTableSlots)
-
     // Validate timetable data
     if (
       !timeTableData ||
@@ -106,14 +101,14 @@ export async function PATCH(req: Request) {
     } else {
       // Case 2: Update Existing Timetable (timeTableId is provided)
       // Prepare categorized data
-      const existingSlotsMap = new Map(
-        timeTableSlots.map((slot) => [
+      const existingSlotsMap = new Map<string, any>(
+        timeTableSlots.map((slot: any) => [
           `${slot.day}-${slot.startTime}-${slot.endTime}`,
           slot
         ])
       )
 
-      const newSlotsMap = new Map(
+      const newSlotsMap = new Map<string, any>(
         slotsData.map((slot) => [
           `${slot.day}-${slot.startTime}-${slot.endTime}`,
           slot

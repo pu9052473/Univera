@@ -119,8 +119,8 @@ export type TimeTableSlot = {
   id: number
   timeTableId: number
   day: string
-  fromTime: string
-  toTime: string
+  startTime: string
+  endTime: string
   title: string
   facultyId?: string
   lecturerId?: string
@@ -128,4 +128,10 @@ export type TimeTableSlot = {
   courseId: number
   classId: number
   departmentId: number
+  time: string
+  subject: string
+  faculty: string
+  tag: string
+  remarks: string
+  location: string
 }

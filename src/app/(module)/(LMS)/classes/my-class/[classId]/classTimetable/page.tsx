@@ -1,6 +1,6 @@
 "use client"
 
-import { useContext, useState, useRef, useEffect } from "react"
+import React, { useContext, useState, useRef, useEffect } from "react"
 import {
   Dialog,
   DialogContent,
@@ -25,7 +25,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
 import { Submit } from "@/components/(commnon)/ButtonV1"
 import toast from "react-hot-toast"
-import React from "react"
+import { TimeTableSlot } from "@/types/globals"
 
 const colors = {
   primary: "#87CEEB",
@@ -43,12 +43,12 @@ const colors = {
   lamaYellowLight: "#FEFCE8"
 }
 
-const fetchSubjects = async (courseId) => {
+const fetchSubjects = async (courseId: string) => {
   const response = await axios.get(`/api/subjects?courseId=${courseId}`)
   return response.data.subjects || []
 }
 
-const fetchSubjectfaculties = async (classId) => {
+const fetchSubjectfaculties = async (classId: string) => {
   const response = await axios.get(
     `/api/classes/timeTable?route=facultyDetails`,
     {
@@ -58,7 +58,7 @@ const fetchSubjectfaculties = async (classId) => {
   return response?.data || []
 }
 
-const fetchTimeTableSlots = async (classId) => {
+const fetchTimeTableSlots = async (classId: string) => {
   const response = await axios.get(
     `/api/classes/timeTable?route=timeTableSlots`,
     {
@@ -71,15 +71,15 @@ const fetchTimeTableSlots = async (classId) => {
 export default function ClassTimeTablePage() {
   const { classId } = useParams()
   const { user } = useContext(UserContext)
-  const [selectedSlot, setSelectedSlot] = useState(null)
+  const [selectedSlot, setSelectedSlot] = useState<TimeTableSlot | null>(null)
   const [selectedFaculty, setSelectedFaculty] = useState(null)
   const [selectedTime, setSelectedTime] = useState(null)
   const [currentSubject, setCurrentSubject] = useState("Non Academic")
   const [scale, setScale] = useState(1)
   const [scheduleData, setScheduleData] = useState({})
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const contentRef = useRef(null)
-  const containerRef = useRef(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const { data: subjects } = useQuery({
     queryKey: ["subjects", user?.courseId],
@@ -89,19 +89,19 @@ export default function ClassTimeTablePage() {
 
   const { data: faculties } = useQuery({
     queryKey: ["faculties", classId],
-    queryFn: () => fetchSubjectfaculties(classId),
+    queryFn: () => fetchSubjectfaculties(classId as string),
     enabled: !!classId
   })
 
   const { data: timeTableSlots } = useQuery({
     queryKey: ["timeTableSlots", classId],
-    queryFn: () => fetchTimeTableSlots(classId),
+    queryFn: () => fetchTimeTableSlots(classId as string),
     enabled: !!classId
   })
 
   useEffect(() => {
     if (timeTableSlots && timeTableSlots.length > 0) {
-      const scheduleData = timeTableSlots.reduce((acc, slot) => {
+      const scheduleData = timeTableSlots.reduce((acc: any, slot: any) => {
         let facultyName = null
         if (slot.facultyId) {
           const facultyData = faculties?.find(
@@ -148,19 +148,19 @@ export default function ClassTimeTablePage() {
     return () => window.removeEventListener("resize", setInitialScale)
   }, [])
 
-  const handleZoom = (delta) => {
+  const handleZoom = (delta: any) => {
     setScale((prev) => Math.min(Math.max(0.5, prev + delta), 2))
   }
 
-  const getTimeSlotSpan = (startTime, endTime) => {
+  const getTimeSlotSpan = (startTime: string, endTime: string) => {
     const startIndex = timeSlots.findIndex((slot) => slot === startTime)
     const endIndex = timeSlots.findIndex((slot) => slot === endTime)
     return endIndex - startIndex
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const formData = new FormData(e.target)
+    const formData = new FormData(e.target as HTMLFormElement)
     const endTime = formData.get("endTime")
 
     const subjectData = subjects.find((s: any) => s.name === currentSubject)
@@ -175,6 +175,11 @@ export default function ClassTimeTablePage() {
         (f: any) => f.user.name === selectedFaculty
       )
       facultyId = facultyData?.id
+    }
+
+    if (!selectedSlot) {
+      console.log("Selected slot is null. Cannot proceed.")
+      return
     }
 
     const data = {
@@ -203,12 +208,13 @@ export default function ClassTimeTablePage() {
     setIsDialogOpen(false)
   }
 
-  const shouldRenderSlot = (day, time) => {
-    const storedData =
-      JSON.parse(localStorage.getItem(`classId-${classId}`)) || {}
-    for (const key in storedData) {
+  const shouldRenderSlot = (day: string, time: string) => {
+    const storedData = localStorage.getItem(`classId-${classId}`)
+    const parsedData = storedData ? JSON.parse(storedData) : {}
+
+    for (const key in parsedData) {
       const [slotDay, startTime] = key.split("-")
-      const data = storedData[key]
+      const data = parsedData[key]
       if (slotDay === day && startTime === time) {
         return {
           render: true,
@@ -229,9 +235,9 @@ export default function ClassTimeTablePage() {
   }
 
   useEffect(() => {
-    const storedData =
-      JSON.parse(localStorage.getItem(`classId-${classId}`)) || {}
-    setScheduleData(storedData)
+    const storedData = localStorage.getItem(`classId-${classId}`)
+    const parsedData = storedData ? JSON.parse(storedData) : {}
+    setScheduleData(parsedData)
   }, [classId])
 
   const days = [
@@ -248,27 +254,33 @@ export default function ClassTimeTablePage() {
   )
   const tags = ["Lecture", "Lab", "Seminar"]
 
-  const handleSubjectSelectChange = (value) => {
+  const handleSubjectSelectChange = (value: any) => {
     setCurrentSubject(value)
     setSelectedFaculty(null)
   }
 
-  const handleFacultySelectChange = (value) => {
+  const handleFacultySelectChange = (value: any) => {
     setSelectedFaculty(value)
   }
 
-  const matchedFaculty = faculties?.filter((faculty) =>
-    faculty.subject.some((subject) => subject.name === currentSubject)
+  const matchedFaculty = faculties?.filter((faculty: any) =>
+    faculty.subject.some((subject: any) => subject.name === currentSubject)
   )
 
-  const handleSlotClick = (day, time) => {
-    const storedData =
-      JSON.parse(localStorage.getItem(`classId-${classId}`)) || {}
+  const handleSlotClick = (day: any, time: any) => {
+    const storedData = localStorage.getItem(`classId-${classId}`)
+    const parsedData = storedData ? JSON.parse(storedData) : {}
+
     const slotKey = `${day}-${time}`
-    const slotData = storedData[slotKey]
+    const slotData = parsedData[slotKey]
 
     if (!slotData) {
-      setSelectedSlot({ day, time })
+      // in this only day and time is update
+      setSelectedSlot((prev) => ({
+        ...prev!,
+        day,
+        time
+      }))
     } else {
       setSelectedSlot({ day, time, ...slotData })
       setCurrentSubject(slotData.subject)
@@ -309,6 +321,12 @@ export default function ClassTimeTablePage() {
       }
     } catch (error) {
       console.error("Error updating timetable:", error)
+    } finally {
+      setCurrentSubject("Non Academic")
+      setIsDialogOpen(false)
+      setSelectedSlot(null)
+      setSelectedFaculty(null)
+      setSelectedTime(null)
     }
   }
 
@@ -445,7 +463,7 @@ export default function ClassTimeTablePage() {
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent className="w-full max-h-[40vh] bg-lamaSkyLight">
-                    {subjects?.map((subject) => (
+                    {subjects?.map((subject: any) => (
                       <SelectItem
                         key={subject.id}
                         value={subject.name}
@@ -485,7 +503,7 @@ export default function ClassTimeTablePage() {
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent className="w-full max-h-[40vh] bg-lamaSkyLight">
-                    {matchedFaculty?.map((faculty) => (
+                    {matchedFaculty?.map((faculty: any) => (
                       <SelectItem
                         key={faculty.user.id}
                         value={faculty.user.name}
