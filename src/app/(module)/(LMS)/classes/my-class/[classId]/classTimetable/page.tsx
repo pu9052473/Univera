@@ -309,24 +309,24 @@ export default function ClassTimeTablePage() {
           },
           slotsData: Object.values(scheduleData),
           timeTableId: timeTableId || null, // Set to null for creating a new timetable
-          timeTableSlots: [] // Pass the existing slots if updating
+          timeTableSlots: timeTableSlots || [] // Pass the existing slots if updating
         })
       })
 
       if (response.ok) {
         toast.success("Timetable and slots created successfully!")
-        localStorage.removeItem(`classId-${classId}`)
+        // localStorage.removeItem(`classId-${classId}`)
+        setCurrentSubject("Non Academic")
+        setSelectedSlot(null)
+        setSelectedFaculty(null)
+        setSelectedTime(null)
       } else {
         toast.error("Failed to create timetable and slots. Please try again.")
       }
     } catch (error) {
       console.error("Error updating timetable:", error)
     } finally {
-      setCurrentSubject("Non Academic")
       setIsDialogOpen(false)
-      setSelectedSlot(null)
-      setSelectedFaculty(null)
-      setSelectedTime(null)
     }
   }
 
