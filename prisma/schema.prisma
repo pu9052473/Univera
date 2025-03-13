@@ -457,10 +457,13 @@ model Slot {
   id           Int        @id @default(autoincrement())
   timeTableId  Int
   day          String
-  fromTime     String
-  toTime       String
+  startTime     String
+  endTime       String
   subjectId    Int?
   title        String
+  tag          String
+  location     String
+  remarks      String?
   courseId     Int
   classId      Int
   departmentId Int
