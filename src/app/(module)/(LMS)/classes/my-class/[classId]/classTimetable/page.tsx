@@ -166,8 +166,8 @@ export default function ClassTimeTablePage() {
     const subjectData = subjects.find((s: any) => s.name === currentSubject)
     const subjectId = subjectData ? subjectData.id : null
 
-    console.log("faculty", selectedFaculty)
-    console.log("faculties", faculties)
+    // console.log("faculty", selectedFaculty)
+    // console.log("faculties", faculties)
 
     let facultyId = null
     if (selectedFaculty) {
@@ -291,12 +291,12 @@ export default function ClassTimeTablePage() {
   }
 
   const saveTimetableSlotsToDb = async () => {
-    console.log("timeTableData", {
-      courseId: user?.courseId,
-      classId,
-      departmentId: user?.departmentId
-    })
-    console.log("slotsData", Object.values(scheduleData))
+    // console.log("timeTableData", {
+    //   courseId: user?.courseId,
+    //   classId,
+    //   departmentId: user?.departmentId
+    // })
+    // console.log("slotsData", Object.values(scheduleData))
     try {
       const response = await fetch(`/api/classes/timeTable`, {
         method: "PATCH",
@@ -309,24 +309,24 @@ export default function ClassTimeTablePage() {
           },
           slotsData: Object.values(scheduleData),
           timeTableId: timeTableId || null, // Set to null for creating a new timetable
-          timeTableSlots: [] // Pass the existing slots if updating
+          timeTableSlots: timeTableSlots || [] // Pass the existing slots if updating
         })
       })
 
       if (response.ok) {
         toast.success("Timetable and slots created successfully!")
-        localStorage.removeItem(`classId-${classId}`)
+        // localStorage.removeItem(`classId-${classId}`)
+        setCurrentSubject("Non Academic")
+        setSelectedSlot(null)
+        setSelectedFaculty(null)
+        setSelectedTime(null)
       } else {
         toast.error("Failed to create timetable and slots. Please try again.")
       }
     } catch (error) {
       console.error("Error updating timetable:", error)
     } finally {
-      setCurrentSubject("Non Academic")
       setIsDialogOpen(false)
-      setSelectedSlot(null)
-      setSelectedFaculty(null)
-      setSelectedTime(null)
     }
   }
 

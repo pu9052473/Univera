@@ -14,7 +14,7 @@ export async function PATCH(req: Request) {
       !timeTableData.classId ||
       !timeTableData.departmentId
     ) {
-      console.log("first")
+      // console.log("first")
       return NextResponse.json(
         {
           error:
@@ -26,7 +26,7 @@ export async function PATCH(req: Request) {
 
     // Validate slots data
     if (!Array.isArray(slotsData) || slotsData.length === 0) {
-      console.log("second")
+      // console.log("second")
       return NextResponse.json(
         { error: "Invalid slots data. Provide an array of slot objects." },
         { status: 400 }
@@ -38,10 +38,10 @@ export async function PATCH(req: Request) {
       return day && startTime && endTime && subject
     })
 
-    console.log("validSlotsData", validSlotsData)
+    // console.log("validSlotsData", validSlotsData)
 
     if (validSlotsData.length === 0) {
-      console.log("third")
+      // console.log("third")
       return NextResponse.json(
         { error: "No valid slot data to process." },
         { status: 400 }
@@ -242,9 +242,9 @@ export async function GET(request: Request) {
 
       return NextResponse.json(faculties, { status: 200 })
     } catch (error) {
-      console.log("Error fetching faculties:", error)
+      // console.log("Error fetching faculties:", error)
       return NextResponse.json(
-        { message: "Error fetching faculties" },
+        { message: "Error fetching faculties", error: error },
         { status: 500 }
       )
     }
@@ -267,12 +267,15 @@ export async function GET(request: Request) {
 
       return NextResponse.json(slots, { status: 200 })
     } catch (error) {
-      console.log(
-        "Error fetching subject details @api/subjects/forum/tags:",
-        error
-      )
+      // console.log(
+      //   "Error fetching subject details @api/subjects/forum/tags:",
+      //   error
+      // )
       return NextResponse.json(
-        { error: "Internal server error @api/subjects/forum/tags" },
+        {
+          error: "Internal server error @api/subjects/forum/tags",
+          details: error
+        },
         { status: 500 }
       )
     }
