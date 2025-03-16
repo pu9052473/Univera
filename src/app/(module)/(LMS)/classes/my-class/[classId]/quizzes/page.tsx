@@ -1,9 +1,10 @@
-"use client"
+import React from "react"
+import CreateQuiz from "../_components/CreateQuiz"
 
-export default function ClassQuizzesPage() {
+export default async function Page() {
   return (
     <div>
-      <h1>Quizzes</h1>
+      <CreateQuiz />
     </div>
   )
 }
