@@ -45,11 +45,16 @@ export async function POST(req: Request) {
     // const pdfData = await parse(buffer);
     // const documentText = pdfData.text;
 
-    // Generate quiz using AI
     const quizDetails = { title, description, duration, tags }
+    // Generate quiz using AI
+    // const AIResponse = await DeepseekQuizGenerater(topic, quizDetails)
+    // return NextResponse.json({ AIResponse }, { status: 200 })
+
     const AIResponse = await generateQuizFromDocument(topic, quizDetails)
     // Calculate total marks and number of questions
+    console.log("AIResponse: ", AIResponse)
     const AIQuestions = await JSON.parse(AIResponse)
+    console.log("AIQuestions:", AIQuestions)
     const totalMarks = AIQuestions.reduce(
       (sum: number, q: any) => sum + q.marks,
       0
@@ -103,6 +108,33 @@ export async function POST(req: Request) {
     )
     return NextResponse.json(
       { message: "Failed to generate quiz" },
+      { status: 500 }
+    )
+  }
+}
+
+export async function GET() {
+  const user = await currentUser()
+
+  if (!user?.id)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  try {
+    const quizzes = await prisma.quiz.findMany({
+      where: { creatorId: user?.id },
+      include: { questions: true }
+    })
+
+    return NextResponse.json(
+      { message: "quiz found successfully", quizzes },
+      { status: 200 }
+    )
+  } catch (error) {
+    console.log(
+      "Error while fetching quiz @/api/classes/my-class/[classId]/quizzes",
+      error
+    )
+    return NextResponse.json(
+      { message: "Failed to fetch quiz" },
       { status: 500 }
     )
   }

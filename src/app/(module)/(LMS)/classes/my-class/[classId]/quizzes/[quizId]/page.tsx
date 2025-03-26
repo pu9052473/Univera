@@ -14,13 +14,51 @@ async function getQuizDetails(quizId: number, classId: number) {
 
 export default function Page() {
   const { quizId, classId } = useParams()
-  const { data: quizDetails } = useQuery({
+  const { data: quizDetails, refetch } = useQuery({
     queryKey: ["quizDetails", quizId],
     queryFn: () => getQuizDetails(Number(quizId), Number(classId)),
     enabled: !!String(quizId)
   })
-
+  const UpdateStatus = async (quizId: number, newStatus: string) => {
+    try {
+      // console.log(newStatus)
+      const res = await axios.patch(
+        `/api/classes/my-class/${classId}/quizzes/${quizId}`,
+        { newStatus },
+        {
+          params: { UpdateStatus: true }
+        }
+      )
+      console.log(res)
+      refetch()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  const UpdateVisibility = async (quizId: number, newVisibility: string) => {
+    try {
+      const res = await axios.patch(
+        `/api/classes/my-class/${classId}/quizzes/${quizId}`,
+        { newVisibility },
+        {
+          params: { UpdateVisibility: true }
+        }
+      )
+      console.log(res)
+      refetch()
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
-    <div>{quizDetails && <QuizReview quizData={quizDetails?.questions} />}</div>
+    <div>
+      {quizDetails && (
+        <QuizReview
+          onUpdateStatus={UpdateStatus}
+          onUpdateVisibility={UpdateVisibility}
+          quiz={quizDetails}
+        />
+      )}
+    </div>
   )
 }

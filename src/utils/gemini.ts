@@ -1,8 +1,39 @@
-import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai"
+import {
+  ArraySchema,
+  GoogleGenerativeAI,
+  SchemaType
+} from "@google/generative-ai"
+import OpenAI from "openai"
+
+const openai = new OpenAI({
+  baseURL: "https://api.deepseek.com",
+  apiKey: "sk-d785ed671be34aef920a746667c10b65"
+})
+
+export async function DeepseekQuizGenerater(
+  documentText: string,
+  quizDetails: any
+) {
+  const prompt = `
+      Generate a multichoice quiz on the following topic:
+      Document: ${documentText}
+      Quiz Details: ${JSON.stringify(quizDetails)}
+      Return a JSON response with:
+      - title: string
+      - description: string
+      - questions: Array<{ title: string, description?: string, options: string[], correctAnswer: number, marks: number }>
+    `
+  const completion = await openai.chat.completions.create({
+    messages: [{ role: "system", content: prompt }],
+    model: "deepseek-chat"
+  })
+  console.log(completion.choices[0].message.content)
+  return completion.choices[0].message.content
+}
 
 const genAI = new GoogleGenerativeAI("AIzaSyCq83BDk07EJwz8ekUN40wz5V8_FnIg4xA")
 
-const quizSchema = {
+const quizSchema: ArraySchema = {
   description: "List of quiz questions with options and correct answers",
   type: SchemaType.ARRAY,
   items: {
@@ -44,7 +75,7 @@ const quizSchema = {
 }
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-pro",
+  model: "gemini-2.0-flash",
   generationConfig: {
     responseMimeType: "application/json",
     responseSchema: quizSchema
@@ -75,6 +106,7 @@ export async function generateQuizFromDocument(
   //     },
   //     body: JSON.stringify({ prompt }),
   // });
+
   const aiResponse = await model.generateContent(prompt)
 
   const result = await aiResponse.response.text()
