@@ -2,10 +2,14 @@
 import React from "react"
 import { useContext, useState } from "react"
 import { useParams } from "next/navigation"
-import { Subject } from "@prisma/client"
 import { UserContext } from "@/context/user"
 import axios from "axios"
 import { useQuery } from "@tanstack/react-query"
+
+interface Subject {
+  id: string
+  name: string
+}
 
 const getSubjects = async (userId: string) => {
   const res = await axios.get("/api/subjects", {
@@ -25,6 +29,9 @@ export default function CreateQuiz({
   const { user } = useContext(UserContext)
   const { classId } = useParams<{ classId: string }>()
 
+  // Format today's date as YYYY-MM-DD for default value and min attribute
+  const today = new Date().toISOString().split("T")[0]
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -32,8 +39,9 @@ export default function CreateQuiz({
     tags: "",
     classId: classId || "",
     subjectId: "",
-    topic: ""
+    date: today // Add date field with today as default
   })
+
   const { data: subjects, isLoading: subjectsLoading } = useQuery({
     queryKey: ["subjects"],
     queryFn: () => getSubjects(user?.id as string),
@@ -49,12 +57,30 @@ export default function CreateQuiz({
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+
+    // Special handling for date field to prevent dates before today
+    if (name === "date" && value < today) {
+      // If selected date is before today, keep using today's date
+      setFormData({ ...formData, [name]: today })
+      return
+    }
+
+    setFormData({ ...formData, [name]: value })
   }
 
   // Handles file input
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) setFile(e.target.files[0])
+  }
+
+  const encodeFileAsBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = (error) => reject(error)
+    })
   }
 
   // Handles form submission
@@ -65,12 +91,27 @@ export default function CreateQuiz({
       return
     }
 
+    // Additional validation to ensure selected date is not before today
+    if (new Date(formData.date) < new Date(today)) {
+      alert("Quiz date cannot be set to a date in the past")
+      return
+    }
+
+    const EncodeFileASBase64 = await encodeFileAsBase64(file)
+    const submitedFile = {
+      name: file.name,
+      type: file.type,
+      data: EncodeFileASBase64
+    }
+
     setLoading(true)
     try {
       const payload = {
         ...formData,
+        file: submitedFile,
         universityId: `${user?.universityId}`,
         departmentId: `${user?.departmentId}`,
+        date: new Date(formData.date).toISOString(), // Format date as ISO string for backend
         tags: formData.tags.split(",").map((tag) => tag.trim()) // Convert tags into an array
       }
       const res = await axios.post(
@@ -90,7 +131,7 @@ export default function CreateQuiz({
           tags: "",
           classId: classId || "",
           subjectId: "",
-          topic: ""
+          date: today
         })
       } else {
         alert(result.error)
@@ -175,18 +216,23 @@ export default function CreateQuiz({
                   />
                 </div>
 
+                {/* Date Field with min attribute to prevent past dates */}
                 <div>
                   <label className="block text-sm font-medium text-[#0A2353] mb-1">
-                    Topic
+                    Quiz Date
                   </label>
-                  <textarea
-                    name="topic"
-                    value={formData.topic}
+                  <input
+                    type="date"
+                    name="date"
+                    value={formData.date}
                     onChange={handleChange}
+                    min={today} // This prevents selecting dates before today in the date picker
                     className="w-full border border-[#C3EBFA] rounded-lg p-3 focus:ring-2 focus:ring-[#5B58EB] focus:border-transparent"
-                    rows={2}
-                    placeholder="Enter the main topic for this quiz"
+                    required
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    You can only select today or future dates
+                  </p>
                 </div>
               </div>
             </div>
@@ -396,6 +442,23 @@ export default function CreateQuiz({
                         />
                       </svg>
                       Verify the subject selection is correct
+                    </li>
+                    <li className="flex items-start">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 text-[#BB63FF] mr-2 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      Confirm the quiz date is set to today or a future date
                     </li>
                   </ul>
                 </div>

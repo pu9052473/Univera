@@ -33,7 +33,7 @@ export async function DeepseekQuizGenerater(
 
 const genAI = new GoogleGenerativeAI("AIzaSyCq83BDk07EJwz8ekUN40wz5V8_FnIg4xA")
 
-const quizSchema: ArraySchema = {
+export const quizSchema: ArraySchema = {
   description: "List of quiz questions with options and correct answers",
   type: SchemaType.ARRAY,
   items: {

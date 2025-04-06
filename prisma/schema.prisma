@@ -525,6 +525,7 @@ model Quiz {
   totalMarks        Int
   visibility        String   @default("private") // "public" or "private"
   status            String   @default("draft") // "draft", "published", "completed"
+  date              String?
 
   classId      Int
   subjectId    Int

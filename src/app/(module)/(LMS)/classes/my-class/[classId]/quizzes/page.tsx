@@ -7,6 +7,7 @@ import axios from "axios"
 import { useParams } from "next/navigation"
 import { UserContext } from "@/context/user"
 import { useQuery } from "@tanstack/react-query"
+import { useRouter } from "next/navigation"
 
 async function fetchQuizzes(classId: string) {
   const response = await axios.get(`/api/classes/my-class/${classId}/quizzes`)
@@ -27,7 +28,7 @@ export default function Page() {
     queryFn: () => fetchQuizzes(String(classId)),
     enabled: !!user
   })
-
+  const router = useRouter()
   // console.log("quizzes: ", quizzes)
 
   const openDialog = () => {
@@ -132,11 +133,15 @@ export default function Page() {
                         {quiz.totalMarks}
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                        <button className="text-[#5B58EB] hover:text-[#BB63FF] mr-3">
+                        <button
+                          onClick={() =>
+                            router.push(
+                              `/classes/my-class/${classId}/quizzes/${quiz.id}`
+                            )
+                          }
+                          className="flex-1 py-2 bg-[#EDF9FD] text-[#5B58EB] rounded-md text-sm font-medium"
+                        >
                           View
-                        </button>
-                        <button className="text-[#56E1E9] hover:text-[#87CEEB] mr-3">
-                          Edit
                         </button>
                       </td>
                     </tr>
@@ -188,11 +193,15 @@ export default function Page() {
                     </div>
                   </div>
                   <div className="mt-4 flex space-x-2">
-                    <button className="flex-1 py-2 bg-[#EDF9FD] text-[#5B58EB] rounded-md text-sm font-medium">
+                    <button
+                      onClick={() =>
+                        router.push(
+                          `/classes/my-class/${classId}/quizzes/${quiz.id}`
+                        )
+                      }
+                      className="flex-1 py-2 bg-[#EDF9FD] text-[#5B58EB] rounded-md text-sm font-medium"
+                    >
                       View
-                    </button>
-                    <button className="flex-1 py-2 bg-[#F1F0FF] text-[#BB63FF] rounded-md text-sm font-medium">
-                      Edit
                     </button>
                   </div>
                 </div>

@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useContext, useState } from "react"
 import { UserContext } from "@/context/user"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -10,8 +10,14 @@ import {
   FileText,
   Tag,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Pencil,
+  Save
 } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import toast from "react-hot-toast"
+import axios from "axios"
 
 interface QuizQuestion {
   id: number
@@ -57,6 +63,16 @@ const QuizReview: React.FC<QuizReviewProps> = ({
   const userRoles = user?.roles.map((role: any) => role.id)
   const isStudent = userRoles?.includes(7)
 
+  // State to track which question is being edited
+  const [editingQuestionId, setEditingQuestionId] = useState<number | null>(
+    null
+  )
+  // State to store edited question data
+  const [editedQuestion, setEditedQuestion] = useState<QuizQuestion | null>(
+    null
+  )
+  const [questions, setQuestions] = useState(quiz.questions)
+
   if (!user || isStudent) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -83,6 +99,76 @@ const QuizReview: React.FC<QuizReviewProps> = ({
   const handleVisibilityChange = () => {
     const newVisibility = isPrivate ? "public" : "private"
     onUpdateVisibility(quiz.id, newVisibility)
+  }
+
+  // Function to enable edit mode for a question
+  const handleEditQuestion = (question: QuizQuestion) => {
+    setEditingQuestionId(question.id)
+    setEditedQuestion({ ...question })
+  }
+
+  // Function to handle input changes for question fields
+  const handleQuestionChange = (field: string, value: string) => {
+    if (!editedQuestion) return
+    setEditedQuestion({
+      ...editedQuestion,
+      [field]: value
+    })
+  }
+
+  // Function to handle changes to options
+  const handleOptionChange = (index: number, value: string) => {
+    if (!editedQuestion) return
+    const newOptions = [...editedQuestion.options]
+    newOptions[index] = value
+    setEditedQuestion({
+      ...editedQuestion,
+      options: newOptions
+    })
+  }
+
+  // Function to handle correct answer selection
+  const handleCorrectAnswerChange = (index: number) => {
+    if (!editedQuestion) return
+    setEditedQuestion({
+      ...editedQuestion,
+      correctAnswer: index
+    })
+  }
+
+  // Function to save edited question
+  const handleSaveQuestion = async () => {
+    if (!editedQuestion) return
+    console.log("editedQuestion: ", editedQuestion)
+    try {
+      const res = await axios.patch(
+        `/api/classes/my-class/${quiz.classId}/quizzes/questions/${editedQuestion.id}`,
+        editedQuestion
+      )
+
+      if (!res.status) {
+        throw new Error("Failed to update question")
+      }
+
+      // Update the local state
+      const updatedQuestions = quiz.questions.map((q) =>
+        q.id === editedQuestion.id ? editedQuestion : q
+      )
+      setQuestions(updatedQuestions)
+      // Reset edit mode
+      setEditingQuestionId(null)
+      setEditedQuestion(null)
+      toast.success("Question updated successfully")
+    } catch (error) {
+      console.error("Error updating question:", error)
+      toast.error("Error updating question")
+    }
+  }
+
+  // Function to cancel editing
+  const handleCancelEdit = () => {
+    setEditingQuestionId(null)
+    setEditedQuestion(null)
   }
 
   return (
@@ -192,53 +278,157 @@ const QuizReview: React.FC<QuizReviewProps> = ({
       {/* Quiz Questions */}
       <h2 className="text-xl font-bold mb-4 text-TextTwo">Quiz Questions</h2>
       <div className="space-y-4">
-        {quiz.questions.map((question, index) => (
+        {questions.map((question, index) => (
           <Card
             key={index}
             className="bg-white border border-gray-200 shadow-sm rounded-2xl p-4 md:p-5"
           >
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold mb-2 text-TextTwo">
-                Q{index + 1}. {question.title}
-              </h2>
-              <Badge className="bg-ColorOne text-TextTwo">
-                {question.marks} marks
-              </Badge>
-            </div>
+            {editingQuestionId === question.id ? (
+              // Edit mode
+              <>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex-grow">
+                    <Input
+                      value={editedQuestion?.title || ""}
+                      onChange={(e) =>
+                        handleQuestionChange("title", e.target.value)
+                      }
+                      className="font-semibold text-TextTwo mb-2"
+                      placeholder="Question title"
+                    />
 
-            {question.description && (
-              <p className="text-sm text-gray-600 mb-3 bg-lamaSkyLight p-2 rounded-lg">
-                {question.description}
-              </p>
-            )}
+                    <div className="flex items-center">
+                      <span className="text-sm mr-2">Marks:</span>
+                      <Input
+                        type="number"
+                        value={editedQuestion?.marks || 0}
+                        onChange={(e) =>
+                          handleQuestionChange("marks", e.target.value)
+                        }
+                        className="w-20 text-sm"
+                        min={1}
+                      />
+                    </div>
+                  </div>
+                </div>
 
-            <ul className="space-y-2 mt-3">
-              {question.options.map((option, optIndex) => (
-                <li
-                  key={optIndex}
-                  className={`px-4 py-2 rounded-lg border transition-colors ${
-                    optIndex === question.correctAnswer
-                      ? "border-green-500 bg-green-50"
-                      : "border-gray-200 hover:bg-gray-50"
-                  }`}
-                >
-                  <span
-                    className={`font-medium ${optIndex === question.correctAnswer ? "text-green-600" : ""}`}
+                <Textarea
+                  value={editedQuestion?.description || ""}
+                  onChange={(e) =>
+                    handleQuestionChange("description", e.target.value)
+                  }
+                  className="mb-3 text-sm"
+                  placeholder="Question description (optional)"
+                />
+
+                <div className="space-y-2 mt-3">
+                  {editedQuestion?.options.map((option, optIndex) => (
+                    <div key={optIndex} className="flex items-center">
+                      <div className="flex-grow">
+                        <Input
+                          value={option}
+                          onChange={(e) =>
+                            handleOptionChange(optIndex, e.target.value)
+                          }
+                          className={`border ${
+                            optIndex === editedQuestion.correctAnswer
+                              ? "border-green-500 bg-green-50"
+                              : "border-gray-200"
+                          }`}
+                          placeholder={`Option ${String.fromCharCode(65 + optIndex)}`}
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant={
+                          optIndex === editedQuestion.correctAnswer
+                            ? "default"
+                            : "outline"
+                        }
+                        onClick={() => handleCorrectAnswerChange(optIndex)}
+                        className="ml-2"
+                        size="sm"
+                      >
+                        {optIndex === editedQuestion.correctAnswer
+                          ? "Correct ✓"
+                          : "Set Correct"}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-2 mt-4 max-sm:flex-col">
+                  <Button
+                    onClick={handleSaveQuestion}
+                    className="bg-green-500 hover:bg-green-600 text-white"
                   >
-                    {String.fromCharCode(65 + optIndex)}.
-                  </span>{" "}
-                  {option}
-                </li>
-              ))}
-            </ul>
+                    <Save size={16} className="mr-2" />
+                    Save Changes
+                  </Button>
+                  <Button onClick={handleCancelEdit} variant="outline">
+                    Cancel
+                  </Button>
+                </div>
+              </>
+            ) : (
+              // View mode
+              <>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold mb-2 text-TextTwo">
+                    Q{index + 1}. {question.title}
+                  </h2>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-ColorOne text-TextTwo">
+                      {question.marks} marks
+                    </Badge>
+                    {quiz.status == "draft" && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditQuestion(question)}
+                        className="p-1 hover:bg-gray-100 rounded-full"
+                      >
+                        <Pencil size={16} className="text-gray-600" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
 
-            <div className="mt-3 text-sm text-gray-500 flex items-center">
-              <CheckCircle size={16} className="mr-1 text-green-500" />
-              <span>
-                <strong>Correct Answer:</strong> Option{" "}
-                {String.fromCharCode(65 + question.correctAnswer)}
-              </span>
-            </div>
+                {question.description && (
+                  <p className="text-sm text-gray-600 mb-3 bg-lamaSkyLight p-2 rounded-lg">
+                    {question.description}
+                  </p>
+                )}
+
+                <ul className="space-y-2 mt-3">
+                  {question.options.map((option, optIndex) => (
+                    <li
+                      key={optIndex}
+                      className={`px-4 py-2 rounded-lg border transition-colors ${
+                        optIndex === question.correctAnswer
+                          ? "border-green-500 bg-green-50"
+                          : "border-gray-200 hover:bg-gray-50"
+                      }`}
+                    >
+                      <span
+                        className={`font-medium ${optIndex === question.correctAnswer ? "text-green-600" : ""}`}
+                      >
+                        {String.fromCharCode(65 + optIndex)}.
+                      </span>{" "}
+                      {option}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-3 text-sm text-gray-500 flex items-center">
+                  <CheckCircle size={16} className="mr-1 text-green-500" />
+                  <span>
+                    <strong>Correct Answer:</strong> Option{" "}
+                    {String.fromCharCode(65 + question.correctAnswer)}
+                  </span>
+                </div>
+              </>
+            )}
           </Card>
         ))}
       </div>
