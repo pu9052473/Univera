@@ -22,7 +22,7 @@ const getBackgroundColor = (tag: string) => {
     case "Seminar":
       return "#FFF8E1" // Soft yellow
     case "Break":
-      return "#E0F7FA" // Soft cyan
+      return "#CBF5CB" // Soft Blue Romance
     default:
       return "#ffffff" // White
   }
@@ -37,7 +37,7 @@ const getBorderColor = (tag: string) => {
     case "Seminar":
       return "#FFE082" // Darker yellow border
     case "Break":
-      return "#80DEEA" // Darker cyan border
+      return "#7BE37B" // Darker paster green
     default:
       return "#e5e7eb" // Default gray border
   }
@@ -52,7 +52,7 @@ const getTagClass = (tag: string) => {
     case "Seminar":
       return "bg-amber-100 text-amber-800"
     case "Break":
-      return "bg-cyan-100 text-cyan-800"
+      return "bg-green-100 text-green-900"
     default:
       return "bg-gray-100 text-gray-800"
   }
@@ -62,13 +62,13 @@ const getTagClass = (tag: string) => {
 const getIconForTag = (tag: string) => {
   switch (tag) {
     case "Lecture":
-      return <BookOpen size={40} className="text-blue-200" />
+      return <BookOpen size={40} className="text-blue-300" />
     case "Lab":
-      return <FlaskConical size={40} className="text-purple-200" />
+      return <FlaskConical size={40} className="text-purple-300" />
     case "Seminar":
-      return <Users size={40} className="text-amber-200" />
+      return <Users size={40} className="text-amber-300" />
     case "Break":
-      return <Coffee size={40} className="text-cyan-200" />
+      return <Coffee size={40} className="text-green-300" />
     default:
       return null
   }
@@ -84,8 +84,8 @@ const days = [
 ]
 
 const timeSlots = Array.from(
-  { length: 12 },
-  (_, i) => `${8 + i}:00 ${i + 8 < 12 ? "AM" : "PM"}`
+  { length: 15 },
+  (_, i) => `${6 + i}:00 ${i + 6 < 12 ? "AM" : "PM"}`
 )
 
 const tags = ["Lecture", "Lab", "Seminar", "Break"]
@@ -136,6 +136,11 @@ export default function ClassTimeTable() {
   const containerRef = useRef<HTMLDivElement>(null)
   const userRoles = user?.roles?.map((role: any) => role.id) || []
   const isCoordinator = userRoles.includes(5)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [slotToDelete, setSlotToDelete] = useState<{
+    day: string
+    time: string
+  } | null>(null)
 
   const { data: subjects } = useQuery({
     queryKey: ["subjects", user?.courseId],
@@ -482,6 +487,10 @@ export default function ClassTimeTable() {
         getBorderColor={getBorderColor}
         getTagClass={getTagClass}
         getIconForTag={getIconForTag}
+        isDeleteDialogOpen={isDeleteDialogOpen}
+        setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+        slotToDelete={slotToDelete}
+        setSlotToDelete={setSlotToDelete}
       />
 
       <SlotDialog
