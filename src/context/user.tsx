@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query"
 import { RotateCcw } from "lucide-react"
 import { ButtonV1 } from "@/components/(commnon)/ButtonV1"
 import { Prisma } from "@prisma/client"
+import UniveraLoader from "@/components/(commnon)/UniveraLoader"
 
 type UserWithRelations = Prisma.UserGetPayload<{
   include: {
@@ -93,7 +94,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     [state, dispatch]
   )
   if (!isClient) return null // Avoid rendering on the server
-  if (isLoading || !data) return <div>Loading...</div>
+  if (isLoading || !data) return <UniveraLoader />
 
   if (fetchError)
     return (

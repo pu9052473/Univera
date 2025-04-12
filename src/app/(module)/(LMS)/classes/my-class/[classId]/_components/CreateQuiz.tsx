@@ -1,10 +1,11 @@
 "use client"
 import React from "react"
 import { useContext, useState } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { UserContext } from "@/context/user"
 import axios from "axios"
 import { useQuery } from "@tanstack/react-query"
+import toast from "react-hot-toast"
 
 interface Subject {
   id: string
@@ -28,7 +29,7 @@ export default function CreateQuiz({
 }) {
   const { user } = useContext(UserContext)
   const { classId } = useParams<{ classId: string }>()
-
+  const router = useRouter()
   // Format today's date as YYYY-MM-DD for default value and min attribute
   const today = new Date().toISOString().split("T")[0]
 
@@ -39,7 +40,10 @@ export default function CreateQuiz({
     tags: "",
     classId: classId || "",
     subjectId: "",
-    date: today // Add date field with today as default
+    date: today, // Add date field with today as default
+    enableTimeCustomization: false,
+    fromTime: "08:00",
+    toTime: ""
   })
 
   const { data: subjects, isLoading: subjectsLoading } = useQuery({
@@ -57,12 +61,20 @@ export default function CreateQuiz({
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    const { name, value } = e.target
+    const { name, value, type } = e.target
+    const checked =
+      type === "checkbox" ? (e.target as HTMLInputElement).checked : undefined
 
     // Special handling for date field to prevent dates before today
     if (name === "date" && value < today) {
       // If selected date is before today, keep using today's date
       setFormData({ ...formData, [name]: today })
+      return
+    }
+
+    // For checkbox inputs, use the checked property
+    if (type === "checkbox") {
+      setFormData({ ...formData, [name]: checked })
       return
     }
 
@@ -97,6 +109,12 @@ export default function CreateQuiz({
       return
     }
 
+    // Validation for time customization
+    if (formData.enableTimeCustomization && !formData.fromTime) {
+      alert("From Time is required when time customization is enabled")
+      return
+    }
+
     const EncodeFileASBase64 = await encodeFileAsBase64(file)
     const submitedFile = {
       name: file.name,
@@ -106,22 +124,28 @@ export default function CreateQuiz({
 
     setLoading(true)
     try {
+      // Create payload with time customization if enabled
       const payload = {
         ...formData,
         file: submitedFile,
         universityId: `${user?.universityId}`,
         departmentId: `${user?.departmentId}`,
         date: new Date(formData.date).toISOString(), // Format date as ISO string for backend
-        tags: formData.tags.split(",").map((tag) => tag.trim()) // Convert tags into an array
+        tags: formData.tags.split(",").map((tag) => tag.trim()), // Convert tags into an array
+        // Include time customization data only if enabled
+        ...(formData.enableTimeCustomization && {
+          fromTime: formData.fromTime,
+          toTime: formData.toTime || null // Send null if toTime is empty
+        })
       }
+
       const res = await axios.post(
         `/api/classes/my-class/${classId}/quizzes`,
         payload
       )
       const result = res.data
-      console.log("result: ", result)
       if (res.status == 201) {
-        // router.push(`/classes/my-class/${classId}/quizzes/${result.quiz.id}`)
+        router.push(`/classes/my-class/${classId}/quizzes/${result.quiz.id}`)
         closeDialog()
         refetchQuizzes()
         setFormData({
@@ -131,14 +155,20 @@ export default function CreateQuiz({
           tags: "",
           classId: classId || "",
           subjectId: "",
-          date: today
+          date: today,
+          enableTimeCustomization: false,
+          fromTime: "08:00",
+          toTime: ""
         })
       } else {
-        alert(result.error)
+        toast.error(result.message)
       }
     } catch (error) {
-      console.log(error)
-      alert("An error occurred while generating the quiz.")
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message || "Something went wrong")
+      } else {
+        toast.error("An unexpected error occurred")
+      }
     } finally {
       setLoading(false)
     }
@@ -234,6 +264,68 @@ export default function CreateQuiz({
                     You can only select today or future dates
                   </p>
                 </div>
+
+                {/* Time Customization Checkbox */}
+                <div className="pt-2">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="enableTimeCustomization"
+                      name="enableTimeCustomization"
+                      checked={formData.enableTimeCustomization}
+                      onChange={handleChange}
+                      className="h-4 w-4 text-[#5B58EB] focus:ring-[#5B58EB] border-[#C3EBFA] rounded"
+                    />
+                    <label
+                      htmlFor="enableTimeCustomization"
+                      className="ml-2 block text-sm font-medium text-[#0A2353]"
+                    >
+                      Enable time customization
+                    </label>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1 ml-6">
+                    Set specific times when students can access the quiz
+                  </p>
+                </div>
+
+                {/* Time Fields (shown only when checkbox is checked) */}
+                {formData.enableTimeCustomization && (
+                  <div className="space-y-4 pt-2 pl-2 border-l-2 border-[#C3EBFA]">
+                    <div>
+                      <label className="block text-sm font-medium text-[#0A2353] mb-1">
+                        From Time <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="time"
+                        name="fromTime"
+                        value={formData.fromTime}
+                        onChange={handleChange}
+                        className="w-full border border-[#C3EBFA] rounded-lg p-3 focus:ring-2 focus:ring-[#5B58EB] focus:border-transparent"
+                        required={formData.enableTimeCustomization}
+                      />
+                      <p className="text-xs text-red-500 mt-1">
+                        Quiz will be accessible from this time
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-[#0A2353] mb-1">
+                        To Time{" "}
+                        <span className="text-gray-400">(Optional)</span>
+                      </label>
+                      <input
+                        type="time"
+                        name="toTime"
+                        value={formData.toTime}
+                        onChange={handleChange}
+                        className="w-full border border-[#C3EBFA] rounded-lg p-3 focus:ring-2 focus:ring-[#5B58EB] focus:border-transparent"
+                      />
+                      <p className="text-xs text-red-500 mt-1">
+                        If set, quiz will be accessible until this time
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -460,6 +552,25 @@ export default function CreateQuiz({
                       </svg>
                       Confirm the quiz date is set to today or a future date
                     </li>
+                    {formData.enableTimeCustomization && (
+                      <li className="flex items-start">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5 text-[#BB63FF] mr-2 flex-shrink-0"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                        Ensure From Time is set for time customization
+                      </li>
+                    )}
                   </ul>
                 </div>
 
