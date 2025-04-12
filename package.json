@@ -52,6 +52,7 @@
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.4",
     "localtunnel": "^2.0.2",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.456.0",
     "next": "^15.0.4",
     "openai": "^4.87.3",
@@ -80,6 +81,7 @@
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",
     "@commitlint/config-conventional": "^18.4.3",
+    "@types/lodash": "^4.17.14",
     "@types/node": "^20",
     "@types/pdf-parse": "^1.1.4",
     "@types/react": "^18",

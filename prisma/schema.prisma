@@ -121,8 +121,8 @@ model Faculty {
   university     University   @relation(fields: [universityId], references: [id])
   forumModerator Forum[]
   students       Student[]
-  timeTable      TimeTable[]  @relation("FacultyToAttendance")
-  proxyTimeTable TimeTable[]  @relation("ProxyToAttendance")
+  slots          Slot[]       @relation("FacultyToLecture")
+  proxySlots     Slot[]       @relation("ProxyToSlot")
   subject        Subject[]    @relation("faculty_to_Subject")
 }
 
@@ -262,7 +262,7 @@ model Subject {
   department   Department   @relation(fields: [departmentId], references: [id])
   result       Result?      @relation(fields: [resultId], references: [id])
   university   University   @relation(fields: [universityId], references: [id])
-  timeTable    TimeTable[]
+  slots        Slot[]
   classes      Class[]      @relation("class_to_Subject")
   faculties    Faculty[]    @relation("faculty_to_Subject")
 }
@@ -291,7 +291,7 @@ model Attendance {
   subject      Subject    @relation(fields: [subjectId], references: [id])
   university   University @relation(fields: [universityId], references: [id])
 
-  @@unique([studentId, classId, date]) //for update attendance this should be unique
+  @@unique([studentId, classId, date]) // Composite unique constraint
 }
 
 model AssignmentSubmission {
@@ -443,23 +443,40 @@ model Announcement {
 
 model TimeTable {
   id           Int        @id @default(autoincrement())
-  day          String
-  fromTime     String
-  toTime       String
-  subjectId    Int
   courseId     Int
-  classId      Int
+  classId      Int        @unique
   departmentId Int
-  facultyId    String
-  lecturerId   String?
+  slots        Slot[]
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @default(now())
   class        Class      @relation(fields: [classId], references: [id])
   course       Course     @relation(fields: [courseId], references: [id])
   department   Department @relation(fields: [departmentId], references: [id])
-  facuty       Faculty    @relation("FacultyToAttendance", fields: [facultyId], references: [clerkId])
-  lecturer     Faculty?   @relation("ProxyToAttendance", fields: [lecturerId], references: [clerkId])
-  subject      Subject    @relation(fields: [subjectId], references: [id])
+}
+
+model Slot {
+  id           Int        @id @default(autoincrement())
+  timeTableId  Int
+  day          String
+  startTime     String
+  endTime       String
+  subjectId    Int?
+  title        String
+  tag          String
+  location     String
+  remarks      String?
+  courseId     Int
+  classId      Int
+  departmentId Int
+  facultyId    String?
+  lecturerId   String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @default(now()) 
+
+  facuty       Faculty?    @relation("FacultyToLecture", fields: [facultyId], references: [clerkId])
+  lecturer     Faculty?   @relation("ProxyToSlot", fields: [lecturerId], references: [clerkId])
+  subject      Subject?    @relation(fields: [subjectId], references: [id])
+  timetable    TimeTable  @relation(fields: [timeTableId], references: [id])
 }
 
 model Event {
