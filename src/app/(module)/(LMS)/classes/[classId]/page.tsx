@@ -14,7 +14,7 @@ import ClassFaculties from "../../_components/ClassFaculties"
 import ClassStudents from "../../_components/ClassStudents"
 import SubjectCard from "../../_components/SubjectCard"
 import { Subject } from "@prisma/client"
-import ClassTimeTable from "../my-class/[classId]/time-table/_components/ClassTimeTable"
+import ClassTimeTable from "../my-class/[classId]/_components/ClassTimeTable"
 
 async function fetchClassById(classId: number) {
   const { data } = await axios.get(`/api/classes/${classId}`)
