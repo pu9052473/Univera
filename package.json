@@ -49,6 +49,7 @@
     "http": "^0.0.1-security",
     "i": "^0.3.7",
     "i18next": "^24.0.5",
+    "js-cookie": "^3.0.5",
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.4",
     "localtunnel": "^2.0.2",
@@ -81,6 +82,7 @@
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",
     "@commitlint/config-conventional": "^18.4.3",
+    "@types/js-cookie": "^3.0.6",
     "@types/lodash": "^4.17.14",
     "@types/node": "^20",
     "@types/pdf-parse": "^1.1.4",

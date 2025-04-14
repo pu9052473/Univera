@@ -6,6 +6,9 @@ import { UserContext } from "@/context/user"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import axios from "axios"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft } from "lucide-react"
+import { FacultyQuizzesSkeleton } from "@/components/(commnon)/Skeleton"
 
 async function fetchQuizzes(classId: string) {
   const response = await axios.get(`/api/classes/my-class/${classId}/quizzes`)
@@ -28,6 +31,10 @@ export default function Faculty() {
   })
   const router = useRouter()
 
+  const handleBack = () => {
+    router.push(`/classes/my-class/${classId}`)
+  }
+
   const openDialog = () => {
     setIsDialogOpen(true)
     // Prevent scrolling on the background when dialog is open
@@ -42,6 +49,16 @@ export default function Faculty() {
 
   return (
     <div className="p-3">
+      <div className="mb-4">
+        <Button
+          onClick={handleBack}
+          variant="ghost"
+          className="flex items-center text-TextTwo hover:bg-lamaSkyLight"
+        >
+          <ArrowLeft size={18} className="mr-2" />
+          Back
+        </Button>
+      </div>
       <div className="flex justify-between items-start md:items-center mb-3">
         <h1 className="text-2xl font-bold text-[#112C71] mb-4 md:mb-0">
           Quizzes
@@ -50,9 +67,7 @@ export default function Faculty() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#5B58EB]"></div>
-        </div>
+        <FacultyQuizzesSkeleton />
       ) : (
         <>
           {/* Desktop Table View - only visible on md screens and above */}

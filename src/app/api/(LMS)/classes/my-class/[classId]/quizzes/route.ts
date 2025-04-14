@@ -204,7 +204,8 @@ export async function GET(req: Request, context: any) {
   try {
     const quizzes = await prisma.quiz.findMany({
       where: { classId: Number(classId) },
-      include: { questions: true }
+      include: { questions: true },
+      orderBy: { date: "desc" }
     })
 
     return NextResponse.json(

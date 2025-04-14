@@ -9,6 +9,7 @@ export async function PATCH(req: Request, context: any) {
       return NextResponse.json({ message: "Unauthenticated" }, { status: 401 })
     const { questionId } = await context.params
     const body = await req.json()
+    body.marks = Number(body.marks)
     console.log("editedQuestion: ", body, questionId)
     const Question = await prisma.question.update({
       where: { id: Number(questionId) },
