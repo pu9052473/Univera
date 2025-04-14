@@ -20,7 +20,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
-import { Calendar, Clock, Plus, X, Edit2 } from "lucide-react"
+import { Calendar, Clock, Plus, X, Edit2, ArrowLeft } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import { UserContext } from "@/context/user"
 import axios from "axios"
@@ -34,7 +34,6 @@ import { useParams } from "next/navigation"
 import { ButtonV1 } from "@/components/(commnon)/ButtonV1"
 import toast from "react-hot-toast"
 import { SelectedSlot, TimeTableSlot } from "@/types/globals"
-import Left from "@/components/Icons/Left"
 import Link from "next/link"
 import { DaySchedule, TableSlotCell } from "./TimeTableComponents"
 
@@ -67,11 +66,7 @@ const fetchTimeTableSlots = async (classId: string) => {
   return response?.data || []
 }
 
-export default function ClassTimeTable({
-  isMyClass = true
-}: {
-  isMyClass?: boolean
-}) {
+export default function ClassTimeTable() {
   const { classId } = useParams()
   const [timeSlots, setTimeSlots] = useState<{
     [IntClassId: number]: string[]
@@ -427,14 +422,15 @@ export default function ClassTimeTable({
 
   return (
     <div className="min-h-screen ">
-      {isMyClass && (
+      <div className="mb-4">
         <Link
-          className="flex items-center justify-center ml-4 gap-2 border-2 border-black text-black w-32 font-semibold rounded-lg py-2 transition-transform transform hover:scale-105 hover:bg-gray-100"
           href={`/classes/my-class/${classId}`}
+          className="flex items-center text-TextTwo hover:bg-lamaSkyLight"
         >
-          <Left /> Back
+          <ArrowLeft size={18} className="mr-2" />
+          Back
         </Link>
-      )}
+      </div>
       <div className={`mx-auto p-4 ${!isMobile ? "max-w-7xl" : "max-w-lg"}`}>
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-TextTwo">Class Time Table</h1>

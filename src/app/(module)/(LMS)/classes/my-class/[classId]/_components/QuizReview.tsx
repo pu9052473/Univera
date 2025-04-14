@@ -12,12 +12,15 @@ import {
   CheckCircle,
   AlertCircle,
   Pencil,
-  Save
+  Save,
+  Trash2,
+  ArrowLeft
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import toast from "react-hot-toast"
 import axios from "axios"
+import { useRouter } from "next/navigation"
 
 interface QuizQuestion {
   id: number
@@ -52,16 +55,37 @@ interface QuizReviewProps {
   quiz: Quiz
   onUpdateStatus: (quizId: number, newStatus: string) => void
   onUpdateVisibility: (quizId: number, newVisibility: string) => void
+  onBack?: () => void
+}
+
+const OnDelete = async (classId: string, id: string) => {
+  try {
+    const res = await axios.delete(
+      `/api/classes/my-class/${classId}/quizzes/${id}`
+    )
+    if (res.status === 200) {
+      toast.success("Quiz deleted successfully")
+    }
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      toast.error(error.response.data.message || "Something went wrong")
+    } else {
+      toast.error("Something went wrong, Please try again")
+    }
+    console.log(error)
+  }
 }
 
 const QuizReview: React.FC<QuizReviewProps> = ({
   quiz,
   onUpdateStatus,
-  onUpdateVisibility
+  onUpdateVisibility,
+  onBack
 }) => {
   const { user } = useContext(UserContext)
   const userRoles = user?.roles.map((role: any) => role.id)
   const isStudent = userRoles?.includes(7)
+  const router = useRouter()
 
   // State to track which question is being edited
   const [editingQuestionId, setEditingQuestionId] = useState<number | null>(
@@ -72,6 +96,7 @@ const QuizReview: React.FC<QuizReviewProps> = ({
     null
   )
   const [questions, setQuestions] = useState(quiz.questions)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   if (!user || isStudent) {
     return (
@@ -99,6 +124,37 @@ const QuizReview: React.FC<QuizReviewProps> = ({
   const handleVisibilityChange = () => {
     const newVisibility = isPrivate ? "public" : "private"
     onUpdateVisibility(quiz.id, newVisibility)
+  }
+
+  const handleDeleteQuiz = async () => {
+    if (
+      confirm(
+        "Are you sure you want to delete this quiz? This action cannot be undone."
+      )
+    ) {
+      setIsDeleting(true)
+      try {
+        await OnDelete(quiz.classId.toString(), quiz.id.toString())
+        // Navigate back to the quizzes list after deletion
+        if (onBack) {
+          onBack()
+        } else {
+          router.push(`/classes/my-class/${quiz.classId}/quizzes`)
+        }
+      } catch (error) {
+        console.error("Error deleting quiz:", error)
+      } finally {
+        setIsDeleting(false)
+      }
+    }
+  }
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack()
+    } else {
+      router.back()
+    }
   }
 
   // Function to enable edit mode for a question
@@ -173,6 +229,18 @@ const QuizReview: React.FC<QuizReviewProps> = ({
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6">
+      {/* Back Button */}
+      <div className="mb-4">
+        <Button
+          onClick={handleBack}
+          variant="ghost"
+          className="flex items-center text-TextTwo hover:bg-lamaSkyLight"
+        >
+          <ArrowLeft size={18} className="mr-2" />
+          Back to Quizzes
+        </Button>
+      </div>
+
       {/* Quiz Header */}
       <Card className="mb-6 bg-white border border-gray-200 shadow-sm rounded-2xl p-4 md:p-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
@@ -250,6 +318,16 @@ const QuizReview: React.FC<QuizReviewProps> = ({
                 Make Private
               </>
             )}
+          </Button>
+
+          {/* Delete Button */}
+          <Button
+            onClick={handleDeleteQuiz}
+            className="px-4 py-2 bg-red-500 text-white hover:bg-red-600"
+            disabled={isDeleting}
+          >
+            <Trash2 size={16} className="mr-2" />
+            {isDeleting ? "Deleting..." : "Delete Quiz"}
           </Button>
         </div>
 

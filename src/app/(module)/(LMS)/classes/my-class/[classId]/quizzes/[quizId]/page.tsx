@@ -4,6 +4,7 @@ import React from "react"
 import QuizReview from "../../_components/QuizReview"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
+import { QuizReviewSkeleton } from "@/components/(commnon)/Skeleton"
 
 async function getQuizDetails(quizId: number, classId: number) {
   const res = await axios.get(
@@ -14,7 +15,11 @@ async function getQuizDetails(quizId: number, classId: number) {
 
 export default function Page() {
   const { quizId, classId } = useParams()
-  const { data: quizDetails, refetch } = useQuery({
+  const {
+    data: quizDetails,
+    refetch,
+    isLoading
+  } = useQuery({
     queryKey: ["quizDetails", quizId],
     queryFn: () => getQuizDetails(Number(quizId), Number(classId)),
     enabled: !!String(quizId)
@@ -49,6 +54,9 @@ export default function Page() {
     } catch (error) {
       console.log(error)
     }
+  }
+  if (isLoading) {
+    return <QuizReviewSkeleton />
   }
   return (
     <div>

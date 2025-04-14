@@ -145,8 +145,9 @@ export default function CreateQuiz({
       )
       const result = res.data
       if (res.status == 201) {
-        router.push(`/classes/my-class/${classId}/quizzes/${result.quiz.id}`)
         closeDialog()
+        toast.success("Quiz Created")
+        router.push(`/classes/my-class/${classId}/quizzes/${result.quiz.id}`)
         refetchQuizzes()
         setFormData({
           title: "",

@@ -115,7 +115,7 @@ export default function Student() {
 
   // Handle back button click
   const handleBackClick = () => {
-    router.back()
+    router.push(`/classes/my-class/${classId}`)
   }
 
   return (

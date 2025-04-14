@@ -66,3 +66,35 @@ export async function PATCH(req: Request, context: any) {
     )
   }
 }
+
+export async function DELETE(req: Request, context: any) {
+  const user = await currentUser()
+
+  if (!user?.id)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  try {
+    const { quizId } = await context.params
+    // Delete quiz and related questions in a transaction
+    const Quiz = await prisma.$transaction(async (tx) => {
+      // First delete all related questions
+      await tx.question.deleteMany({
+        where: { quizId: Number(quizId) }
+      })
+
+      // Then delete the quiz
+      return tx.quiz.delete({
+        where: { id: Number(quizId) }
+      })
+    })
+    return NextResponse.json({ message: "Quiz Deleted", Quiz }, { status: 200 })
+  } catch (error) {
+    console.log(
+      "Error while deleting quiz @/api/classes/my-class/[classId]/quizes/[quizId]",
+      error
+    )
+    return NextResponse.json(
+      { message: "Error while Deleting quiz" },
+      { status: 500 }
+    )
+  }
+}
