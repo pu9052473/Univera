@@ -2,12 +2,13 @@
 
 import React, { useContext, useState, useRef, useEffect } from "react"
 import { BookOpen, Coffee, FlaskConical, Users } from "lucide-react"
+import * as XLSX from "xlsx"
 import axios from "axios"
 import { UserContext } from "@/context/user"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
 import toast from "react-hot-toast"
-import { TimeTableSlot } from "@/types/globals"
+import { SlotData, TimeTableSlot } from "@/types/globals"
 import TimetableHeader from "./TimetableHeader"
 import TimetableGrid from "./TimetableGrid"
 import SlotDialog from "./SlotDialog"
@@ -83,10 +84,7 @@ const days = [
   "Saturday"
 ]
 
-const timeSlots = Array.from(
-  { length: 15 },
-  (_, i) => `${6 + i}:00 ${i + 6 < 12 ? "AM" : "PM"}`
-)
+const timeSlots = Array.from({ length: 15 }, (_, i) => `${6 + i}:00`)
 
 const tags = ["Lecture", "Lab", "Seminar", "Break"]
 
@@ -165,6 +163,8 @@ export default function ClassTimeTable() {
     queryFn: () => allTimeTableSlots(),
     enabled: !!classId
   })
+
+  console.log("allSlots", allSlots)
 
   useEffect(() => {
     if (timeTableSlots && timeTableSlots.length > 0) {
@@ -465,12 +465,123 @@ export default function ClassTimeTable() {
     }
   }
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.name.endsWith(".xlsx") && !file.name.endsWith(".xls")) {
+      toast.error("Please upload a valid Excel file")
+      return
+    }
+
+    try {
+      const data = await file.arrayBuffer()
+      const workbook = XLSX.read(data)
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]]
+      const jsonData: SlotData[] = XLSX.utils.sheet_to_json(worksheet, {
+        defval: "",
+        raw: false
+      })
+      const updatedScheduleData = { ...scheduleData }
+
+      let conflictMessages = 0
+
+      jsonData.forEach((row) => {
+        const {
+          day,
+          subject,
+          faculty,
+          startTime,
+          endTime,
+          tag,
+          location,
+          remarks
+        } = row
+
+        const slotKey = `${day}-${startTime}`
+
+        const subjectData = subjects.find((s: any) => s.name === subject)
+        const subjectId = subjectData ? subjectData.id : null
+
+        const facultyData = faculties.find((f: any) => f.user.name === faculty)
+        const facultyId = facultyData ? facultyData.id : null
+
+        const data = {
+          subject,
+          faculty: faculty || null,
+          startTime,
+          endTime,
+          tag,
+          location: location || "",
+          remarks: remarks || "",
+          subjectId,
+          facultyId
+        }
+
+        // check for the conflict of slot of same faculty in different class
+        if (allSlots.length > 0 && subject !== "Break" && facultyId) {
+          const conflictSlot = allSlots.some(
+            (slot: any) =>
+              slot.classId !== Number(classId) &&
+              slot.facultyId === facultyId &&
+              slot.day === day &&
+              slot.startTime === startTime &&
+              slot.endTime === endTime
+          )
+
+          if (conflictSlot) {
+            toast.error(
+              `The ${faculty} has already slot on ${day} at ${startTime} - ${endTime} in another class.`
+            )
+            conflictMessages++
+            return // skip this slot
+          }
+        }
+
+        if (subject === "Break" && startTime && endTime) {
+          days.forEach((d) => {
+            updatedScheduleData[`${d}-${startTime}`] = {
+              ...data,
+              day: d,
+              faculty: "",
+              subjectId: null,
+              facultyId: null,
+              location: "",
+              remarks: ""
+            }
+          })
+        } else {
+          updatedScheduleData[slotKey] = {
+            ...data,
+            day
+          }
+        }
+      })
+
+      if (conflictMessages > 0) {
+        toast.error(`${conflictMessages} slot(s) skipped due to conflicts.`)
+      }
+
+      toast.success("Timetable imported successfully!")
+
+      setScheduleData(updatedScheduleData)
+      localStorage.setItem(
+        `classId-${classId}`,
+        JSON.stringify(updatedScheduleData)
+      )
+    } catch (error) {
+      console.log("Error reading Excel file:", error)
+      toast.error("Failed to import timetable")
+    }
+  }
+
   return (
     <div className="mx-auto p-4">
       <TimetableHeader
         isCoordinator={isCoordinator}
         handleZoom={handleZoom}
         saveTimetableSlotsToDb={saveTimetableSlotsToDb}
+        handleFileChange={handleFileChange}
       />
 
       <TimetableGrid

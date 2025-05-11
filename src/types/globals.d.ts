@@ -136,6 +136,19 @@ export type TimeTableSlot = {
   location: string
 }
 
+export type SlotData = {
+  subject: string
+  faculty: string
+  startTime: string
+  endTime: string
+  subjectId?: string
+  facultyId?: string
+  tag: string
+  location: string
+  remarks: string
+  day: string
+}
+
 export interface FileWithPreview extends File {
   preview?: string
   existing?: boolean
