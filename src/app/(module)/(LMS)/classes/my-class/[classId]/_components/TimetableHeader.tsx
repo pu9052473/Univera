@@ -1,18 +1,28 @@
-import React from "react"
+import React, { useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { Calendar, Save, ZoomIn, ZoomOut } from "lucide-react"
+import { Calendar, Save, ZoomIn, ZoomOut, Upload } from "lucide-react"
 
 interface TimetableHeaderProps {
   isCoordinator: boolean
   handleZoom: (delta: number) => void
   saveTimetableSlotsToDb: () => Promise<void>
+  handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 const TimetableHeader: React.FC<TimetableHeaderProps> = ({
   isCoordinator,
   handleZoom,
-  saveTimetableSlotsToDb
+  saveTimetableSlotsToDb,
+  handleFileChange
 }) => {
+  const inputRef = useRef<HTMLInputElement | null>(null)
+
+  const triggerFileInput = () => {
+    if (inputRef.current) {
+      inputRef.current.click()
+    }
+  }
+
   return (
     <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 px-2">
       {/* Title with decorative element */}
@@ -26,6 +36,27 @@ const TimetableHeader: React.FC<TimetableHeaderProps> = ({
 
       {/* Controls container - wraps on small screens */}
       <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+        {/* Hidden file input */}
+        <input
+          type="file"
+          ref={inputRef}
+          accept=".xlsx,.xls"
+          onChange={handleFileChange}
+          className="hidden"
+          aria-label="Upload Excel file"
+        />
+
+        {/* Upload button */}
+        {isCoordinator && (
+          <Button
+            onClick={triggerFileInput}
+            className="bg-green-500 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg w-full sm:w-auto flex items-center justify-center gap-2 shadow-sm transition-all"
+          >
+            <Upload size={18} />
+            <span>Upload Timetable</span>
+          </Button>
+        )}
+
         {/* Save button */}
         {isCoordinator && (
           <Button
@@ -70,12 +101,12 @@ const TimetableHeader: React.FC<TimetableHeaderProps> = ({
             <span className="text-xs text-gray-600">Seminar</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-full bg-cyan-100 border border-cyan-300"></div>
+            <div className="w-3 h-3 rounded-full bg-[#CBF5CB] border border-[#7BE37B]"></div>
             <span className="text-xs text-gray-600">Break</span>
           </div>
         </div>
 
-        {/* Legend for timetable colors - visible on larger screens */}
+        {/* Legend for timetable colors - visible on smaller screens */}
         <div className="flex flex-wrap justify-center gap-x-3 gap-y-2 mb-4 sm:hidden">
           <div className="flex items-center gap-1">
             <div className="w-3 h-3 rounded-full bg-blue-100 border border-blue-300"></div>
@@ -90,7 +121,7 @@ const TimetableHeader: React.FC<TimetableHeaderProps> = ({
             <span className="text-xs text-gray-600">Seminar</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-full bg-cyan-100 border border-cyan-300"></div>
+            <div className="w-3 h-3 rounded-full bg-[#CBF5CB] border border-[#7BE37B]"></div>
             <span className="text-xs text-gray-600">Break</span>
           </div>
         </div>
