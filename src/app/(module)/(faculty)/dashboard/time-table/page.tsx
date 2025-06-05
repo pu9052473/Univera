@@ -8,7 +8,6 @@ import { CheckCircle, XCircle, AlertTriangle } from "lucide-react"
 import {
   getBackgroundColor,
   getBorderColor,
-  getIconForTag,
   getStatusColor,
   getTagClass
 } from "@/helpers/TimeTableTagColor"
@@ -122,9 +121,6 @@ export default function Page() {
     return { askedProxies: asked, receivedProxies: received }
   }, [proxySlots, user?.id])
 
-  console.log("askedProxies:", askedProxies)
-  console.log("receivedProxies:", receivedProxies)
-
   const rolling = useMemo(
     () => getRollingDays(currentPage - 2, 3),
     [currentPage]
@@ -157,12 +153,19 @@ export default function Page() {
   })
 
   const sortedSlots = useMemo(() => {
-    return [...currentSlots].sort((a, b) => {
+    const approvedProxySlots = receivedProxies
+      ?.filter(
+        (slot: ProxySlot) =>
+          slot.status === "APPROVED" && slot.date === currentDate
+      )
+      .map((slot: ProxySlot) => ({ ...slot, isProxy: true }))
+
+    return [...currentSlots, ...approvedProxySlots].sort((a, b) => {
       const timeA = new Date(`1970/01/01 ${a.startTime}`)
       const timeB = new Date(`1970/01/01 ${b.startTime}`)
       return timeA.getTime() - timeB.getTime()
     })
-  }, [currentSlots])
+  }, [currentSlots, receivedProxies])
 
   function openProxyDialog(slotId: number) {
     const existingProxy = askedProxies?.find((proxy) => proxy.slotId === slotId)
@@ -205,7 +208,6 @@ export default function Page() {
           })
         }
       )
-      console.log("Response from proxy slot API:", res)
 
       if (res.ok) {
         toast.success(
@@ -422,7 +424,6 @@ export default function Page() {
         getProxyStatusForSlot={getProxyStatusForSlot}
         getBorderColor={getBorderColor}
         getBackgroundColor={getBackgroundColor}
-        getIconForTag={getIconForTag}
         getTagClass={getTagClass}
         openProxyDialog={openProxyDialog}
         ConfirmationDialogContent={ConfirmationDialogContent}

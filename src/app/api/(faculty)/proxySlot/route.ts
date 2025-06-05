@@ -213,7 +213,11 @@ export async function GET(req: Request) {
         OR: [{ slot: { facultyId: userId } }, { lecturerId: userId }]
       },
       include: {
-        slot: true
+        slot: {
+          include: {
+            class: true
+          }
+        }
       },
       orderBy: {
         date: "desc"
