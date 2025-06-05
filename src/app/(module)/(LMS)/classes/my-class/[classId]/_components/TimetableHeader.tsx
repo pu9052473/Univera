@@ -119,7 +119,7 @@ const TimetableHeader: React.FC<TimetableHeaderProps> = ({
                   {savedAnimation ? (
                     <>
                       <span className="inline-block animate-bounce">✓</span>
-                      <span>Saved!</span>
+                      <span>Saving...</span>
                     </>
                   ) : (
                     <>

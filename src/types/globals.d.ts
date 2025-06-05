@@ -154,3 +154,18 @@ export interface FileWithPreview extends File {
   existing?: boolean
   url?: string
 }
+
+export interface ProxySlot {
+  id: number
+  slotId: number
+  lecturerId: string
+  date: string
+  slot: {
+    facultyId: string
+    startTime: string
+    endTime: string
+    location: string
+  }
+  reason?: string
+  status: string
+}
