@@ -83,37 +83,35 @@ const CurrentDayDisplay: React.FC<CurrentDayDisplayProps> = ({
               {currentDate}
             </p>
           </div>
-          <div className="flex justify-between items-center mb-6">
-            <ProxyManagementDrawer
-              pendingCount={pendingCount}
-              receivedProxies={receivedProxies}
-              askedProxies={askedProxies}
-              findFacultyName={findFacultyName}
-              getStatusColor={getStatusColor}
-              handleProxyResponse={handleProxyResponse}
-              isApproveDialogOpen={isApproveDialogOpen}
-              setIsApproveDialogOpen={setIsApproveDialogOpen}
-              isDeclineDialogOpen={isDeclineDialogOpen}
-              setIsDeclineDialogOpen={setIsDeclineDialogOpen}
-              deleteDialogOpen={deleteDialogOpen}
-              handleDeleteClick={handleDeleteClick}
-              handleDeleteCancel={handleDeleteCancel}
-              handleDeleteConfirm={handleDeleteConfirm}
-              isDeleting={isDeleting}
-              ConfirmationDialogContent={ConfirmationDialogContent}
-            />
-            {currentPage !== 1 && (
-              <button
-                onClick={goToToday}
-                className="px-4 py-2 rounded-full text-ColorThree font-bold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 bg-white/90 backdrop-blur-sm hover:bg-white text-sm"
-              >
-                <div className="flex items-center space-x-2">
-                  <Calendar className="h-4 w-4" />
-                  <span>Jump to Today</span>
-                </div>
-              </button>
-            )}
-          </div>
+          <ProxyManagementDrawer
+            pendingCount={pendingCount}
+            receivedProxies={receivedProxies}
+            askedProxies={askedProxies}
+            findFacultyName={findFacultyName}
+            getStatusColor={getStatusColor}
+            handleProxyResponse={handleProxyResponse}
+            isApproveDialogOpen={isApproveDialogOpen}
+            setIsApproveDialogOpen={setIsApproveDialogOpen}
+            isDeclineDialogOpen={isDeclineDialogOpen}
+            setIsDeclineDialogOpen={setIsDeclineDialogOpen}
+            deleteDialogOpen={deleteDialogOpen}
+            handleDeleteClick={handleDeleteClick}
+            handleDeleteCancel={handleDeleteCancel}
+            handleDeleteConfirm={handleDeleteConfirm}
+            isDeleting={isDeleting}
+            ConfirmationDialogContent={ConfirmationDialogContent}
+          />
+          {currentPage !== 1 && (
+            <button
+              onClick={goToToday}
+              className="px-4 py-2 rounded-full text-ColorThree font-bold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 bg-white/90 backdrop-blur-sm hover:bg-white text-sm"
+            >
+              <div className="flex items-center space-x-2">
+                <Calendar className="h-4 w-4" />
+                <span>Jump to Today</span>
+              </div>
+            </button>
+          )}
         </div>
       </div>
       <SlotsContent

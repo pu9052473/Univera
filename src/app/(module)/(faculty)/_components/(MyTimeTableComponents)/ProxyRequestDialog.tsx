@@ -37,6 +37,7 @@ type ProxyRequestDialogProps = {
   setReason: (reason: string) => void
   faculties: Faculty[]
   user: any
+  proxyRequestLoading?: boolean
 }
 
 const ProxyRequestDialog: React.FC<ProxyRequestDialogProps> = ({
@@ -49,7 +50,8 @@ const ProxyRequestDialog: React.FC<ProxyRequestDialogProps> = ({
   reason,
   setReason,
   faculties,
-  user
+  user,
+  proxyRequestLoading
 }) => {
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -130,11 +132,17 @@ const ProxyRequestDialog: React.FC<ProxyRequestDialogProps> = ({
             </DialogClose>
             <Button
               type="submit"
-              disabled={!selectedFacultyId}
+              disabled={!selectedFacultyId || proxyRequestLoading}
               className="flex-1 h-12 font-bold hover:scale-105 border-ColorThree bg-ColorThree transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <User className="h-4 w-4 mr-2" />
-              Send Request
+              {proxyRequestLoading ? (
+                "Requesting..."
+              ) : (
+                <>
+                  <User className="h-4 w-4 mr-2" />
+                  Send Request
+                </>
+              )}
             </Button>
           </DialogFooter>
         </form>

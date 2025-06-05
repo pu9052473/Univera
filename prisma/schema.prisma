@@ -474,7 +474,7 @@ model Slot {
   updatedAt    DateTime @default(now())
 
   class     Class   @relation(fields: [classId], references: [id])
-  facuty    Faculty?  @relation("FacultyToLecture", fields: [facultyId], references: [clerkId])
+  faculty    Faculty?  @relation("FacultyToLecture", fields: [facultyId], references: [clerkId])
   subject   Subject?  @relation(fields: [subjectId], references: [id])
   timetable TimeTable @relation(fields: [timeTableId], references: [id])
 

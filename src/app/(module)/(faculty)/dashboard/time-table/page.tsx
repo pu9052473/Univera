@@ -85,6 +85,8 @@ export default function Page() {
   const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [proxyRequestLoading, setProxyRequestLoading] = useState(false)
+  const [statusUpdateLoading, setStatusUpdate] = useState(false)
 
   const { data: mySlots } = useQuery({
     queryKey: ["mySlots"],
@@ -103,10 +105,6 @@ export default function Page() {
     queryFn: () => proxySlotsFetcher(user?.id || ""),
     enabled: !!user?.id
   })
-
-  console.log("Proxy Slots:", proxySlots)
-  console.log("usre:", user)
-  console.log("faculties:", faculties)
 
   // Split proxySlots into sent and received
   const { askedProxies, receivedProxies } = useMemo(() => {
@@ -190,19 +188,24 @@ export default function Page() {
   async function handleProxySubmit(e: FormEvent) {
     e.preventDefault()
     if (!selectedSlotId || !selectedFacultyId) return
+    setProxyRequestLoading(true)
 
     try {
-      const res = await fetch("/api/proxySlot", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slotId: selectedSlotId,
-          lecturerId: selectedFacultyId,
-          date: currentDate,
-          reason: reason.trim() || null,
-          editingProxyId: editingProxyId || null
-        })
-      })
+      const res = await fetch(
+        `/api/proxySlot?${editingProxyId ? "route=editProxy" : "route=createProxy"}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            slotId: selectedSlotId,
+            lecturerId: selectedFacultyId,
+            date: currentDate,
+            reason: reason.trim() || null,
+            editingProxyId: editingProxyId || null
+          })
+        }
+      )
+      console.log("Response from proxy slot API:", res)
 
       if (res.ok) {
         toast.success(
@@ -218,6 +221,7 @@ export default function Page() {
       console.log("error while send proxy request", error)
     } finally {
       proxySlotsRefetch() // Refetch proxy slots to update the list
+      setProxyRequestLoading(false)
     }
   }
 
@@ -230,12 +234,13 @@ export default function Page() {
     proxyId: number,
     action: "APPROVED" | "DECLINED" | string
   ) => {
+    setStatusUpdate(true)
+    if (!proxyId) return
     try {
-      const res = await fetch("/api/proxySlot", {
+      const res = await fetch("/api/proxySlot?route=statusUpdate", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          updateStatusOnly: true,
           proxyId,
           status: action
         })
@@ -255,6 +260,7 @@ export default function Page() {
       } else {
         setIsDeclineDialogOpen(false)
       }
+      setStatusUpdate(false)
     }
   }
 
@@ -345,13 +351,16 @@ export default function Page() {
         <DialogFooter className="flex flex-col sm:flex-row gap-3 mt-6">
           <Button
             onClick={onConfirm}
+            disabled={statusUpdateLoading}
             className={`flex-1 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg ${
               isApprove
                 ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
                 : "bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700"
             }`}
           >
-            {isApprove ? (
+            {statusUpdateLoading ? (
+              "Processing..."
+            ) : isApprove ? (
               <>
                 <CheckCircle className="h-4 w-4 mr-2" />
                 Yes, Accept
@@ -434,6 +443,7 @@ export default function Page() {
         setReason={setReason}
         faculties={faculties}
         user={user}
+        proxyRequestLoading={proxyRequestLoading}
       />
     </div>
   )
