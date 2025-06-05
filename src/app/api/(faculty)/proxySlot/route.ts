@@ -112,3 +112,31 @@ export async function GET(req: Request) {
     )
   }
 }
+
+export async function DELETE(req: Request) {
+  const { id } = await req.json()
+
+  if (!id) {
+    return NextResponse.json(
+      { error: "Proxy slot ID is required" },
+      { status: 400 }
+    )
+  }
+
+  try {
+    const deletedProxySlot = await prisma.proxySlot.delete({
+      where: { id: Number(id) }
+    })
+
+    return NextResponse.json(
+      { message: "Proxy slot deleted successfully", deletedProxySlot },
+      { status: 200 }
+    )
+  } catch (error) {
+    console.error("Error deleting proxy slot:", error)
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
+  }
+}

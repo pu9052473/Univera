@@ -156,7 +156,7 @@ export interface FileWithPreview extends File {
 }
 
 export interface ProxySlot {
-  id: number
+  id: string
   slotId: number
   lecturerId: string
   date: string
@@ -165,6 +165,7 @@ export interface ProxySlot {
     startTime: string
     endTime: string
     location: string
+    title: string
   }
   reason?: string
   status: string
