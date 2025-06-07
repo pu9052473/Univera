@@ -65,7 +65,7 @@ const CurrentDayDisplay: React.FC<CurrentDayDisplayProps> = ({
 }) => {
   return (
     <div className="bg-white/95 backdrop-blur-lg border-lamaSky rounded-3xl shadow-2xl overflow-hidden border-2">
-      <div className="p-6 text-white relative overflow-hidden bg-gradient-to-r from-Dark via-ColorThree to-ColorTwo">
+      <div className="p-6 text-white relative overflow-hidden bg-ColorThree">
         <div className="absolute top-0 right-0 w-32 h-32 opacity-10 animate-pulse">
           <Calendar className="w-full h-full" />
         </div>
@@ -81,39 +81,35 @@ const CurrentDayDisplay: React.FC<CurrentDayDisplayProps> = ({
               {currentDate}
             </p>
           </div>
-          <div className="">
-            <ProxyManagementDrawer
-              pendingCount={pendingCount}
-              receivedProxies={receivedProxies}
-              askedProxies={askedProxies}
-              findFacultyName={findFacultyName}
-              getStatusColor={getStatusColor}
-              handleProxyResponse={handleProxyResponse}
-              isApproveDialogOpen={isApproveDialogOpen}
-              setIsApproveDialogOpen={setIsApproveDialogOpen}
-              isDeclineDialogOpen={isDeclineDialogOpen}
-              setIsDeclineDialogOpen={setIsDeclineDialogOpen}
-              deleteDialogOpen={deleteDialogOpen}
-              handleDeleteClick={handleDeleteClick}
-              handleDeleteCancel={handleDeleteCancel}
-              handleDeleteConfirm={handleDeleteConfirm}
-              isDeleting={isDeleting}
-              ConfirmationDialogContent={ConfirmationDialogContent}
-            />
-          </div>
-          <div className="">
-            {currentPage !== 1 && (
-              <button
-                onClick={goToToday}
-                className="px-4 py-2 mt-2 sm:mt-0 rounded-full text-ColorThree font-bold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 bg-white/90 backdrop-blur-sm hover:bg-white text-sm"
-              >
-                <div className="flex items-center space-x-2">
-                  <Calendar className="h-4 w-4" />
-                  <span>Jump to Today</span>
-                </div>
-              </button>
-            )}
-          </div>
+          <ProxyManagementDrawer
+            pendingCount={pendingCount}
+            receivedProxies={receivedProxies}
+            askedProxies={askedProxies}
+            findFacultyName={findFacultyName}
+            getStatusColor={getStatusColor}
+            handleProxyResponse={handleProxyResponse}
+            isApproveDialogOpen={isApproveDialogOpen}
+            setIsApproveDialogOpen={setIsApproveDialogOpen}
+            isDeclineDialogOpen={isDeclineDialogOpen}
+            setIsDeclineDialogOpen={setIsDeclineDialogOpen}
+            deleteDialogOpen={deleteDialogOpen}
+            handleDeleteClick={handleDeleteClick}
+            handleDeleteCancel={handleDeleteCancel}
+            handleDeleteConfirm={handleDeleteConfirm}
+            isDeleting={isDeleting}
+            ConfirmationDialogContent={ConfirmationDialogContent}
+          />
+          {currentPage !== 1 && (
+            <button
+              onClick={goToToday}
+              className="px-4 py-2 mt-2 sm:mt-0 rounded-full text-ColorThree font-bold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 bg-white/90 backdrop-blur-sm hover:bg-white text-sm"
+            >
+              <div className="flex items-center space-x-2">
+                <Calendar className="h-4 w-4" />
+                <span>Jump to Today</span>
+              </div>
+            </button>
+          )}
         </div>
       </div>
       <SlotsContent

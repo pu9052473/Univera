@@ -5,12 +5,6 @@ import axios from "axios"
 import { useQuery } from "@tanstack/react-query"
 import { UserContext } from "@/context/user"
 import { CheckCircle, XCircle, AlertTriangle } from "lucide-react"
-import {
-  getBackgroundColor,
-  getBorderColor,
-  getStatusColor,
-  getTagClass
-} from "@/helpers/TimeTableTagColor"
 import { Button } from "@/components/ui/button"
 import {
   DialogDescription,
@@ -18,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog"
+import axious from "axios"
 import toast from "react-hot-toast"
 import { ProxySlot } from "@/types/globals"
 import CurrentDayDisplay from "../../_components/(MyTimeTableComponents)/CurrentDayDisplay"
@@ -69,6 +64,64 @@ function getRollingDays(startOffset = -1, count = 3) {
       offset: startOffset + i
     }
   })
+}
+
+const getBackgroundColor = (tag: string) => {
+  switch (tag) {
+    case "lecture":
+      return "#E3F2FD" // Soft blue
+    case "lab":
+      return "#F3E5F5" // Soft purple
+    case "seminar":
+      return "#FFF8E1" // Soft yellow
+    case "break":
+      return "#CBF5CB" // Soft Blue Romance
+    default:
+      return "#ffffff" // White
+  }
+}
+
+const getBorderColor = (tag: string) => {
+  switch (tag) {
+    case "lecture":
+      return "#90CAF9" // Darker blue border
+    case "lab":
+      return "#CE93D8" // Darker purple border
+    case "seminar":
+      return "#FFE082" // Darker yellow border
+    case "break":
+      return "#7BE37B" // Darker paster green
+    default:
+      return "#e5e7eb" // Default gray border
+  }
+}
+
+const getTagClass = (tag: string) => {
+  switch (tag) {
+    case "lecture":
+      return "bg-blue-100 text-blue-800"
+    case "lab":
+      return "bg-purple-100 text-purple-800"
+    case "seminar":
+      return "bg-amber-100 text-amber-800"
+    case "break":
+      return "bg-green-100 text-green-900"
+    default:
+      return "bg-gray-100 text-gray-800"
+  }
+}
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "APPROVED":
+      return "bg-green-100 text-green-800 border-green-200"
+    case "PENDING":
+      return "bg-yellow-100 text-yellow-800 border-yellow-200"
+    case "DECLINED":
+      return "bg-red-100 text-red-800 border-red-200"
+    default:
+      return "bg-gray-100 text-gray-800 border-gray-200"
+  }
 }
 
 export default function Page() {
@@ -194,33 +247,31 @@ export default function Page() {
     setProxyRequestLoading(true)
 
     try {
-      const res = await fetch(
+      const res = await axious.patch(
         `/api/proxySlot?${editingProxyId ? "route=editProxy" : "route=createProxy"}`,
         {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            slotId: selectedSlotId,
-            lecturerId: selectedFacultyId,
-            date: currentDate,
-            reason: reason.trim() || null,
-            editingProxyId: editingProxyId || null
-          })
+          slotId: selectedSlotId,
+          lecturerId: selectedFacultyId,
+          date: currentDate,
+          reason: reason.trim() || null,
+          editingProxyId: editingProxyId || null
         }
       )
 
-      if (res.ok) {
+      if (res.status >= 200 && res.status < 300) {
         toast.success(
-          editingProxyId
+          res.data.message || editingProxyId
             ? "Proxy request updated!"
             : "Proxy request sent successfully!"
         )
-      } else {
-        toast.error("Failed to send proxy request")
       }
       setDialogOpen(false)
     } catch (error) {
-      console.log("error while send proxy request", error)
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message || "Something went wrong")
+      } else {
+        toast.error("An unexpected error occurred")
+      }
     } finally {
       proxySlotsRefetch() // Refetch proxy slots to update the list
       setProxyRequestLoading(false)
@@ -239,23 +290,24 @@ export default function Page() {
     setStatusUpdate(true)
     if (!proxyId) return
     try {
-      const res = await fetch("/api/proxySlot?route=statusUpdate", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          proxyId,
-          status: action
-        })
+      const res = await axios.patch("/api/proxySlot?route=statusUpdate", {
+        proxyId,
+        status: action
       })
 
-      if (res.ok) {
-        toast.success(`Request ${action.toLowerCase()} successfully!`)
+      if (res.status >= 200 && res.status < 300) {
+        toast.success(
+          res.data.message || `Request ${action.toLowerCase()} successfully!`
+        )
         proxySlotsRefetch() // Refresh the list
-      } else {
-        toast.error("Failed to update proxy status")
       }
     } catch (error) {
       console.log("Error updating proxy status:", error)
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message || "Something went wrong")
+      } else {
+        toast.error("An unexpected error occurred")
+      }
     } finally {
       if (action === "APPROVED") {
         setIsApproveDialogOpen(false)
@@ -287,21 +339,22 @@ export default function Page() {
     setIsDeleting(true)
 
     try {
-      const res = await fetch("/api/proxySlot", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: proxyId })
+      const res = await axious.delete("/api/proxySlot", {
+        data: { id: proxyId }
       })
 
-      if (res.ok) {
-        toast.success("Proxy request deleted successfully!")
+      if (res.status >= 200 && res.status < 300) {
+        toast.success(res.data.message || "Proxy request deleted successfully!")
         proxySlotsRefetch() // Refresh the list
         setDeleteDialogOpen(false)
-      } else {
-        toast.error("Failed to delete proxy request")
       }
     } catch (error) {
       console.log("Error deleting proxy request:", error)
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message || "Something went wrong")
+      } else {
+        toast.error("An unexpected error occurred")
+      }
     } finally {
       setIsDeleting(false)
     }

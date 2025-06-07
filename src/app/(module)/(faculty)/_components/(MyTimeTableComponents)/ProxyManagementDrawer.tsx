@@ -76,7 +76,7 @@ const ProxyManagementDrawer: React.FC<ProxyManagementDrawerProps> = ({
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button className="relative group hover:scale-105 xs:hover:scale-110 bg-gradient-to-r from-ColorTwo to-ColorThree transition-all duration-500 border-0 px-2 xs:px-3 sm:px-4 py-2 xs:py-2.5 sm:py-3">
+        <Button className="relative group hover:scale-105 xs:hover:scale-110 bg-ColorTwo hover:bg-ColorTwo transition-all duration-500 border-0 px-2 xs:px-3 sm:px-4 py-2 xs:py-2.5 sm:py-3">
           <div className="inset-0 opacity-0 group-hover:opacity-20 transform group-hover:translate-x-full transition-all duration-700"></div>
           <Menu className="h-3 w-3 xs:h-4 xs:w-4 sm:h-5 sm:w-5 mr-1.5 xs:mr-2 sm:mr-3 group-hover:rotate-180 transition-transform duration-500" />
           <span className="relative z-10 text-xs xs:text-sm sm:text-base lg:text-lg font-bold whitespace-nowrap">
@@ -84,10 +84,10 @@ const ProxyManagementDrawer: React.FC<ProxyManagementDrawerProps> = ({
           </span>
           {pendingCount > 0 && (
             <div className="absolute -top-2 xs:-top-2.5 sm:-top-3 -right-2 xs:-right-2.5 sm:-right-3 flex items-center justify-center">
-              <Badge className="h-4 w-4 bg-ColorTwo xs:h-5 xs:w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 p-0 flex items-center justify-center text-[8px] xs:text-[ correspondingly] sm:text-xs font-bold text-white shadow-lg animate-bounce z-50">
+              <Badge className="h-4 w-4 bg-ColorOne xs:h-5 xs:w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 p-0 flex items-center justify-center text-[8px] xs:text-[ correspondingly] sm:text-xs font-bold text-Dark shadow-lg animate-bounce z-50">
                 {pendingCount}
               </Badge>
-              <div className="absolute inset-0 bg-ColorTwo opacity-40 rounded-full animate-pulse-ring"></div>
+              <div className="absolute inset-0 bg-ColorOne opacity-40 rounded-full animate-pulse-ring"></div>
             </div>
           )}
         </Button>
@@ -106,8 +106,13 @@ const ProxyManagementDrawer: React.FC<ProxyManagementDrawerProps> = ({
           style={{ scrollbarWidth: "thin" }}
         >
           <Tabs defaultValue="incoming" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8 shadow-lg bg-lamaSkyLight">
-              <TabsTrigger value="incoming" className="font-bold text-TextTwo">
+            <TabsList className="grid w-full grid-cols-2 mb-8 pb-5 shadow-lg bg-lamaSkyLight">
+              <TabsTrigger
+                value="incoming"
+                className="font-bold text-TextTwo py-0.5 transition-all duration-300
+               border-b-2 border-transparent 
+               data-[state=active]:border-Dark data-[state=active]:bg-white"
+              >
                 <div className="flex items-center space-x-2">
                   <span className="font-bold">Incoming Requests</span>
                   {receivedProxies && receivedProxies?.length > 0 && (
@@ -120,7 +125,12 @@ const ProxyManagementDrawer: React.FC<ProxyManagementDrawerProps> = ({
                   )}
                 </div>
               </TabsTrigger>
-              <TabsTrigger value="requested" className="font-bold text-TextTwo">
+              <TabsTrigger
+                value="requested"
+                className="font-bold text-TextTwo py-0.5 transition-all duration-300
+               border-b-2 border-transparent 
+               data-[state=active]:border-Dark data-[state=active]:bg-white"
+              >
                 <div className="flex items-center space-x-2">
                   <span className="font-bold">My Requests</span>
                   {askedProxies && askedProxies?.length > 0 && (
@@ -322,93 +332,92 @@ const ProxyManagementDrawer: React.FC<ProxyManagementDrawerProps> = ({
                                 request.status.slice(1)}
                             </span>
                           </Badge>
-                          {request.status === "APPROVED" && (
-                            <Dialog
-                              open={deleteDialogOpen}
-                              onOpenChange={(open: any) => {
-                                if (!open) handleDeleteCancel()
-                              }}
-                            >
-                              <DialogTrigger asChild>
-                                <Button
-                                  variant="destructive"
-                                  size="sm"
-                                  className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200 hover:scale-105"
-                                  disabled={isDeleting}
-                                  onClick={() => handleDeleteClick()}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                  <span className="hidden sm:inline">
-                                    Delete Proxy
+
+                          <Dialog
+                            open={deleteDialogOpen}
+                            onOpenChange={(open: any) => {
+                              if (!open) handleDeleteCancel()
+                            }}
+                          >
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200 hover:scale-105"
+                                disabled={isDeleting}
+                                onClick={() => handleDeleteClick()}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                                <span className="hidden sm:inline">
+                                  Delete Proxy
+                                </span>
+                                <span className="sm:hidden">Delete</span>
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[425px] mx-4 bg-white">
+                              <DialogHeader>
+                                <DialogTitle className="text-Dark">
+                                  Delete Proxy Request
+                                </DialogTitle>
+                                <DialogDescription className="text-TextTwo">
+                                  Are you sure you want to delete this proxy
+                                  request for{" "}
+                                  <span className="font-semibold">
+                                    {request?.slot.title}
                                   </span>
-                                  <span className="sm:hidden">Delete</span>
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="sm:max-w-[425px] mx-4 bg-white">
-                                <DialogHeader>
-                                  <DialogTitle className="text-Dark">
-                                    Delete Proxy Request
-                                  </DialogTitle>
-                                  <DialogDescription className="text-TextTwo">
-                                    Are you sure you want to delete this proxy
-                                    request for{" "}
-                                    <span className="font-semibold">
-                                      {request?.slot.title}
+                                  ?
+                                </DialogDescription>
+                              </DialogHeader>
+                              <div className="">
+                                <div className="bg-lamaPurpleLight p-4 rounded-lg">
+                                  <div className="flex items-center gap-3 mb-2">
+                                    <Calendar className="h-4 w-4 text-ColorTwo" />
+                                    <span className="text-sm font-medium text-TextTwo">
+                                      {request?.date} at{" "}
+                                      {request?.slot.startTime} -{" "}
+                                      {request?.slot.endTime}
                                     </span>
-                                    ?
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <div className="">
-                                  <div className="bg-lamaPurpleLight p-4 rounded-lg">
-                                    <div className="flex items-center gap-3 mb-2">
-                                      <Calendar className="h-4 w-4 text-ColorTwo" />
-                                      <span className="text-sm font-medium text-TextTwo">
-                                        {request?.date} at{" "}
-                                        {request?.slot.startTime} -{" "}
-                                        {request?.slot.endTime}
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                      <MapPin className="h-4 w-4 text-ColorTwo" />
-                                      <span className="text-sm text-TextTwo">
-                                        {request?.slot.location}
-                                      </span>
-                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-3">
+                                    <MapPin className="h-4 w-4 text-ColorTwo" />
+                                    <span className="text-sm text-TextTwo">
+                                      {request?.slot.location}
+                                    </span>
                                   </div>
                                 </div>
-                                <DialogFooter className="flex flex-col sm:flex-row gap-2">
-                                  <Button
-                                    variant="outline"
-                                    onClick={handleDeleteCancel}
-                                    disabled={isDeleting}
-                                    className="w-full sm:w-auto border-ColorTwo text-ColorTwo hover:bg-lamaPurpleLight"
-                                  >
-                                    Cancel
-                                  </Button>
-                                  <Button
-                                    variant="destructive"
-                                    onClick={() =>
-                                      handleDeleteConfirm(Number(request.id))
-                                    }
-                                    disabled={isDeleting}
-                                    className="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-2 rounded-lg transition-all duration-200 hover:scale-105"
-                                  >
-                                    {isDeleting ? (
-                                      <div className="flex items-center gap-2">
-                                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                                        Deleting...
-                                      </div>
-                                    ) : (
-                                      <>
-                                        <Trash2 className="h-4 w-4" />
-                                        Delete Proxy
-                                      </>
-                                    )}
-                                  </Button>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
-                          )}
+                              </div>
+                              <DialogFooter className="flex flex-col sm:flex-row gap-2">
+                                <Button
+                                  variant="outline"
+                                  onClick={handleDeleteCancel}
+                                  disabled={isDeleting}
+                                  className="w-full sm:w-auto border-ColorTwo text-ColorTwo hover:bg-lamaPurpleLight"
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  variant="destructive"
+                                  onClick={() =>
+                                    handleDeleteConfirm(Number(request.id))
+                                  }
+                                  disabled={isDeleting}
+                                  className="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-2 rounded-lg transition-all duration-200 hover:scale-105"
+                                >
+                                  {isDeleting ? (
+                                    <div className="flex items-center gap-2">
+                                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                                      Deleting...
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <Trash2 className="h-4 w-4" />
+                                      Delete Proxy
+                                    </>
+                                  )}
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
                         </div>
                       </div>
                     </CardHeader>

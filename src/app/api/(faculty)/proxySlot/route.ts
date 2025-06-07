@@ -6,20 +6,6 @@ const getFacultyById = async (id: string) => {
   return await prisma.user.findUnique({ where: { id } })
 }
 
-const getSlotById = async (slotId: string) => {
-  return await prisma.slot.findUnique({
-    where: { id: Number(slotId) },
-    include: {
-      faculty: {
-        include: {
-          user: true
-        }
-      },
-      class: true
-    }
-  })
-}
-
 const getProxySlotById = async (id: string) => {
   return await prisma.proxySlot.findUnique({ where: { id: Number(id) } })
 }
@@ -39,35 +25,61 @@ export async function PATCH(req: Request) {
     }
 
     try {
-      // Send email notification for status change
-      const proxySlot = await getProxySlotById(String(proxyId))
-      const slot = await getSlotById(String(proxySlot?.slotId))
-      const fromFaculty = await getFacultyById(String(slot?.facultyId))
-      const toLecturer = await getFacultyById(String(proxySlot?.lecturerId))
-
       const updated = await prisma.proxySlot.update({
         where: { id: Number(proxyId) },
-        data: { status }
+        data: { status },
+        include: {
+          slot: {
+            include: {
+              faculty: {
+                include: {
+                  user: true
+                }
+              },
+              class: true
+            }
+          },
+          lecturer: {
+            include: {
+              user: true
+            }
+          }
+        }
       })
 
-      await handleProxyEmail({
-        type: "STATUS_CHANGE", // or other type
-        fromFaculty: fromFaculty
-          ? { name: fromFaculty.name, email: fromFaculty.email }
-          : undefined,
-        toLecturer: toLecturer
-          ? { name: toLecturer.name, email: toLecturer.email }
-          : undefined,
-        slot: {
-          startTime: slot?.startTime,
-          endTime: slot?.endTime,
-          title: slot?.title,
-          location: slot?.location,
-          className: slot?.class?.name
-        },
-        date,
-        status
-      })
+      try {
+        // // Send email notification for status change
+        await handleProxyEmail({
+          type: "STATUS_CHANGE", // or other type
+          fromFaculty: updated?.slot?.faculty?.user
+            ? {
+                name: updated?.slot?.faculty?.user?.name,
+                email: updated?.slot?.faculty?.user?.email
+              }
+            : undefined,
+          toLecturer: updated?.lecturer?.user
+            ? {
+                name: updated?.lecturer?.user?.name,
+                email: updated?.lecturer?.user?.email
+              }
+            : undefined,
+          slot: {
+            startTime: updated?.slot?.startTime,
+            endTime: updated?.slot?.endTime,
+            title: updated?.slot?.title,
+            location: updated?.slot?.location,
+            className: updated?.slot?.class?.name
+          },
+          date,
+          status
+        })
+      } catch (error) {
+        console.error("Error while sending email for proxy slot status:", error)
+        return NextResponse.json(
+          { message: "Failed to send email" },
+          { status: 500 }
+        )
+      }
 
       return NextResponse.json(
         { message: `Proxy slot ${status.toLowerCase()} successfully`, updated },
@@ -91,10 +103,7 @@ export async function PATCH(req: Request) {
     try {
       // Send email notification
       const oldProxy = await getProxySlotById(String(editingProxyId))
-      const slot = await getSlotById(String(slotId))
-      const fromFaculty = await getFacultyById(String(slot?.facultyId))
       const oldLecturer = await getFacultyById(String(oldProxy?.lecturerId))
-      const toLecturer = await getFacultyById(String(lecturerId))
 
       // Update existing proxy slot
       const updatedProxySlot = await prisma.proxySlot.update({
@@ -104,30 +113,61 @@ export async function PATCH(req: Request) {
           lecturerId: String(lecturerId),
           reason: reason || "No reason provided",
           date: String(date)
+        },
+        include: {
+          slot: {
+            include: {
+              faculty: {
+                include: {
+                  user: true
+                }
+              },
+              class: true
+            }
+          },
+          lecturer: {
+            include: {
+              user: true
+            }
+          }
         }
       })
 
-      await handleProxyEmail({
-        type: "UPDATE_LECTURER",
-        fromFaculty: fromFaculty
-          ? { name: fromFaculty.name, email: fromFaculty.email }
-          : undefined,
-        toLecturer: toLecturer
-          ? { name: toLecturer.name, email: toLecturer.email }
-          : undefined,
-        oldLecturer: oldLecturer
-          ? { name: oldLecturer.name, email: oldLecturer.email }
-          : undefined,
-        slot: {
-          startTime: slot?.startTime,
-          endTime: slot?.endTime,
-          title: slot?.title,
-          location: slot?.location,
-          className: slot?.class?.name
-        },
-        reason,
-        date
-      })
+      try {
+        await handleProxyEmail({
+          type: "UPDATE_LECTURER",
+          fromFaculty: updatedProxySlot?.slot?.faculty?.user
+            ? {
+                name: updatedProxySlot?.slot?.faculty?.user?.name,
+                email: updatedProxySlot?.slot?.faculty?.user?.email
+              }
+            : undefined,
+          toLecturer: updatedProxySlot?.lecturer?.user
+            ? {
+                name: updatedProxySlot?.lecturer?.user?.name,
+                email: updatedProxySlot?.lecturer?.user?.email
+              }
+            : undefined,
+          oldLecturer: oldLecturer
+            ? { name: oldLecturer.name, email: oldLecturer.email }
+            : undefined,
+          slot: {
+            startTime: updatedProxySlot?.slot?.startTime,
+            endTime: updatedProxySlot?.slot?.endTime,
+            title: updatedProxySlot?.slot?.title,
+            location: updatedProxySlot?.slot?.location,
+            className: updatedProxySlot?.slot?.class?.name
+          },
+          reason,
+          date
+        })
+      } catch (error) {
+        console.error("Error while sending email for proxy slot update:", error)
+        return NextResponse.json(
+          { message: "Failed to send email" },
+          { status: 500 }
+        )
+      }
 
       return NextResponse.json(
         { message: "Proxy slot updated successfully", updatedProxySlot },
@@ -156,32 +196,62 @@ export async function PATCH(req: Request) {
           reason: reason || "No reason provided",
           status: "PENDING",
           date: String(date)
+        },
+        include: {
+          slot: {
+            include: {
+              faculty: {
+                include: {
+                  user: true
+                }
+              },
+              class: true
+            }
+          },
+          lecturer: {
+            include: {
+              user: true
+            }
+          }
         }
       })
 
-      // Send email notification
-      const slot = await getSlotById(String(slotId))
-      const fromFaculty = await getFacultyById(String(slot?.facultyId)) // example field
-      const toLecturer = await getFacultyById(String(lecturerId))
-
-      await handleProxyEmail({
-        type: "NEW_REQUEST",
-        fromFaculty: fromFaculty
-          ? { name: fromFaculty.name, email: fromFaculty.email }
-          : undefined,
-        toLecturer: toLecturer
-          ? { name: toLecturer.name, email: toLecturer.email }
-          : undefined,
-        slot: {
-          startTime: slot?.startTime,
-          endTime: slot?.endTime,
-          title: slot?.title,
-          location: slot?.location,
-          className: slot?.class?.name
-        },
-        reason,
-        date
-      })
+      try {
+        // Send email notification
+        await handleProxyEmail({
+          type: "NEW_REQUEST",
+          fromFaculty: proxySlot?.slot?.faculty?.user
+            ? {
+                name: proxySlot?.slot?.faculty?.user?.name,
+                email: proxySlot?.slot?.faculty?.user?.email
+              }
+            : undefined,
+          toLecturer: proxySlot?.lecturer?.user
+            ? {
+                name: proxySlot?.lecturer?.user?.name,
+                email: proxySlot?.lecturer?.user?.email
+              }
+            : undefined,
+          slot: {
+            startTime: proxySlot?.slot?.startTime,
+            endTime: proxySlot?.slot?.endTime,
+            title: proxySlot?.slot?.title,
+            location: proxySlot?.slot?.location,
+            className: proxySlot?.slot?.class?.name
+          },
+          reason,
+          date
+        })
+      } catch (error) {
+        console.error(
+          "Error while sending email for proxy slot creation:",
+          error
+        )
+        return NextResponse.json(
+          { message: "Failed to send email" },
+          { status: 500 }
+        )
+      }
 
       return NextResponse.json(
         { message: "Proxy slot created successfully", proxySlot },
@@ -245,33 +315,59 @@ export async function DELETE(req: Request) {
   }
 
   try {
-    const oldProxy = await getProxySlotById(String(id))
-    const slot = await getSlotById(String(oldProxy?.slotId))
-    const fromFaculty = await getFacultyById(String(slot?.facultyId))
-    const toLecturer = await getFacultyById(String(oldProxy?.lecturerId))
-
     const deletedProxySlot = await prisma.proxySlot.delete({
-      where: { id: Number(id) }
+      where: { id: Number(id) },
+      include: {
+        slot: {
+          include: {
+            faculty: {
+              include: {
+                user: true
+              }
+            },
+            class: true
+          }
+        },
+        lecturer: {
+          include: {
+            user: true
+          }
+        }
+      }
     })
 
-    // Send email notification for deletion
-    await handleProxyEmail({
-      type: "DELETE_APPROVED",
-      fromFaculty: fromFaculty
-        ? { name: fromFaculty.name, email: fromFaculty.email }
-        : undefined,
-      toLecturer: toLecturer
-        ? { name: toLecturer.name, email: toLecturer.email }
-        : undefined,
-      slot: {
-        startTime: slot?.startTime,
-        endTime: slot?.endTime,
-        title: slot?.title,
-        location: slot?.location,
-        className: slot?.class?.name
-      },
-      date: deletedProxySlot.date
-    })
+    try {
+      // Send email notification for deletion
+      await handleProxyEmail({
+        type: "DELETE_APPROVED",
+        fromFaculty: deletedProxySlot?.slot?.faculty?.user
+          ? {
+              name: deletedProxySlot?.slot?.faculty?.user?.name,
+              email: deletedProxySlot?.slot?.faculty?.user?.email
+            }
+          : undefined,
+        toLecturer: deletedProxySlot?.lecturer?.user
+          ? {
+              name: deletedProxySlot?.lecturer?.user?.name,
+              email: deletedProxySlot?.lecturer?.user?.email
+            }
+          : undefined,
+        slot: {
+          startTime: deletedProxySlot?.slot?.startTime,
+          endTime: deletedProxySlot?.slot?.endTime,
+          title: deletedProxySlot?.slot?.title,
+          location: deletedProxySlot?.slot?.location,
+          className: deletedProxySlot?.slot?.class?.name
+        },
+        date: deletedProxySlot.date
+      })
+    } catch (error) {
+      console.error("Error while sending email for proxy slot deletion:", error)
+      return NextResponse.json(
+        { message: "Failed to send email" },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json(
       { message: "Proxy slot deleted successfully", deletedProxySlot },
