@@ -2,51 +2,6 @@ import React from "react"
 import { Calendar, Clock, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-const getBackgroundColor = (tag: string) => {
-  switch (tag) {
-    case "lecture":
-      return "#E3F2FD" // Soft blue
-    case "lab":
-      return "#F3E5F5" // Soft purple
-    case "seminar":
-      return "#FFF8E1" // Soft yellow
-    case "break":
-      return "#CBF5CB" // Soft Blue Romance
-    default:
-      return "#ffffff" // White
-  }
-}
-
-const getBorderColor = (tag: string) => {
-  switch (tag) {
-    case "lecture":
-      return "#90CAF9" // Darker blue border
-    case "lab":
-      return "#CE93D8" // Darker purple border
-    case "seminar":
-      return "#FFE082" // Darker yellow border
-    case "break":
-      return "#7BE37B" // Darker paster green
-    default:
-      return "#e5e7eb" // Default gray border
-  }
-}
-
-const getTagClass = (tag: string) => {
-  switch (tag) {
-    case "lecture":
-      return "bg-blue-100 text-blue-800"
-    case "lab":
-      return "bg-purple-100 text-purple-800"
-    case "seminar":
-      return "bg-amber-100 text-amber-800"
-    case "break":
-      return "bg-green-100 text-green-900"
-    default:
-      return "bg-gray-100 text-gray-800"
-  }
-}
-
 type SlotsContentProps = {
   sortedSlots: any[]
   getProxyStatusForSlot: (slot: any) => string
@@ -66,7 +21,7 @@ const SlotsContent: React.FC<SlotsContentProps> = ({
     <div className="p-4 sm:p-6">
       {sortedSlots.length > 0 ? (
         <div className="space-y-4 sm:space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-gradient-to-r from-blue-50/80 to-purple-50/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-blue-100/50">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-blue-50/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-blue-100/50">
             <div className="flex items-center mb-3 sm:mb-0">
               <div className="p-2 bg-blue-100 rounded-lg mr-3">
                 <Clock className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-blue-600" />
@@ -85,7 +40,7 @@ const SlotsContent: React.FC<SlotsContentProps> = ({
                 return (
                   <span
                     key={tag}
-                    className={`px-2 sm:px-3 py-1 rounded-full text-xs font-bold ${getTagClass(tag)} shadow-sm`}
+                    className={`px-2 sm:px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800 shadow-sm`}
                   >
                     {count} {tag}
                     {count > 1 ? "s" : ""}
@@ -104,9 +59,7 @@ const SlotsContent: React.FC<SlotsContentProps> = ({
                   key={slot.id}
                   className="group relative rounded-2xl md:rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1 hover:scale-[1.02] border-l-4 md:border-l-6 overflow-hidden bg-gradient-to-r from-white/95 to-white/90 backdrop-blur-sm hover:from-white hover:to-white/95 border border-gray-100/50"
                   style={{
-                    borderLeftColor: getBorderColor(
-                      slot.isProxy ? slot.slot.tag : slot.tag
-                    )
+                    borderLeftColor: "#CE93D8"
                   }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-gray-50/20 pointer-events-none" />
@@ -143,32 +96,7 @@ const SlotsContent: React.FC<SlotsContentProps> = ({
                               size="sm"
                               variant="outline"
                               onClick={() => openProxyDialog(slot.id)}
-                              className="font-semibold px-4 md:px-6 py-2 md:py-2.5 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 shadow-sm hover:shadow-md whitespace-nowrap"
-                              style={
-                                {
-                                  "--hover-border-color": getBorderColor(
-                                    slot.tag
-                                  ),
-                                  "--hover-bg-color":
-                                    getBackgroundColor(slot.tag) + "20",
-                                  "--hover-text-color": getBorderColor(slot.tag)
-                                } as any
-                              }
-                              onMouseEnter={(e) => {
-                                const target = e.target as HTMLButtonElement
-                                target.style.borderColor = getBorderColor(
-                                  slot.tag
-                                )
-                                target.style.backgroundColor =
-                                  getBackgroundColor(slot.tag) + "20"
-                                target.style.color = getBorderColor(slot.tag)
-                              }}
-                              onMouseLeave={(e) => {
-                                const target = e.target as HTMLButtonElement
-                                target.style.borderColor = ""
-                                target.style.backgroundColor = ""
-                                target.style.color = ""
-                              }}
+                              className="font-semibold px-4 md:px-6 py-2 md:py-2.5 rounded-xl border-2 transition-all duration-300 hover:border-ColorTwo transform hover:text-ColorTwo hover:scale-105 shadow-sm hover:shadow-md whitespace-nowrap"
                             >
                               {proxyStatus === "DECLINE" ||
                               proxyStatus === "PENDING"
@@ -218,7 +146,7 @@ const SlotsContent: React.FC<SlotsContentProps> = ({
                         </div>
                         <div className="flex">
                           <div
-                            className={`w-full flex items-center justify-center px-4 py-3 rounded-xl text-sm font-black uppercase tracking-wider ${getTagClass(slot.isProxy ? slot.slot.tag : slot.tag)} shadow-md ring-1 ring-white/30 transform group-hover:scale-105 transition-all duration-300`}
+                            className={`w-full flex items-center justify-center px-4 py-3 rounded-xl text-sm font-black uppercase tracking-wider bg-purple-100 text-purple-800 shadow-md ring-1 ring-white/30 transform group-hover:scale-105 transition-all duration-300`}
                           >
                             <span>
                               {slot.isProxy ? slot.slot.tag : slot.tag}
@@ -234,32 +162,7 @@ const SlotsContent: React.FC<SlotsContentProps> = ({
                             size="sm"
                             variant="outline"
                             onClick={() => openProxyDialog(slot.id)}
-                            className="font-semibold px-6 py-2.5 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 shadow-sm hover:shadow-md w-full max-w-xs"
-                            style={
-                              {
-                                "--hover-border-color": getBorderColor(
-                                  slot.tag
-                                ),
-                                "--hover-bg-color":
-                                  getBackgroundColor(slot.tag) + "20",
-                                "--hover-text-color": getBorderColor(slot.tag)
-                              } as any
-                            }
-                            onMouseEnter={(e) => {
-                              const target = e.target as HTMLButtonElement
-                              target.style.borderColor = getBorderColor(
-                                slot.tag
-                              )
-                              target.style.backgroundColor =
-                                getBackgroundColor(slot.tag) + "20"
-                              target.style.color = getBorderColor(slot.tag)
-                            }}
-                            onMouseLeave={(e) => {
-                              const target = e.target as HTMLButtonElement
-                              target.style.borderColor = ""
-                              target.style.backgroundColor = ""
-                              target.style.color = ""
-                            }}
+                            className="font-semibold px-6 py-2.5 rounded-xl border-2 transition-all duration-300 hover:border-ColorTwo transform hover:text-ColorTwo hover:scale-105 shadow-sm hover:shadow-md w-full max-w-xs"
                           >
                             {proxyStatus === "DECLINE" ||
                             proxyStatus === "PENDING"
@@ -278,7 +181,7 @@ const SlotsContent: React.FC<SlotsContentProps> = ({
                   <div
                     className="absolute bottom-0 left-0 right-0 h-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                     style={{
-                      background: `linear-gradient(to right, transparent, ${getBorderColor(slot.isProxy ? slot.slot.tag : slot.tag)}40, transparent)`
+                      background: `linear-gradient(to right, transparent,"#CE93D8"40, transparent)`
                     }}
                   />
                 </div>
