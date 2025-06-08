@@ -66,51 +66,6 @@ function getRollingDays(startOffset = -1, count = 3) {
   })
 }
 
-const getBackgroundColor = (tag: string) => {
-  switch (tag) {
-    case "lecture":
-      return "#E3F2FD" // Soft blue
-    case "lab":
-      return "#F3E5F5" // Soft purple
-    case "seminar":
-      return "#FFF8E1" // Soft yellow
-    case "break":
-      return "#CBF5CB" // Soft Blue Romance
-    default:
-      return "#ffffff" // White
-  }
-}
-
-const getBorderColor = (tag: string) => {
-  switch (tag) {
-    case "lecture":
-      return "#90CAF9" // Darker blue border
-    case "lab":
-      return "#CE93D8" // Darker purple border
-    case "seminar":
-      return "#FFE082" // Darker yellow border
-    case "break":
-      return "#7BE37B" // Darker paster green
-    default:
-      return "#e5e7eb" // Default gray border
-  }
-}
-
-const getTagClass = (tag: string) => {
-  switch (tag) {
-    case "lecture":
-      return "bg-blue-100 text-blue-800"
-    case "lab":
-      return "bg-purple-100 text-purple-800"
-    case "seminar":
-      return "bg-amber-100 text-amber-800"
-    case "break":
-      return "bg-green-100 text-green-900"
-    default:
-      return "bg-gray-100 text-gray-800"
-  }
-}
-
 const getStatusColor = (status: string) => {
   switch (status) {
     case "APPROVED":
@@ -475,9 +430,6 @@ export default function Page() {
         setIsDeclineDialogOpen={setIsDeclineDialogOpen}
         sortedSlots={sortedSlots}
         getProxyStatusForSlot={getProxyStatusForSlot}
-        getBorderColor={getBorderColor}
-        getBackgroundColor={getBackgroundColor}
-        getTagClass={getTagClass}
         openProxyDialog={openProxyDialog}
         ConfirmationDialogContent={ConfirmationDialogContent}
         handleDeleteClick={handleDeleteClick}

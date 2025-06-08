@@ -337,7 +337,7 @@ export async function sendProxyEmail({
 
     await transporter.sendMail({
       from: `"Proxy System" <${process.env.EMAIL_USER}>`,
-      to: "pu9052473@gmail.com" + "kp648027@gmail.com " + recipients.join(", "),
+      to: recipients.join(", "),
       subject,
       html: htmlContent
     })

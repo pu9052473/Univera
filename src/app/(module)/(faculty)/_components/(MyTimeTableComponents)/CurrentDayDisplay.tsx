@@ -20,9 +20,6 @@ type CurrentDayDisplayProps = {
   setIsDeclineDialogOpen: (open: boolean) => void
   sortedSlots: any[]
   getProxyStatusForSlot: (slot: any) => string
-  getBorderColor: (slot: any) => string
-  getBackgroundColor: (slot: any) => string
-  getTagClass: (tag: string) => string
   openProxyDialog: (slot: any) => void
   ConfirmationDialogContent: React.FC<{
     action: string
@@ -52,9 +49,6 @@ const CurrentDayDisplay: React.FC<CurrentDayDisplayProps> = ({
   setIsDeclineDialogOpen,
   sortedSlots,
   getProxyStatusForSlot,
-  getBorderColor,
-  getBackgroundColor,
-  getTagClass,
   openProxyDialog,
   ConfirmationDialogContent,
   deleteDialogOpen,
@@ -115,9 +109,6 @@ const CurrentDayDisplay: React.FC<CurrentDayDisplayProps> = ({
       <SlotsContent
         sortedSlots={sortedSlots}
         getProxyStatusForSlot={getProxyStatusForSlot}
-        getBorderColor={getBorderColor}
-        getBackgroundColor={getBackgroundColor}
-        getTagClass={getTagClass}
         openProxyDialog={openProxyDialog}
         ConfirmationDialogContent={ConfirmationDialogContent}
       />

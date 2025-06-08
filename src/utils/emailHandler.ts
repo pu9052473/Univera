@@ -1,5 +1,3 @@
-// utils/emailHandler.ts
-
 import { sendProxyEmail } from "./sendProxyEmail"
 
 interface EmailHandlerInput {
