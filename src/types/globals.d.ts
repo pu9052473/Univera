@@ -183,4 +183,5 @@ export interface attendacePayload {
   attendance: Record<string, string>
   attendanceId?: string
   attendanceDate?: string
+  isLock?: boolean
 }

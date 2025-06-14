@@ -228,6 +228,7 @@ export default function AttendancePage() {
     if (slotAttendance) {
       payload.attendanceId = slotAttendance.id
       payload.attendanceDate = slotAttendance.date
+      payload.isLock = slotAttendance.isLock
     }
 
     try {
