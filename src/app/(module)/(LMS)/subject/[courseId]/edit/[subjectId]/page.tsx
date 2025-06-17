@@ -55,18 +55,18 @@ export default function EditSubjectPage() {
     fetchSubjects()
   }, [subjectId, courseId])
 
-  const handleUpdateSubject = async (updatedData: any) => {
-    try {
-      const res = await axios.put(`/api/subjects/${subjectId}`, updatedData)
-      if (res.status === 200) {
-        toast.success("Subject updated successfully!")
-        router.push(`/subject/${courseId}`)
-      }
-    } catch (error) {
-      console.error("Error updating subject:", error)
-      toast.error("Something went wrong while updating the subject.")
-    }
-  }
+  // const handleUpdateSubject = async (updatedData: any) => {
+  //   try {
+  //     const res = await axios.put(`/api/subjects/${subjectId}`, updatedData)
+  //     if (res.status === 200) {
+  //       toast.success("Subject updated successfully!")
+  //       router.push(`/subject/${courseId}`)
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating subject:", error)
+  //     toast.error("Something went wrong while updating the subject.")
+  //   }
+  // }
 
   const handleDeleteClick = async () => {
     try {

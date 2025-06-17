@@ -133,6 +133,7 @@ export default function ClassTimeTable() {
   const containerRef = useRef<HTMLDivElement>(null)
   const userRoles = user?.roles?.map((role: any) => role.id) || []
   const isCoordinator = userRoles.includes(5)
+  const isStudent = userRoles.includes(7)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [slotToDelete, setSlotToDelete] = useState<{
     day: string
@@ -585,6 +586,7 @@ export default function ClassTimeTable() {
     <div className="mx-auto p-4">
       <TimetableHeader
         isCoordinator={isCoordinator}
+        isStudent={isStudent}
         handleZoom={handleZoom}
         saveTimetableSlotsToDb={saveTimetableSlotsToDb}
         handleFileChange={handleFileChange}

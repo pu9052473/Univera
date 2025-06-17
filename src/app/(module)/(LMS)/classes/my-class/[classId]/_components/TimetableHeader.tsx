@@ -18,6 +18,7 @@ import {
 
 interface TimetableHeaderProps {
   isCoordinator: boolean
+  isStudent: boolean
   handleZoom: (delta: number) => void
   saveTimetableSlotsToDb: () => Promise<void>
   handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void
@@ -28,6 +29,7 @@ const TimetableHeader: React.FC<TimetableHeaderProps> = ({
   isCoordinator,
   handleZoom,
   saveTimetableSlotsToDb,
+  isStudent,
   handleFileChange,
   downloadTemplate
 }) => {
@@ -76,7 +78,7 @@ const TimetableHeader: React.FC<TimetableHeaderProps> = ({
           {/* Action buttons for larger screens */}
           <div className="hidden lg:flex items-center gap-3">
             {/* Access indicator */}
-            {!isCoordinator && (
+            {!isStudent && !isCoordinator && (
               <div className="bg-amber-50 border border-amber-100 text-red-500 px-3 py-2 rounded-lg flex items-center gap-2">
                 <Info size={16} className="text-red-500 flex-shrink-0" />
                 <p className="text-sm font-medium">

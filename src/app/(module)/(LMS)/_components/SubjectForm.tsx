@@ -1,5 +1,4 @@
 "use client"
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react"
 import { useState } from "react"
 import axios from "axios"
@@ -7,7 +6,6 @@ import { Department } from "@prisma/client"
 import toast from "react-hot-toast"
 import { useRouter } from "next/navigation"
 import { Subject } from "@prisma/client"
-import Skeleton from "react-loading-skeleton"
 import "react-loading-skeleton/dist/skeleton.css" // Import default styles
 
 interface SubjectFormProps {

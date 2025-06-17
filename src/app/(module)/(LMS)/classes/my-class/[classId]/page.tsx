@@ -2,9 +2,9 @@
 
 import React from "react"
 import { useParams, useRouter } from "next/navigation"
-import { ExploreGrid } from "@/app/(module)/(faculty)/_components/DashboardComponents"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
+import { ExploreGrid } from "@/app/(module)/(faculty)/dashboard/_components/DashboardComponents"
 
 export default function Page() {
   const router = useRouter()

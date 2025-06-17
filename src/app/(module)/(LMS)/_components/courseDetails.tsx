@@ -1,5 +1,4 @@
 "use client"
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import React, { ChangeEvent, useEffect, useState } from "react"
 import * as z from "zod"
@@ -46,7 +45,6 @@ export const CourseDetials: React.FC<CourseDetailsProps> = ({
     )
   const [editingField, setEditingField] = useState<string | null>(null)
   const [isDirty, setIsDirty] = useState(false)
-  const [loading, setLoading] = useState(false)
   const fields = ["name", "code", "totalSemister"]
 
   useEffect(() => {
@@ -132,7 +130,6 @@ export const CourseDetials: React.FC<CourseDetailsProps> = ({
     }
 
     try {
-      setLoading(true)
       const response = await axios.patch(
         `/api/courses/${courseId}?courseId=${courseId}`,
         payload
@@ -150,8 +147,6 @@ export const CourseDetials: React.FC<CourseDetailsProps> = ({
       } else {
         toast.error("An unexpected error occurred")
       }
-    } finally {
-      setLoading(false)
     }
   }
 
