@@ -97,9 +97,9 @@ const SlotsContent: React.FC<SlotsContentProps> = ({
                           className={`hidden sm:flex gap-2 ${proxyStatus === "APPROVED" ? "sm:hidden" : ""}`}
                         >
                           {proxyStatus !== "APPROVED" &&
-                            currentDate === todayDate && (
+                            new Date(currentDate) <= new Date(todayDate) && (
                               <Link
-                                href={`/dashboard/time-table/${slot.isProxy ? slot.slot.id : slot.id}/attendance`}
+                                href={`/dashboard/time-table/${slot.isProxy ? slot.slot.id : slot.id}/attendance?date=${currentDate}`}
                               >
                                 <Button
                                   size="sm"
@@ -183,9 +183,9 @@ const SlotsContent: React.FC<SlotsContentProps> = ({
                         className={`sm:hidden ${proxyStatus === "APPROVED" ? "hidden" : ""}`}
                       >
                         {proxyStatus !== "APPROVED" &&
-                          currentDate === todayDate && (
+                          new Date(currentDate) <= new Date(todayDate) && (
                             <Link
-                              href={`/dashboard/time-table/${slot.isProxy ? slot.slot.id : slot.id}/attendance`}
+                              href={`/dashboard/time-table/${slot.isProxy ? slot.slot.id : slot.id}/attendance?date=${currentDate}`}
                             >
                               <Button
                                 size="sm"
