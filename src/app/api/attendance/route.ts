@@ -8,6 +8,7 @@ export async function PATCH(req: Request) {
       classId,
       slotId,
       date,
+      todayDate,
       subjectId,
       facultyId,
       courseId,
@@ -23,6 +24,7 @@ export async function PATCH(req: Request) {
       !classId ||
       !slotId ||
       !date ||
+      !todayDate ||
       !subjectId ||
       !facultyId ||
       !courseId ||
@@ -39,7 +41,7 @@ export async function PATCH(req: Request) {
     // If `existingId` is present, handle update
     try {
       if (attendanceId && attendanceDate) {
-        if (attendanceDate !== date) {
+        if (attendanceDate !== todayDate) {
           if (isLock) {
             return NextResponse.json(
               {
@@ -68,23 +70,41 @@ export async function PATCH(req: Request) {
       )
     }
 
-    // Create
-    const created = await prisma.attendanceRecord.create({
-      data: {
-        classId,
-        slotId: Number(slotId),
-        date,
-        subjectId,
-        facultyId,
-        courseId,
-        departmentId,
-        universityId,
-        attendance,
-        isLock: true
+    try {
+      if (date !== todayDate) {
+        return NextResponse.json(
+          {
+            error: "You can only fill attendance on the same day of slot"
+          },
+          { status: 403 }
+        )
       }
-    })
+      // Create
+      const created = await prisma.attendanceRecord.create({
+        data: {
+          classId,
+          slotId: Number(slotId),
+          date: todayDate,
+          subjectId,
+          facultyId,
+          courseId,
+          departmentId,
+          universityId,
+          attendance,
+          isLock: true
+        }
+      })
 
-    return NextResponse.json(created, { status: 201 })
+      return NextResponse.json(created, { status: 201 })
+    } catch (error) {
+      return NextResponse.json(
+        {
+          error: "Error while filling attendance",
+          details: error
+        },
+        { status: 500 }
+      )
+    }
   } catch (error: any) {
     console.error("Attendance PATCH error:", error)
     return NextResponse.json(

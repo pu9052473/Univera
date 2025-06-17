@@ -101,9 +101,9 @@ const SlotsContent: React.FC<SlotsContentProps> = ({
                           className={`hidden sm:flex gap-2 ${proxyStatus === "APPROVED" ? "sm:hidden" : ""}`}
                         >
                           {proxyStatus !== "APPROVED" &&
-                            currentDate === todayDate && (
+                            new Date(currentDate) <= new Date(todayDate) && (
                               <Link
-                                href={`/dashboard/time-table/${slot.isProxy ? slot.slot.id : slot.id}/attendance`}
+                                href={`/dashboard/time-table/${slot.isProxy ? slot.slot.id : slot.id}/attendance?date=${currentDate}`}
                               >
                                 <Button
                                   size="sm"
@@ -187,9 +187,9 @@ const SlotsContent: React.FC<SlotsContentProps> = ({
                         className={`sm:hidden ${proxyStatus === "APPROVED" ? "hidden" : ""}`}
                       >
                         {proxyStatus !== "APPROVED" &&
-                          currentDate === todayDate && (
+                          new Date(currentDate) <= new Date(todayDate) && (
                             <Link
-                              href={`/dashboard/time-table/${slot.isProxy ? slot.slot.id : slot.id}/attendance`}
+                              href={`/dashboard/time-table/${slot.isProxy ? slot.slot.id : slot.id}/attendance?date=${currentDate}`}
                             >
                               <Button
                                 size="sm"
@@ -239,20 +239,22 @@ const SlotsContent: React.FC<SlotsContentProps> = ({
           </div>
         </div>
       ) : (
-        <div className="text-center py-12 sm:py-16 lg:py-24">
-          <div className="mb-6 sm:mb-8">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mx-auto mb-4 p-4 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full">
-              <Calendar className="w-full h-full text-blue-500" />
+        !isLoading && (
+          <div className="text-center py-12 sm:py-16 lg:py-24">
+            <div className="mb-6 sm:mb-8">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mx-auto mb-4 p-4 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full">
+                <Calendar className="w-full h-full text-blue-500" />
+              </div>
             </div>
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-black mb-3 sm:mb-4 text-gray-800">
+              No Classes Scheduled
+            </h3>
+            <p className="text-sm sm:text-base lg:text-lg text-gray-600 max-w-md mx-auto px-4">
+              You have a free day! Perfect time to relax or catch up on other
+              tasks.
+            </p>
           </div>
-          <h3 className="text-xl sm:text-2xl lg:text-3xl font-black mb-3 sm:mb-4 text-gray-800">
-            No Classes Scheduled
-          </h3>
-          <p className="text-sm sm:text-base lg:text-lg text-gray-600 max-w-md mx-auto px-4">
-            You have a free day! Perfect time to relax or catch up on other
-            tasks.
-          </p>
-        </div>
+        )
       )}
     </div>
   )

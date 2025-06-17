@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import axios from "axios"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import toast from "react-hot-toast"
 import { Badge } from "@/components/ui/badge"
@@ -31,21 +31,17 @@ import { Input } from "@/components/ui/input"
 import { attendacePayload } from "@/types/globals"
 import { AttendancePageSkeleton } from "@/components/(commnon)/Skeleton"
 
-// Define Slot and Student types if not imported from elsewhere
 type Student = {
   prn: string
   user: any
   id: string
   rollNo: number
-  // add other student properties if needed
 }
 
 type Slot = {
   class?: {
     students: Student[]
-    // add other class properties if needed
   }
-  // add other slot properties if needed
 }
 
 const selectdSlot = async (slotId: string) => {
@@ -68,6 +64,14 @@ const selectdSlotAttendance = async (
 
 export default function AttendancePage() {
   const { slotId } = useParams()
+  const searchParams = useSearchParams()
+  const paramsDate = searchParams.get("date")
+  const date =
+    typeof paramsDate === "string"
+      ? paramsDate
+      : Array.isArray(paramsDate)
+        ? (paramsDate[0] ?? "")
+        : ""
   const [attendance, setAttendance] = useState<Record<string, boolean>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [bulkRollNumbers, setBulkRollNumbers] = useState("")
@@ -86,13 +90,11 @@ export default function AttendancePage() {
     enabled: !!slotId
   })
 
-  console.log("slot", slot)
-
   const { data: slotAttendance, isLoading: isSlotAttendanceLoading } = useQuery(
     {
       queryKey: ["slotAttendance"],
       queryFn: () =>
-        selectdSlotAttendance(slotId as string, todayDate, slot?.classId),
+        selectdSlotAttendance(slotId as string, date, slot?.classId),
       enabled: !!slotId
     }
   )
@@ -218,7 +220,8 @@ export default function AttendancePage() {
       courseId: slot?.courseId,
       departmentId: slot?.departmentId,
       universityId: slot?.class?.universityId,
-      date: todayDate,
+      date,
+      todayDate,
       attendance: attendanceMap
     }
 
@@ -256,6 +259,12 @@ export default function AttendancePage() {
 
   const presentCount = Object.values(attendance).filter(Boolean).length
   const absentCount = slot?.class?.students?.length - presentCount
+
+  const isAttendanceActionable =
+    date === todayDate ||
+    (slotAttendance && !Array.isArray(slotAttendance)
+      ? !slotAttendance.isLock
+      : false)
 
   return (
     <div className="min-h-screen p-4 md:p-6">
@@ -395,63 +404,65 @@ export default function AttendancePage() {
           </div>
 
           {/* Bulk Actions Section */}
-          <Card className="bg-white shadow-lg border border-gray-200">
-            <CardHeader className="bg-blue-50 border-b border-gray-200">
-              <CardTitle className="text-lg text-gray-800 flex items-center gap-2">
-                <UserCheck className="w-5 h-5 text-blue-600" />
-                Quick Actions
-              </CardTitle>
-              <CardDescription>
-                Manage attendance efficiently with bulk operations
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Make All Present */}
-                <div className="space-y-3">
-                  <Label className="text-sm font-semibold text-gray-700">
-                    Mark All Present
-                  </Label>
-                  <Button
-                    onClick={markAllPresent}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    <UserCheck className="w-4 h-4 mr-2" />
-                    Make All Present
-                  </Button>
-                </div>
-
-                {/* Bulk Roll Number Input */}
-                <div className="space-y-3">
-                  <label
-                    htmlFor="bulkRollNumbers"
-                    className="text-sm font-semibold text-gray-700"
-                  >
-                    Mark Present by Roll Numbers
-                  </label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="bulkRollNumbers"
-                      value={bulkRollNumbers}
-                      onChange={handleBulkInputChange}
-                      placeholder="e.g., 1, 2, 3 or 1 2 3"
-                      className="flex-1"
-                    />
+          {isAttendanceActionable ? (
+            <Card className="bg-white shadow-lg border border-gray-200">
+              <CardHeader className="bg-blue-50 border-b border-gray-200">
+                <CardTitle className="text-lg text-gray-800 flex items-center gap-2">
+                  <UserCheck className="w-5 h-5 text-blue-600" />
+                  Quick Actions
+                </CardTitle>
+                <CardDescription>
+                  Manage attendance efficiently with bulk operations
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Make All Present */}
+                  <div className="space-y-3">
+                    <Label className="text-sm font-semibold text-gray-700">
+                      Mark All Present
+                    </Label>
                     <Button
-                      onClick={processBulkAttendance}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-4"
-                      disabled={!bulkRollNumbers.trim()}
+                      onClick={markAllPresent}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white"
                     >
-                      Apply
+                      <UserCheck className="w-4 h-4 mr-2" />
+                      Make All Present
                     </Button>
                   </div>
-                  <p className="text-xs text-gray-500">
-                    Enter roll numbers separated by commas or spaces
-                  </p>
+
+                  {/* Bulk Roll Number Input */}
+                  <div className="space-y-3">
+                    <label
+                      htmlFor="bulkRollNumbers"
+                      className="text-sm font-semibold text-gray-700"
+                    >
+                      Mark Present by Roll Numbers
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="bulkRollNumbers"
+                        value={bulkRollNumbers}
+                        onChange={handleBulkInputChange}
+                        placeholder="e.g., 1, 2, 3 or 1 2 3"
+                        className="flex-1"
+                      />
+                      <Button
+                        onClick={processBulkAttendance}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4"
+                        disabled={!bulkRollNumbers.trim()}
+                      >
+                        Apply
+                      </Button>
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Enter roll numbers separated by commas or spaces
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          ) : null}
 
           {/* Attendance Table */}
           <Card className="bg-white shadow-lg border border-gray-200">
@@ -481,78 +492,88 @@ export default function AttendancePage() {
                       <th className="text-left p-4 font-semibold text-gray-700 hidden lg:table-cell">
                         Email
                       </th>
-                      <th className="text-center p-4 font-semibold text-gray-700">
-                        Attendance
-                      </th>
+                      {isAttendanceActionable ? (
+                        <th className="text-center p-4 font-semibold text-gray-700">
+                          Attendance
+                        </th>
+                      ) : null}
                     </tr>
                   </thead>
                   <tbody>
-                    {slot.class.students.map((student: Student) => {
-                      const isPresent = attendance[student.id]
-                      return (
-                        <tr
-                          key={student.id}
-                          className={`border-b border-gray-100 hover:opacity-90 transition-all duration-300 ${
-                            isPresent
-                              ? "bg-green-50 hover:bg-green-100 border-l-4 border-l-green-500"
-                              : "bg-red-50 hover:bg-red-100 border-l-4 border-l-red-500"
-                          }`}
-                        >
-                          <td className="p-4">
-                            <div className="font-semibold text-gray-900">
-                              {student.rollNo}
-                            </div>
-                          </td>
-                          <td className="p-4">
-                            <div className="flex items-center gap-3">
-                              <div
-                                className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-sm ${
-                                  isPresent ? "bg-green-500" : "bg-red-500"
-                                }`}
-                              >
-                                {student.user.name.charAt(0).toUpperCase()}
+                    {[...slot.class.students]
+                      .sort((a, b) => a.rollNo - b.rollNo)
+                      .map((student: Student) => {
+                        const isPresent = attendance[student.id]
+                        return (
+                          <tr
+                            key={student.id}
+                            className={`border-b border-gray-100 hover:opacity-90 transition-all duration-300 ${
+                              isPresent
+                                ? "bg-green-50 hover:bg-green-100 border-l-4 border-l-green-500"
+                                : "bg-red-50 hover:bg-red-100 border-l-4 border-l-red-500"
+                            }`}
+                          >
+                            <td className="p-4">
+                              <div className="font-semibold text-gray-900">
+                                {student.rollNo}
                               </div>
-                              <div>
-                                <div className="font-medium text-gray-900">
-                                  {student.user.name}
+                            </td>
+                            <td className="p-4">
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-sm ${
+                                    isPresent
+                                      ? "bg-gradient-to-br from-green-500 to-green-600"
+                                      : "bg-gradient-to-br from-red-500 to-red-600"
+                                  }`}
+                                >
+                                  {student.user.name.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                  <div className="font-medium text-gray-900">
+                                    {student.user.name}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </td>
-                          <td className="p-4 hidden md:table-cell">
-                            <div className="text-gray-700 font-mono text-sm">
-                              {student.prn}
-                            </div>
-                          </td>
-                          <td className="p-4 hidden lg:table-cell">
-                            <div className="text-gray-600 text-sm">
-                              {student.user.email}
-                            </div>
-                          </td>
-                          <td className="p-4 text-center">
-                            <div className="flex items-center justify-center gap-3">
-                              <Checkbox
-                                checked={isPresent}
-                                onCheckedChange={(checked) =>
-                                  handleAttendanceChange(
-                                    student.id,
-                                    checked === true
-                                  )
-                                }
-                                className="w-5 h-5 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
-                              />
-                              <span
-                                className={`text-sm font-medium ${
-                                  isPresent ? "text-green-600" : "text-red-600"
-                                }`}
-                              >
-                                {isPresent ? "Present" : "Absent"}
-                              </span>
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
+                            </td>
+                            <td className="p-4 hidden md:table-cell">
+                              <div className="text-gray-700 font-mono text-sm">
+                                {student.prn}
+                              </div>
+                            </td>
+                            <td className="p-4 hidden lg:table-cell">
+                              <div className="text-gray-600 text-sm">
+                                {student.user.email}
+                              </div>
+                            </td>
+                            {isAttendanceActionable ? (
+                              <td className="p-4 text-center">
+                                <div className="flex items-center justify-center gap-3">
+                                  <Checkbox
+                                    checked={isPresent}
+                                    onCheckedChange={(checked) =>
+                                      handleAttendanceChange(
+                                        student.id,
+                                        checked === true
+                                      )
+                                    }
+                                    className="w-5 h-5 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                                  />
+                                  <span
+                                    className={`text-sm font-medium ${
+                                      isPresent
+                                        ? "text-green-600"
+                                        : "text-red-600"
+                                    }`}
+                                  >
+                                    {isPresent ? "Present" : "Absent"}
+                                  </span>
+                                </div>
+                              </td>
+                            ) : null}
+                          </tr>
+                        )
+                      })}
                   </tbody>
                 </table>
               </div>
@@ -595,25 +616,27 @@ export default function AttendancePage() {
                           </div>
 
                           {/* Attendance Toggle */}
-                          <div className="flex flex-col items-center gap-2 ml-4">
-                            <Checkbox
-                              checked={isPresent}
-                              onCheckedChange={(checked) =>
-                                handleAttendanceChange(
-                                  student.id,
-                                  checked === true
-                                )
-                              }
-                              className="w-6 h-6 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
-                            />
-                            <span
-                              className={`text-xs font-semibold ${
-                                isPresent ? "text-green-600" : "text-red-600"
-                              }`}
-                            >
-                              {isPresent ? "Present" : "Absent"}
-                            </span>
-                          </div>
+                          {isAttendanceActionable ? (
+                            <div className="flex flex-col items-center gap-2 ml-4">
+                              <Checkbox
+                                checked={isPresent}
+                                onCheckedChange={(checked) =>
+                                  handleAttendanceChange(
+                                    student.id,
+                                    checked === true
+                                  )
+                                }
+                                className="w-6 h-6 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                              />
+                              <span
+                                className={`text-xs font-semibold ${
+                                  isPresent ? "text-green-600" : "text-red-600"
+                                }`}
+                              >
+                                {isPresent ? "Present" : "Absent"}
+                              </span>
+                            </div>
+                          ) : null}
                         </div>
                       </div>
                     )
@@ -624,29 +647,31 @@ export default function AttendancePage() {
           </Card>
 
           {/* Submit Button */}
-          <div className="flex justify-center pb-6">
-            <Button
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className={`px-8 py-3 text-lg font-semibold transition-all duration-300 ${
-                isSubmitting
-                  ? "bg-green-600 hover:bg-green-700"
-                  : "bg-blue-600  hover:from-blue-700 "
-              } text-white shadow-lg hover:shadow-xl transform hover:scale-105`}
-            >
-              {isSubmitting ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Submitting...
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <Save className="w-5 h-5" />
-                  Submit Attendance
-                </div>
-              )}
-            </Button>
-          </div>
+          {isAttendanceActionable ? (
+            <div className="flex justify-center pb-6">
+              <Button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className={`px-8 py-3 text-lg font-semibold transition-all duration-300 ${
+                  isSubmitting
+                    ? "bg-green-600 hover:bg-green-700"
+                    : "bg-blue-600  hover:from-blue-700 "
+                } text-white shadow-lg hover:shadow-xl transform hover:scale-105`}
+              >
+                {isSubmitting ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Submitting...
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Save className="w-5 h-5" />
+                    Submit Attendance
+                  </div>
+                )}
+              </Button>
+            </div>
+          ) : null}
         </div>
       )}
     </div>

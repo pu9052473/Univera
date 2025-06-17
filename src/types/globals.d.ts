@@ -184,4 +184,5 @@ export interface attendacePayload {
   attendanceId?: string
   attendanceDate?: string
   isLock?: boolean
+  todayDate: string
 }

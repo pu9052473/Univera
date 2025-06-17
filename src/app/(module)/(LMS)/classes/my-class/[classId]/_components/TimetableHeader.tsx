@@ -13,8 +13,10 @@ import {
   BookOpen,
   Users,
   Coffee,
-  FlaskConical
+  FlaskConical,
+  ArrowLeft
 } from "lucide-react"
+import Link from "next/link"
 
 interface TimetableHeaderProps {
   isCoordinator: boolean
@@ -22,6 +24,7 @@ interface TimetableHeaderProps {
   saveTimetableSlotsToDb: () => Promise<void>
   handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   downloadTemplate?: () => void
+  backButtonUrl?: string
 }
 
 const TimetableHeader: React.FC<TimetableHeaderProps> = ({
@@ -29,7 +32,8 @@ const TimetableHeader: React.FC<TimetableHeaderProps> = ({
   handleZoom,
   saveTimetableSlotsToDb,
   handleFileChange,
-  downloadTemplate
+  downloadTemplate,
+  backButtonUrl
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [showControls, setShowControls] = useState(false)
@@ -55,6 +59,15 @@ const TimetableHeader: React.FC<TimetableHeaderProps> = ({
 
   return (
     <div className="w-full bg-white shadow-sm rounded-lg mb-1">
+      <div className="mb-1 px-2 py-1 rounded w-fit hover:bg-lamaSkyLight">
+        <Link
+          href={backButtonUrl ?? "#"}
+          className="flex items-center text-TextTwo "
+        >
+          <ArrowLeft size={18} className="mr-2" />
+          Back
+        </Link>
+      </div>
       {/* Main header container with gradient border top */}
       <div className="rounded-t-lg px-4 py-4 sm:py-5">
         <div className="flex flex-col small:flex-row justify-between items-start lg:items-center gap-4">
