@@ -95,7 +95,7 @@ export default function Page() {
   const [proxyRequestLoading, setProxyRequestLoading] = useState(false)
   const [statusUpdateLoading, setStatusUpdate] = useState(false)
 
-  const { data: mySlots } = useQuery({
+  const { data: mySlots, isLoading } = useQuery({
     queryKey: ["mySlots"],
     queryFn: () => myTimeTableSlots(user?.id || ""),
     enabled: !!user?.id
@@ -424,6 +424,7 @@ export default function Page() {
         setCurrentPage={setCurrentPage}
       />
       <CurrentDayDisplay
+        isLoading={isLoading}
         currentDay={currentDay}
         currentDate={currentDate}
         todayDate={todayDate}

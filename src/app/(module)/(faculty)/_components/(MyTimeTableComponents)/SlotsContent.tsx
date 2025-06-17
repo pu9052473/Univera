@@ -2,11 +2,13 @@ import React from "react"
 import { Calendar, Clock, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { SlotsContentSkeleton } from "@/components/(commnon)/Skeleton"
 
 type SlotsContentProps = {
   currentDate: string
   todayDate: string
   sortedSlots: any[]
+  isLoading?: boolean
   getProxyStatusForSlot: (slot: any) => string
   openProxyDialog: (slot: any) => void
   ConfirmationDialogContent: React.FC<{
@@ -18,12 +20,14 @@ type SlotsContentProps = {
 const SlotsContent: React.FC<SlotsContentProps> = ({
   sortedSlots,
   currentDate,
+  isLoading,
   todayDate,
   getProxyStatusForSlot,
   openProxyDialog
 }) => {
   return (
     <div className="p-4 sm:p-6">
+      {isLoading && <SlotsContentSkeleton />}
       {sortedSlots.length > 0 ? (
         <div className="space-y-4 sm:space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-blue-50/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-blue-100/50">

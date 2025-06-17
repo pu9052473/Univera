@@ -22,6 +22,7 @@ type CurrentDayDisplayProps = {
   sortedSlots: any[]
   getProxyStatusForSlot: (slot: any) => string
   openProxyDialog: (slot: any) => void
+  isLoading: boolean
   ConfirmationDialogContent: React.FC<{
     action: string
     onConfirm: () => void
@@ -55,6 +56,7 @@ const CurrentDayDisplay: React.FC<CurrentDayDisplayProps> = ({
   ConfirmationDialogContent,
   deleteDialogOpen,
   handleDeleteClick,
+  isLoading,
   handleDeleteCancel,
   handleDeleteConfirm,
   isDeleting
@@ -109,6 +111,7 @@ const CurrentDayDisplay: React.FC<CurrentDayDisplayProps> = ({
         </div>
       </div>
       <SlotsContent
+        isLoading={isLoading}
         currentDate={currentDate}
         todayDate={todayDate}
         sortedSlots={sortedSlots}

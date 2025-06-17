@@ -29,6 +29,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { attendacePayload } from "@/types/globals"
+import { AttendancePageSkeleton } from "@/components/(commnon)/Skeleton"
 
 // Define Slot and Student types if not imported from elsewhere
 type Student = {
@@ -95,9 +96,6 @@ export default function AttendancePage() {
       enabled: !!slotId
     }
   )
-
-  console.log("slot", slot)
-  console.log("slotAttendance", slotAttendance)
 
   // to make all student absent by default
   useEffect(() => {
@@ -262,9 +260,7 @@ export default function AttendancePage() {
   return (
     <div className="min-h-screen p-4 md:p-6">
       {isSlotAttendanceLoading ? (
-        <div className="bg-muted text-muted-foreground p-4 rounded-xl border border-border shadow-sm text-center font-medium">
-          Fetching attendance data...
-        </div>
+        <AttendancePageSkeleton />
       ) : isSlotLoading ? (
         <div className="bg-muted text-muted-foreground p-4 rounded-xl border border-border shadow-sm text-center font-medium">
           Fetching slot details...
@@ -277,7 +273,7 @@ export default function AttendancePage() {
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header Section */}
           <div className="bg-white rounded-xl shadow-lg border border-blue-100 overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
+            <div className="bg-ColorThree text-white p-6">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div>
                   <h1 className="text-2xl lg:text-3xl font-bold mb-2">
@@ -400,7 +396,7 @@ export default function AttendancePage() {
 
           {/* Bulk Actions Section */}
           <Card className="bg-white shadow-lg border border-gray-200">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
+            <CardHeader className="bg-blue-50 border-b border-gray-200">
               <CardTitle className="text-lg text-gray-800 flex items-center gap-2">
                 <UserCheck className="w-5 h-5 text-blue-600" />
                 Quick Actions
@@ -511,9 +507,7 @@ export default function AttendancePage() {
                             <div className="flex items-center gap-3">
                               <div
                                 className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-sm ${
-                                  isPresent
-                                    ? "bg-gradient-to-br from-green-500 to-green-600"
-                                    : "bg-gradient-to-br from-red-500 to-red-600"
+                                  isPresent ? "bg-green-500" : "bg-red-500"
                                 }`}
                               >
                                 {student.user.name.charAt(0).toUpperCase()}
@@ -582,9 +576,7 @@ export default function AttendancePage() {
                           <div className="flex items-center gap-3 flex-1">
                             <div
                               className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold ${
-                                isPresent
-                                  ? "bg-gradient-to-br from-green-500 to-green-600"
-                                  : "bg-gradient-to-br from-red-500 to-red-600"
+                                isPresent ? "bg-green-500 " : "bg-red-500"
                               }`}
                             >
                               {student.user.name.charAt(0).toUpperCase()}
@@ -639,7 +631,7 @@ export default function AttendancePage() {
               className={`px-8 py-3 text-lg font-semibold transition-all duration-300 ${
                 isSubmitting
                   ? "bg-green-600 hover:bg-green-700"
-                  : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  : "bg-blue-600  hover:from-blue-700 "
               } text-white shadow-lg hover:shadow-xl transform hover:scale-105`}
             >
               {isSubmitting ? (
