@@ -5,7 +5,6 @@ import * as XLSX from "xlsx"
 import axios from "axios"
 import { UserContext } from "@/context/user"
 import { useQuery } from "@tanstack/react-query"
-import { useParams } from "next/navigation"
 import toast from "react-hot-toast"
 import { SlotData, TimeTableSlot } from "@/types/globals"
 import TimetableHeader from "./TimetableHeader"
@@ -119,8 +118,13 @@ const allTimeTableSlots = async () => {
   return response?.data || []
 }
 
-export default function ClassTimeTable() {
-  const { classId } = useParams()
+export default function ClassTimeTable({
+  classId,
+  backButtonUrl
+}: {
+  classId: string | undefined
+  backButtonUrl?: string
+}) {
   const { user } = useContext(UserContext)
   const [selectedSlot, setSelectedSlot] = useState<TimeTableSlot | null>(null)
   const [selectedFaculty, setSelectedFaculty] = useState(null)
@@ -587,6 +591,7 @@ export default function ClassTimeTable() {
       <TimetableHeader
         isCoordinator={isCoordinator}
         isStudent={isStudent}
+        backButtonUrl={backButtonUrl}
         handleZoom={handleZoom}
         saveTimetableSlotsToDb={saveTimetableSlotsToDb}
         handleFileChange={handleFileChange}
