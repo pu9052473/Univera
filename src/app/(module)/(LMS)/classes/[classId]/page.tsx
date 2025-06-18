@@ -179,8 +179,8 @@ export default function ClassEditPage() {
                     </div>
                   )}
                   {tab === "timetable" && (
-                    <div className="">
-                      <ClassTimeTable />
+                    <div>
+                      <ClassTimeTable classId={classId as string} />
                     </div>
                   )}
                 </TabsContent>
