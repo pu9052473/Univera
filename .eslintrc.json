@@ -10,7 +10,6 @@
     "prettier/prettier": "warn",
     "react/no-unescaped-entities": "error",
     "no-unused-vars": "off",
-    "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
@@ -18,6 +17,7 @@
         "varsIgnorePattern": "^_",
         "caughtErrorsIgnorePattern": "^_"
       }
-    ]
+    ],
+    "@typescript-eslint/no-explicit-any": "warn"
   }
 }
