@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma"
+import { Prisma } from "@prisma/client"
 import { NextResponse } from "next/server"
 
 export async function PATCH(req: Request) {
@@ -116,37 +117,69 @@ export async function PATCH(req: Request) {
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
+  const route = searchParams.get("route")
   const classId = searchParams.get("classId")
   const slotId = searchParams.get("slotId") // Get the `id` from URL parameters
   const date = searchParams.get("date")
+  const rollNo = searchParams.get("rollNo")
 
-  if (!date || !classId) {
-    return NextResponse.json(
-      { error: "Date and classId parameter is required" },
-      { status: 400 }
-    )
-  }
+  if (route === "specificSlot") {
+    if (!date || !classId || !slotId) {
+      return NextResponse.json(
+        { error: "Date and classId parameter is required" },
+        { status: 400 }
+      )
+    }
 
-  try {
-    const attendance = await prisma.attendanceRecord.findUnique({
-      where: {
-        classId_slotId_date: {
-          classId: Number(classId),
-          slotId: Number(slotId),
-          date: String(date)
+    try {
+      const attendance = await prisma.attendanceRecord.findUnique({
+        where: {
+          classId_slotId_date: {
+            classId: Number(classId),
+            slotId: Number(slotId),
+            date: String(date)
+          }
         }
-      }
-    })
+      })
 
-    return NextResponse.json(attendance, { status: 200 })
-  } catch (error: any) {
-    console.log("Error while fetching attendance:", error.message)
-    return NextResponse.json(
-      {
-        error: "Failed to fetch attendance",
-        details: error.message
-      },
-      { status: 500 }
-    )
+      return NextResponse.json(attendance, { status: 200 })
+    } catch (error: any) {
+      console.log("Error while fetching attendance:", error.message)
+      return NextResponse.json(
+        {
+          error: "Failed to fetch attendance",
+          details: error.message
+        },
+        { status: 500 }
+      )
+    }
+  } else if (route === "studentsAttendance") {
+    if (!classId || !rollNo) {
+      return NextResponse.json(
+        { error: "classId and rollNo parameter is required" },
+        { status: 400 }
+      )
+    }
+
+    try {
+      const attendance = await prisma.attendanceRecord.findMany({
+        where: {
+          classId: Number(classId),
+          attendance: {
+            path: [String(rollNo)],
+            not: Prisma.JsonNull
+          }
+        },
+        orderBy: { date: "desc" }
+      })
+
+      return NextResponse.json(attendance, { status: 200 })
+    } catch (error) {
+      console.log("Error fetching attendance:", error)
+      return NextResponse.json(
+        { error: "Failed to fetch attendance", details: error },
+        { status: 500 }
+      )
+    }
   }
 }

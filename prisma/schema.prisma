@@ -272,7 +272,7 @@ model AttendanceRecord {
   slotId       Int
   classId      Int
   date         String
-  attendance   Json       // key = rollNo or studentId, value = status
+  attendance   Json       // key = rollNo, value = status
   facultyId    String
   subjectId    Int
   courseId     Int
