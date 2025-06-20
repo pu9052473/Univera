@@ -1040,3 +1040,50 @@ export const SlotsContentSkeleton: React.FC = () => {
     </div>
   )
 }
+
+export const AttendanceCardSkeleton = () => {
+  return (
+    <section className="max-w-5xl mx-auto px-4">
+      {[...Array(5)].map((_, index) => (
+        <Card key={index} className="mb-4 p-4 animate-pulse">
+          <CardHeader className="flex flex-row justify-between items-center">
+            <div className="flex items-center gap-3">
+              <Skeleton circle width={20} height={20} />
+              <div>
+                <Skeleton width={120} height={16} />
+                <Skeleton width={80} height={12} />
+              </div>
+            </div>
+            <Skeleton width={20} height={20} />
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-3">
+              {[...Array(2)].map((_, i) => (
+                <div
+                  key={i}
+                  className="p-4 rounded-xl border bg-white/50 border-border"
+                >
+                  <Skeleton height={20} width={`60%`} />
+                  <Skeleton height={16} width={`40%`} className="mt-2" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </section>
+  )
+}
+
+export const AttendanceStateSkeleton = () => {
+  return (
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto px-2 sm:px-6 lg:px-8 py-6">
+      {[...Array(3)].map((_, i) => (
+        <div key={i} className="rounded-2xl p-4 border animate-pulse">
+          <Skeleton width={80} height={16} />
+          <Skeleton width={40} height={24} className="mt-2" />
+        </div>
+      ))}
+    </div>
+  )
+}
