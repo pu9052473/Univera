@@ -151,7 +151,8 @@ const facultyDashboardItems = [
   {
     icon: FileText,
     title: "Leave",
-    desc: "description"
+    desc: "description",
+    link: `/leave`
   },
   {
     icon: FaBullhorn,
@@ -162,7 +163,8 @@ const facultyDashboardItems = [
   {
     icon: Users,
     title: "My Team",
-    desc: "description"
+    desc: "description",
+    link: `/myTeam`
   },
   {
     icon: BookOpen,
@@ -184,7 +186,8 @@ const facultyDashboardItems = [
   {
     icon: ScrollText,
     title: "Policies",
-    desc: "description"
+    desc: "description",
+    link: `/policy`
   }
 ]
 
@@ -209,7 +212,8 @@ const studentDashboardItems = (classId?: string) => [
   {
     icon: Pencil,
     title: "Assignment",
-    desc: "description"
+    desc: "description",
+    link: `/classes/my-class/${classId}/assignments`
   },
   {
     icon: FaBullhorn,
@@ -226,7 +230,8 @@ const studentDashboardItems = (classId?: string) => [
   {
     icon: ScrollText,
     title: "Syllabus",
-    desc: "description"
+    desc: "description",
+    link: `/classes/my-class/${classId}/syllabus`
   },
   {
     icon: FaBullhorn,

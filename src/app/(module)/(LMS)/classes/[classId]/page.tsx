@@ -58,6 +58,8 @@ export default function ClassEditPage() {
 
   if (userRoles.includes(5)) tabs.push("timetable") // add timetable tab only when user role is coordinator
 
+  console.log("ClassEditPage", Class)
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto sm:px-2 p-2">

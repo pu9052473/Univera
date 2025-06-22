@@ -16,6 +16,7 @@ interface SubjectFormProps {
   subject?: Subject
   submitBtnId?: string
   submitBtnLabel?: string
+  isAllowedUpdatation?: boolean
 }
 
 export function SubjectForm({
@@ -25,12 +26,14 @@ export function SubjectForm({
   department,
   subject,
   submitBtnId,
+  isAllowedUpdatation,
   submitBtnLabel
 }: SubjectFormProps) {
   const [subjectName, setSubjectName] = useState<string>(subject?.name ?? "")
   const [subjectCode, setSubjectCode] = useState<string>(subject?.code ?? "")
   const [credits, setCredits] = useState<number>(subject?.credits ?? 0)
   const [semester, setSemester] = useState<number>(subject?.semester ?? 0)
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,6 +42,7 @@ export function SubjectForm({
 
     if (buttonId == "submit") {
       try {
+        setIsSubmitting(true)
         const createFormData = {
           courseId,
           name: subjectName,
@@ -60,9 +64,12 @@ export function SubjectForm({
         } else {
           toast.error("An unexpected error occurred")
         }
+      } finally {
+        setIsSubmitting(false)
       }
     } else if (buttonId == "subject-update") {
       try {
+        setIsSubmitting(true)
         const updatedSubject = {
           name: subjectName,
           code: subjectCode,
@@ -85,6 +92,8 @@ export function SubjectForm({
         } else {
           toast.error("An unexpected error occurred")
         }
+      } finally {
+        setIsSubmitting(false)
       }
     }
   }
@@ -120,6 +129,7 @@ export function SubjectForm({
           <label className="text-sm">Subject name</label>
           <input
             value={subjectName}
+            disabled={!isAllowedUpdatation}
             className="placeholder-transparent h-10 w-full bg-gray-200 rounded-lg border-gray-300 text-gray-900 p-1 mb-4"
             type="text"
             onChange={(e) => {
@@ -130,6 +140,7 @@ export function SubjectForm({
           <label className="text-sm">Subject Code</label>
           <input
             value={subjectCode}
+            disabled={!isAllowedUpdatation}
             className="placeholder-transparent h-10 w-full bg-gray-200 rounded-lg border-gray-300 text-gray-900 p-1 mb-4"
             type="text"
             onChange={(e) => {
@@ -140,6 +151,7 @@ export function SubjectForm({
           <label className="text-sm">credits</label>
           <input
             value={credits}
+            disabled={!isAllowedUpdatation}
             className="placeholder-transparent h-10 w-full bg-gray-200 rounded-lg border-gray-300 text-gray-900 p-1 mb-4"
             type="number"
             onChange={(e) => {
@@ -150,6 +162,7 @@ export function SubjectForm({
           <label className="text-sm">semester</label>
           <input
             value={semester}
+            disabled={!isAllowedUpdatation}
             className="placeholder-transparent h-10 w-full bg-gray-200 rounded-lg border-gray-300 text-gray-900 p-1 mb-4"
             type="number"
             onChange={(e) => {
@@ -158,13 +171,16 @@ export function SubjectForm({
           />
           <br />
 
-          <button
-            id={submitBtnId ?? "submit"}
-            type="submit"
-            className="bg-Primary text-white w-full mt-4 hover:bg-blue-500 rounded-lg px-4 py-2"
-          >
-            {submitBtnLabel}
-          </button>
+          {isAllowedUpdatation && (
+            <button
+              id={submitBtnId ?? "submit"}
+              disabled={isSubmitting}
+              type="submit"
+              className="bg-Primary text-white w-full mt-4 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg px-4 py-2"
+            >
+              {submitBtnLabel}
+            </button>
+          )}
         </div>
       </div>
     </form>

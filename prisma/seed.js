@@ -198,7 +198,7 @@ async function main() {
       courseId: 1,
       universityId: 1,
       roles: {
-        connect: { id: 4 }
+        connect: [4, 13].map((id) => ({ id }))
       }
     }
   })
