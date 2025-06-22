@@ -58,7 +58,7 @@ const selectdSlotAttendance = async (
   date: string,
   classId: string
 ) => {
-  const response = await axios.get(`/api/attendance`, {
+  const response = await axios.get(`/api/attendance?route=specificSlot`, {
     params: { slotId, date, classId }
   })
   return response?.data || []
