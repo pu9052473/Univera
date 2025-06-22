@@ -3,13 +3,14 @@
 import { UserContext } from "@/context/user"
 import React, { useContext } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { FilePlus, RotateCcw } from "lucide-react"
+import { ArrowLeft, FilePlus, RotateCcw } from "lucide-react"
 import axios from "axios"
 import { useRouter } from "next/navigation"
 import { ButtonV1 } from "./ButtonV1"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import AnnouncementCard from "./AnnouncementCard"
 import { AnnouncementCardSkeleton } from "./Skeleton"
+import Link from "next/link"
 
 async function fetchAnnouncements(
   departmentId: string,
@@ -65,6 +66,15 @@ export default function CommonAnnouncementsPage({
 
   return (
     <div>
+      <div className="px-2 py-1 rounded w-fit border border-Dark">
+        <Link
+          href={`/classes/my-class/${classId}`}
+          className="flex items-center text-TextTwo "
+        >
+          <ArrowLeft size={18} className="mr-2" />
+          Back
+        </Link>
+      </div>
       <div className="max-w-6xl mx-auto p-3 space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-4">
           <h1 className="text-2xl font-semibold text-TextTwo text-center sm:text-left">
