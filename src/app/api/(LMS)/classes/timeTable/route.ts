@@ -252,6 +252,22 @@ export async function GET(request: Request) {
       const slots = await prisma.slot.findMany({
         where: {
           classId: Number(classId)
+        },
+        include: {
+          faculty: {
+            include: {
+              user: true
+            }
+          },
+          ProxySlot: {
+            include: {
+              lecturer: {
+                include: {
+                  user: true
+                }
+              }
+            }
+          }
         }
       })
 

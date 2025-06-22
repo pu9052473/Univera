@@ -202,7 +202,7 @@ const studentDashboardItems = (classId?: string) => [
     icon: FileText,
     title: "Attendance",
     desc: "description",
-    link: `/attendance`
+    link: "/attendance"
   },
   {
     icon: Notebook,
