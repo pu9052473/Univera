@@ -61,7 +61,7 @@ export function AssignmentSubmissions({
 }: AssignmentSubmissionsProps) {
   const { user } = useContext(UserContext)
   return (
-    <div className="min-h-screen bg-lamaSkyLight p-6">
+    <div className="min-h-screen p-3">
       {/* Back Button */}
       <Link
         href={`/classes/my-class/${classId}/assignments/${assignment.subjectId}`}
