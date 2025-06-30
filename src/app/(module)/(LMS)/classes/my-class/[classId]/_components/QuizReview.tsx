@@ -20,12 +20,14 @@ import toast from "react-hot-toast"
 import axios from "axios"
 import { useRouter } from "next/navigation"
 import { Quiz, QuizQuestion } from "@/types/globals"
+import Link from "next/link"
 
 interface QuizReviewProps {
   quiz: Quiz
   onUpdateStatus: (quizId: number, newStatus: string) => void
   onUpdateVisibility: (quizId: number, newVisibility: string) => void
   onBack?: () => void
+  classId: string
 }
 
 const OnDelete = async (classId: string, id: string) => {
@@ -50,7 +52,8 @@ const QuizReview: React.FC<QuizReviewProps> = ({
   quiz,
   onUpdateStatus,
   onUpdateVisibility,
-  onBack
+  onBack,
+  classId
 }) => {
   const router = useRouter()
 
@@ -100,14 +103,6 @@ const QuizReview: React.FC<QuizReviewProps> = ({
       } finally {
         setIsDeleting(false)
       }
-    }
-  }
-
-  const handleBack = () => {
-    if (onBack) {
-      onBack()
-    } else {
-      router.back()
     }
   }
 
@@ -184,15 +179,14 @@ const QuizReview: React.FC<QuizReviewProps> = ({
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6">
       {/* Back Button */}
-      <div className="mb-4">
-        <Button
-          onClick={handleBack}
-          variant="ghost"
-          className="flex items-center text-TextTwo hover:bg-lamaSkyLight"
+      <div className="px-2 py-1 rounded w-fit border border-Dark mb-2">
+        <Link
+          href={`/classes/my-class/${classId}/quizzes/`}
+          className="flex items-center text-TextTwo "
         >
           <ArrowLeft size={18} className="mr-2" />
-          Back to Quizzes
-        </Button>
+          Back
+        </Link>
       </div>
 
       {/* Quiz Header */}
@@ -205,6 +199,13 @@ const QuizReview: React.FC<QuizReviewProps> = ({
             <p className="text-gray-600 mt-1">{quiz.description}</p>
           </div>
           <div className="flex flex-wrap gap-2 mt-3 md:mt-0">
+            <Link
+              href={`/classes/my-class/${quiz.classId}/quizzes/${quiz.id}/submissions`}
+            >
+              <Badge className="px-3 py-1 rounded-md bg-lamaSky text-TextTwo hover:bg-lamaSky/90">
+                View Submissions
+              </Badge>
+            </Link>
             <Badge
               className={`px-3 py-1 ${isDraft ? "bg-lamaYellow text-TextTwo" : isPublished ? "bg-ColorThree text-white" : "bg-green-500 text-white"}`}
             >

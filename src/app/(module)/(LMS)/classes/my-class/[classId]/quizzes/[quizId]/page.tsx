@@ -73,6 +73,7 @@ export default function Page() {
               onUpdateStatus={UpdateStatus}
               onUpdateVisibility={UpdateVisibility}
               quiz={quizDetails}
+              classId={classId as string}
             />
           ) : roles.includes(7) ? (
             <QuizSubmission quiz={quizDetails} studentId={user?.id as string} />

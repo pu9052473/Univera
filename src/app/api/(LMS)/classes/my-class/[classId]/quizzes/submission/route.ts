@@ -60,34 +60,59 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const quizId = searchParams.get("quizId")
   const studentId = searchParams.get("studentId")
+  const route = searchParams.get("route")
 
-  if (!quizId || !studentId) {
-    return NextResponse.json(
-      { message: "Missing required parameters" },
-      { status: 400 }
-    )
-  }
-
-  try {
-    const submission = await prisma.quizSubmissions.findFirst({
-      where: {
-        quizId: Number(quizId),
-        studentId: String(studentId)
-      }
-    })
-
-    if (!submission) {
+  if (route === "personal") {
+    if (!quizId || !studentId) {
       return NextResponse.json(
-        { message: "No submission found" },
-        { status: 404 }
+        { message: "Missing required parameters" },
+        { status: 400 }
       )
     }
 
-    return NextResponse.json(submission, { status: 200 })
-  } catch (error) {
-    return NextResponse.json(
-      { message: "Error fetching quiz submission", error },
-      { status: 500 }
-    )
+    try {
+      const submission = await prisma.quizSubmissions.findFirst({
+        where: {
+          quizId: Number(quizId),
+          studentId: String(studentId)
+        }
+      })
+
+      if (!submission) {
+        return NextResponse.json(
+          { message: "No submission found" },
+          { status: 404 }
+        )
+      }
+
+      return NextResponse.json(submission, { status: 200 })
+    } catch (error) {
+      return NextResponse.json(
+        { message: "Error fetching personal quiz submission", error },
+        { status: 500 }
+      )
+    }
+  } else if (route === "all") {
+    try {
+      const submissions = await prisma.quizSubmissions.findMany({
+        where: {
+          quizId: Number(quizId)
+        },
+        include: {
+          student: {
+            include: {
+              user: true
+            }
+          },
+          quiz: true
+        }
+      })
+      return NextResponse.json(submissions, { status: 200 })
+    } catch (error) {
+      return NextResponse.json(
+        { message: "Error fetching all quiz submissions", error },
+        { status: 500 }
+      )
+    }
   }
 }

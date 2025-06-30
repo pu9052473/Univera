@@ -20,7 +20,7 @@ const fetchSUbmissionData = async (
   studentId: string
 ) => {
   const response = await axios.get(
-    `/api/classes/my-class/${classId}/quizzes/submission?quizId=${quizId}&studentId=${studentId}`
+    `/api/classes/my-class/${classId}/quizzes/submission?quizId=${quizId}&studentId=${studentId}&route=personal`
   )
   return response.data || []
 }

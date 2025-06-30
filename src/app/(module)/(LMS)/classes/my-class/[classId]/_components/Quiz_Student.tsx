@@ -68,22 +68,6 @@ export default function Student() {
     }`
   }
 
-  // Get status label and color
-  const getStatusInfo = (quiz: Quiz) => {
-    const today = new Date().toISOString().split("T")[0]
-    const quizDate = quiz.date || null
-
-    if (!quizDate) {
-      return { label: "Unscheduled", color: "bg-gray-400" }
-    } else if (quizDate === today) {
-      return { label: "Today", color: "bg-green-500" }
-    } else if (quizDate < today) {
-      return { label: "Past", color: "bg-gray-500" }
-    } else {
-      return { label: "Upcoming", color: "bg-blue-500" }
-    }
-  }
-
   // Check if quiz is currently locked
   const isQuizLocked = (quiz: Quiz) => {
     const today = new Date().toISOString().split("T")[0]
@@ -219,12 +203,6 @@ export default function Student() {
                     scope="col"
                     className="px-4 py-3 text-left text-xs font-medium text-[#0A2353] uppercase tracking-wider"
                   >
-                    Status
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-4 py-3 text-left text-xs font-medium text-[#0A2353] uppercase tracking-wider"
-                  >
                     Actions
                   </th>
                 </tr>
@@ -260,19 +238,6 @@ export default function Student() {
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap text-sm text-[#0A2353]">
                           {quiz.numberOfQuestions}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-[#0A2353]">
-                          <span
-                            className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusInfo(
-                              quiz
-                            )
-                              .color.replace("bg-", "bg-")
-                              .replace("500", "100")} ${getStatusInfo(
-                              quiz
-                            ).color.replace("bg-", "text-")}`}
-                          >
-                            {getStatusInfo(quiz).label}
-                          </span>
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                           {locked ? (
@@ -325,7 +290,6 @@ export default function Student() {
           <div className="block md:hidden space-y-4">
             {filteredQuizzes.length > 0 ? (
               filteredQuizzes.map((quiz: Quiz) => {
-                const statusInfo = getStatusInfo(quiz)
                 const locked = isQuizLocked(quiz)
                 return (
                   <div
@@ -336,16 +300,6 @@ export default function Student() {
                       <h3 className="font-bold text-[#112C71] text-base">
                         {quiz.title}
                       </h3>
-                      <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusInfo.color
-                          .replace("bg-", "bg-")
-                          .replace("500", "100")} ${statusInfo.color.replace(
-                          "bg-",
-                          "text-"
-                        )}`}
-                      >
-                        {statusInfo.label}
-                      </span>
                     </div>
 
                     <p className="text-sm text-gray-600 mb-3 line-clamp-2">
@@ -381,13 +335,6 @@ export default function Student() {
 
                     {/* Status indicator */}
                     <div className="flex items-center mb-3">
-                      <div
-                        className={`w-2 h-2 rounded-full mr-2 ${statusInfo.color}`}
-                      ></div>
-                      <span className="text-xs font-medium">
-                        {statusInfo.label}
-                      </span>
-
                       {quiz.documentUrl && (
                         <div className="ml-auto">
                           <a
