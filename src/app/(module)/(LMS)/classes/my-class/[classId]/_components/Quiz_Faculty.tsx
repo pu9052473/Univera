@@ -1,14 +1,12 @@
 import React, { useContext, useState } from "react"
 import CreateQuiz from "../_components/CreateQuiz"
-import { ButtonV1 } from "@/components/(commnon)/ButtonV1"
 import { useParams } from "next/navigation"
 import { UserContext } from "@/context/user"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import axios from "axios"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft } from "lucide-react"
 import { FacultyQuizzesSkeleton } from "@/components/(commnon)/Skeleton"
+import Link from "next/link"
 
 async function fetchQuizzes(classId: string) {
   const response = await axios.get(`/api/classes/my-class/${classId}/quizzes`)
@@ -31,16 +29,6 @@ export default function Faculty() {
   })
   const router = useRouter()
 
-  const handleBack = () => {
-    router.push(`/classes/my-class/${classId}`)
-  }
-
-  const openDialog = () => {
-    setIsDialogOpen(true)
-    // Prevent scrolling on the background when dialog is open
-    document.body.style.overflow = "hidden"
-  }
-
   const closeDialog = () => {
     setIsDialogOpen(false)
     // Re-enable scrolling
@@ -49,21 +37,32 @@ export default function Faculty() {
 
   return (
     <div className="p-3">
-      <div className="mb-4">
-        <Button
-          onClick={handleBack}
-          variant="ghost"
-          className="flex items-center text-TextTwo hover:bg-lamaSkyLight"
-        >
-          <ArrowLeft size={18} className="mr-2" />
-          Back
-        </Button>
-      </div>
       <div className="flex justify-between items-start md:items-center mb-3">
-        <h1 className="text-2xl font-bold text-[#112C71] mb-4 md:mb-0">
-          Quizzes
-        </h1>
-        <ButtonV1 label="Create Quiz" onClick={openDialog} />
+        <div className="flex items-center">
+          <Link
+            href={`/classes/my-class/${classId}`}
+            className="mr-3 p-1 rounded-full hover:bg-gray-200"
+            aria-label="Go back"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-[#112C71]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </Link>
+          <h1 className="text-xl md:text-2xl font-bold text-[#112C71]">
+            Quizzes
+          </h1>
+        </div>
       </div>
 
       {isLoading ? (
@@ -151,7 +150,7 @@ export default function Faculty() {
                               `/classes/my-class/${classId}/quizzes/${quiz.id}`
                             )
                           }
-                          className="flex-1 py-2 bg-[#EDF9FD] text-[#5B58EB] rounded-md text-sm font-medium"
+                          className="flex-1 p-2 bg-[#EDF9FD] text-[#5B58EB] rounded-md text-sm font-medium"
                         >
                           View
                         </button>

@@ -422,27 +422,11 @@ export function Assignments_Subject_Skeleton() {
 }
 
 import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
 import { Button } from "../ui/button"
 
-interface AssignmentSubmissionsSkeletonProps {
-  classId: string
-}
-
-export function AssignmentSubmissionsSkeleton({
-  classId
-}: AssignmentSubmissionsSkeletonProps) {
+export function AssignmentSubmissionsSkeleton() {
   return (
     <div className="min-h-screen bg-lamaSkyLight p-6">
-      {/* Back Button */}
-      <Link
-        href={`/classes/my-class/${classId}`}
-        className="flex items-center text-TextTwo hover:bg-lamaSkyLight"
-      >
-        <ArrowLeft size={18} className="mr-2" />
-        Back
-      </Link>
-
       {/* Assignment Details Card Skeleton */}
       <Card className="mb-6 sm:mb-8 border-none shadow-lg bg-white">
         <CardHeader className="border-b border-gray-100 p-4 sm:p-6">
@@ -533,16 +517,6 @@ export function AssignmentSubmissionsSkeleton({
 export function FacultyQuizzesSkeleton() {
   return (
     <div className="p-3">
-      <div className="mb-4">
-        <Button
-          variant="ghost"
-          className="flex items-center text-TextTwo hover:bg-lamaSkyLight"
-          disabled
-        >
-          <ArrowLeft size={18} className="mr-2" />
-          Back
-        </Button>
-      </div>
       <div className="flex justify-between items-start md:items-center mb-3">
         <div className="h-8 w-32 bg-gray-200 rounded-md animate-pulse"></div>
         <div className="h-10 w-28 bg-gray-200 rounded-md animate-pulse"></div>
