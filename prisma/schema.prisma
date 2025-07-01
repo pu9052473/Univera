@@ -242,7 +242,7 @@ model Class {
 }
 
 model Subject {
-  id           Int                @id @unique @default(autoincrement())
+  id           Int                @id @default(autoincrement())
   name         String
   credits      Int
   semester     Int
@@ -292,16 +292,24 @@ model AttendanceRecord {
   @@unique([classId, slotId, date]) // Composite unique constraint
 }
 
+enum AssignmentSubmissionStatus {
+  PENDING
+  SUBMITTED
+  APPROVED
+  REJECTED
+  LATE
+}
+
 model AssignmentSubmission {
-  id           Int        @id @unique @default(autoincrement())
+  id           Int                        @id @unique @default(autoincrement())
   studentId    String
   assignmentId Int
   attachments  Json[]
-  status       String     @default("PENDING")
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @default(now())
-  assignment   Assignment @relation(fields: [assignmentId], references: [id])
-  student      Student    @relation(fields: [studentId], references: [clerkId])
+  status       AssignmentSubmissionStatus @default(PENDING)
+  createdAt    DateTime                   @default(now())
+  updatedAt    DateTime                   @default(now())
+  assignment   Assignment                 @relation(fields: [assignmentId], references: [id])
+  student      Student                    @relation(fields: [studentId], references: [clerkId])
 }
 
 model Assignment {

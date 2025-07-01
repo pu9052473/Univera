@@ -58,7 +58,8 @@ export async function PATCH(req: Request, context: any) {
       data: {
         studentId,
         attachments,
-        assignmentId: Number(assignmentId)
+        assignmentId: Number(assignmentId),
+        status: "SUBMITTED"
       }
     })
 

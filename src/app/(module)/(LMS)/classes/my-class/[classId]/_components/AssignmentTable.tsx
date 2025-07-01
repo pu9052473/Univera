@@ -196,7 +196,6 @@ export const AssignmentTableComponent = ({
       ),
     enabled: !!selectedAssignmentId
   })
-
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       const UniqueFiles = acceptedFiles.filter((file) => {
@@ -356,7 +355,6 @@ export const AssignmentTableComponent = ({
   const canSubmitAssignment = submissionsData
     ? submissionsData.status !== "APPROVED"
     : true
-
   const renderRow = (
     item: Prisma.AssignmentGetPayload<{
       include: { faculty: true; subject: true }
@@ -370,7 +368,6 @@ export const AssignmentTableComponent = ({
       .includes(userId)
 
     if (assignmentsIsError) return <>Error while fetching data</>
-
     return (
       <tr
         key={item.id}
@@ -472,7 +469,9 @@ export const AssignmentTableComponent = ({
                     }
                   >
                     <Upload size={16} />
-                    Submit Assignment
+                    {submissionsData?.attachments?.length > 0
+                      ? "Update Submission"
+                      : "Submit Assignment"}
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
@@ -549,7 +548,9 @@ export const AssignmentTableComponent = ({
           <DialogHeader className="border-b border-gray-100 pb-4">
             <div className="flex items-center justify-between">
               <DialogTitle className="text-xl font-semibold text-TextTwo">
-                Submit Assignment
+                {submissionsData?.attachments?.length > 0
+                  ? "Update your submission"
+                  : "Submit Assignment"}
               </DialogTitle>
             </div>
             <p className="text-sm text-gray-600">
@@ -558,6 +559,7 @@ export const AssignmentTableComponent = ({
                 {selectedAssignmentTitle}
               </span>
             </p>
+            {submissionsData && <p>Status: {submissionsData.status}</p>}
           </DialogHeader>
 
           <div className="space-y-2">
@@ -567,7 +569,9 @@ export const AssignmentTableComponent = ({
             </p>
             {submissionsData?.attachments?.length > 0 && (
               <div className="p-2 mb-2 bg-amber-50 text-amber-700 rounded border-l-2 border-amber-700 text-sm">
-                You can update your existing submission.
+                {canSubmitAssignment
+                  ? "You can update your existing submission."
+                  : `You assignment is ${submissionsData.status}`}
               </div>
             )}
           </div>
@@ -591,20 +595,22 @@ export const AssignmentTableComponent = ({
             >
               Cancel
             </Button>
-            <Button
-              onClick={handleSubmitAssignment}
-              disabled={files.length === 0 || isSubmitting || uploading}
-              className="w-full sm:w-auto order-1 sm:order-2 bg-ColorThree hover:bg-ColorTwo text-white"
-            >
-              {isSubmitting || uploading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  {uploading ? "Uploading..." : "Submitting..."}
-                </div>
-              ) : (
-                "Submit Assignment"
-              )}
-            </Button>
+            {canSubmitAssignment && (
+              <Button
+                onClick={handleSubmitAssignment}
+                disabled={files.length === 0 || isSubmitting || uploading}
+                className="w-full sm:w-auto order-1 sm:order-2 bg-ColorThree hover:bg-ColorTwo text-white"
+              >
+                {isSubmitting || uploading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    {uploading ? "Uploading..." : "Submitting..."}
+                  </div>
+                ) : (
+                  "Submit Assignment"
+                )}
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
