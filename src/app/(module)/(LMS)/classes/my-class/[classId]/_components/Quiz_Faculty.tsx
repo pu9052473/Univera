@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import axios from "axios"
 import { FacultyQuizzesSkeleton } from "@/components/(commnon)/Skeleton"
 import Link from "next/link"
+import { ButtonV1 } from "@/components/(commnon)/ButtonV1"
 
 async function fetchQuizzes(classId: string) {
   const response = await axios.get(`/api/classes/my-class/${classId}/quizzes`)
@@ -28,6 +29,12 @@ export default function Faculty() {
     enabled: !!user
   })
   const router = useRouter()
+
+  const openDialog = () => {
+    setIsDialogOpen(true)
+    // Prevent scrolling on the background when dialog is open
+    document.body.style.overflow = "hidden"
+  }
 
   const closeDialog = () => {
     setIsDialogOpen(false)
@@ -63,6 +70,7 @@ export default function Faculty() {
             Quizzes
           </h1>
         </div>
+        <ButtonV1 label="Create Quiz" onClick={openDialog} />
       </div>
 
       {isLoading ? (

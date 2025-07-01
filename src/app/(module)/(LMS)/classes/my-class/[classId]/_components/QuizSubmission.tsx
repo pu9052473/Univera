@@ -13,6 +13,7 @@ import axios from "axios"
 import { useParams } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
+import { QuizReviewSkeleton } from "@/components/(commnon)/Skeleton"
 
 const fetchSUbmissionData = async (
   classId: string,
@@ -434,16 +435,7 @@ const QuizSubmission = ({
       : 0)
 
   // 9️⃣ Loading state
-  if (isLoadingSubmission) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading quiz...</p>
-        </div>
-      </div>
-    )
-  }
+  if (isLoadingSubmission) return <QuizReviewSkeleton />
 
   return (
     <div
@@ -530,36 +522,173 @@ const QuizSubmission = ({
           {accessibility.accessible &&
             accessibility.showStartButton &&
             quizStatus === "not-started" && (
-              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div>
-                    <p className="text-gray-900 font-semibold">
-                      Ready to start?
-                    </p>
-                    <p className="text-gray-600 text-sm">
-                      You will have {quiz.duration} minutes to complete this
-                      quiz
-                    </p>
+              <div className="mt-4 space-y-4">
+                {/* Security Warning Section */}
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0">
+                      <svg
+                        className="w-6 h-6 text-amber-600 mt-0.5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base font-semibold text-amber-800 mb-2">
+                        Important Quiz Security Guidelines
+                      </h3>
+                      <div className="text-sm text-amber-700 space-y-2">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div className="space-y-2">
+                            <p className="flex items-start gap-2">
+                              <span className="w-1.5 h-1.5 bg-amber-600 rounded-full mt-2 flex-shrink-0"></span>
+                              <span className="leading-relaxed">
+                                <strong>Fullscreen Mode:</strong> Quiz will
+                                automatically enter fullscreen. Exiting
+                                fullscreen will submit your quiz immediately.
+                              </span>
+                            </p>
+                            <p className="flex items-start gap-2">
+                              <span className="w-1.5 h-1.5 bg-amber-600 rounded-full mt-2 flex-shrink-0"></span>
+                              <span className="leading-relaxed">
+                                <strong>Tab Switching:</strong> Changing tabs or
+                                switching to other applications will auto-submit
+                                your quiz.
+                              </span>
+                            </p>
+                            <p className="flex items-start gap-2">
+                              <span className="w-1.5 h-1.5 bg-amber-600 rounded-full mt-2 flex-shrink-0"></span>
+                              <span className="leading-relaxed">
+                                <strong>Timer:</strong> You have {quiz.duration}{" "}
+                                minutes. Timer counts down every second and
+                                continues even after page refresh.
+                              </span>
+                            </p>
+                          </div>
+                          <div className="space-y-2">
+                            <p className="flex items-start gap-2">
+                              <span className="w-1.5 h-1.5 bg-amber-600 rounded-full mt-2 flex-shrink-0"></span>
+                              <span className="leading-relaxed">
+                                <strong>Keyboard Disabled:</strong> All keyboard
+                                shortcuts and keys will be disabled during the
+                                quiz.
+                              </span>
+                            </p>
+                            <p className="flex items-start gap-2">
+                              <span className="w-1.5 h-1.5 bg-amber-600 rounded-full mt-2 flex-shrink-0"></span>
+                              <span className="leading-relaxed">
+                                <strong>Page Refresh:</strong> Refreshing the
+                                page will not reset the timer, but all your
+                                selected answers will be lost.
+                              </span>
+                            </p>
+                            <p className="flex items-start gap-2">
+                              <span className="w-1.5 h-1.5 bg-amber-600 rounded-full mt-2 flex-shrink-0"></span>
+                              <span className="leading-relaxed">
+                                <strong>Auto-Submit:</strong> Quiz will
+                                automatically submit when time expires, even if
+                                you have not manually submitted.
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                        <div className="mt-4 p-3 bg-amber-100 rounded-md border border-amber-300">
+                          <p className="text-amber-800 font-medium text-center text-sm sm:text-base">
+                            ⚠️ Once started, ensure stable internet connection
+                            and avoid any actions that might trigger
+                            auto-submission
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  {!quizStarted && !isResumable && (
-                    <button
-                      onClick={handleStartQuiz}
-                      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
-                    >
-                      <Play className="w-5 h-5" />
-                      Start Quiz
-                    </button>
-                  )}
+                </div>
 
-                  {!quizStarted && isResumable && (
-                    <button
-                      onClick={handleResumeQuiz}
-                      className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
-                    >
-                      <Play className="w-5 h-5" />
-                      Resume Quiz
-                    </button>
-                  )}
+                {/* Quiz Start Section */}
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-gray-900 font-semibold text-base sm:text-lg">
+                        Ready to start?
+                      </p>
+                      <p className="text-gray-600 text-sm sm:text-base mt-1">
+                        You will have {quiz.duration} minutes to complete this
+                        quiz
+                      </p>
+                      <div className="mt-2 flex flex-wrap gap-2 text-xs sm:text-sm text-blue-700">
+                        <span className="inline-flex items-center gap-1 bg-blue-100 px-2 py-1 rounded">
+                          <svg
+                            className="w-3 h-3"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          {quiz.duration} min timer
+                        </span>
+                        <span className="inline-flex items-center gap-1 bg-blue-100 px-2 py-1 rounded">
+                          <svg
+                            className="w-3 h-3"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          Fullscreen mode
+                        </span>
+                        <span className="inline-flex items-center gap-1 bg-blue-100 px-2 py-1 rounded">
+                          <svg
+                            className="w-3 h-3"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          Secure mode
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                      {!quizStarted && !isResumable && (
+                        <button
+                          onClick={handleStartQuiz}
+                          className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 w-full sm:w-auto"
+                        >
+                          <Play className="w-5 h-5" />
+                          Start Quiz
+                        </button>
+                      )}
+
+                      {!quizStarted && isResumable && (
+                        <button
+                          onClick={handleResumeQuiz}
+                          className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 w-full sm:w-auto"
+                        >
+                          <Play className="w-5 h-5" />
+                          Resume Quiz
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

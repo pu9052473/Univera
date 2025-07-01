@@ -61,17 +61,28 @@ const QuizSubmissionsPage = () => {
 
   if (!submissions || submissions.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <BookOpen className="w-24 h-24 mx-auto text-gray-400 mb-4" />
-          <h2 className="text-2xl font-bold text-gray-700 mb-2">
-            No Submissions Yet
-          </h2>
-          <p className="text-gray-500">
-            Students have not submitted this quiz yet.
-          </p>
+      <>
+        <div className="px-2 py-1 rounded w-fit border border-Dark ml-3">
+          <Link
+            href={`/classes/my-class/${classId}/quizzes/${quizId}`}
+            className="flex items-center text-TextTwo "
+          >
+            <ArrowLeft size={18} className="mr-2" />
+            Back
+          </Link>
         </div>
-      </div>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <BookOpen className="w-24 h-24 mx-auto text-gray-400 mb-4" />
+            <h2 className="text-2xl font-bold text-gray-700 mb-2">
+              No Submissions Yet
+            </h2>
+            <p className="text-gray-500">
+              Students have not submitted this quiz yet.
+            </p>
+          </div>
+        </div>
+      </>
     )
   }
 

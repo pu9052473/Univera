@@ -42,7 +42,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       {
-        message: "Quiz submission created successfully",
+        message: "Quiz submited successfully",
         submission
       },
       { status: 201 }

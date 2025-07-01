@@ -523,11 +523,6 @@ export function AssignmentSubmissionsSkeleton() {
 export function FacultyQuizzesSkeleton() {
   return (
     <div className="p-3">
-      <div className="flex justify-between items-start md:items-center mb-3">
-        <div className="h-8 w-32 bg-gray-200 rounded-md animate-pulse"></div>
-        <div className="h-10 w-28 bg-gray-200 rounded-md animate-pulse"></div>
-      </div>
-
       {/* Desktop Table View Skeleton - only visible on md screens and above */}
       <div className="hidden md:block overflow-x-auto bg-[#EDF9FD] rounded-lg shadow-md">
         <table className="min-w-full divide-y divide-[#C3EBFA]">
