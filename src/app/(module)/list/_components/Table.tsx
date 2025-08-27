@@ -26,7 +26,7 @@ const Table = ({
             </th>
           </tr>
         </thead>
-        {data.length !== 0 ? (
+        {data && data.length !== 0 ? (
           <tbody className="divide-y divide-gray-100">
             {data.map((item, index) => renderRow(item, index))}
           </tbody>
