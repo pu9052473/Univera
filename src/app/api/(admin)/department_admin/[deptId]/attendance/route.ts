@@ -2,10 +2,7 @@ import { NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 import { subMonths, startOfMonth, endOfMonth } from "date-fns"
 
-export async function GET(
-  req: Request,
-  context: { params: { deptId: string } }
-) {
+export async function GET(req: Request, context: any) {
   try {
     const { deptId } = await context.params
     const departmentId = parseInt(deptId, 10)
